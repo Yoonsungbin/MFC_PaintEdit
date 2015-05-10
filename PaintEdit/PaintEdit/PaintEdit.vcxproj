@@ -100,6 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainFrm.h" />
+    <ClInclude Include="MyObject.h" />
     <ClInclude Include="PaintEdit.h" />
     <ClInclude Include="PaintEditDoc.h" />
     <ClInclude Include="PaintEditView.h" />
@@ -109,6 +110,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainFrm.cpp" />
+    <ClCompile Include="MyObject.cpp" />
     <ClCompile Include="PaintEdit.cpp" />
     <ClCompile Include="PaintEditDoc.cpp" />
     <ClCompile Include="PaintEditView.cpp" />

@@ -29,6 +29,7 @@ END_MESSAGE_MAP()
 
 CPaintEditView::CPaintEditView()
 {
+	type = rectangle;
 	// TODO: 여기에 생성 코드를 추가합니다.
 
 }
@@ -85,8 +86,14 @@ CPaintEditDoc* CPaintEditView::GetDocument() const // 디버그되지 않은 버전은 인�
 void CPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	 
+	if (type == rectangle){
+		AfxMessageBox(_T("rectangle"), MB_YESNO);
+	}
+	else {
+		AfxMessageBox(_T("ni hao"), MB_YESNO);
+	}
 
-	AfxMessageBox(_T("ni hao"), MB_YESNO);
 
 	CView::OnLButtonDown(nFlags, point);
 }

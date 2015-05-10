@@ -1,16 +1,14 @@
 
 // PaintEditView.h : CPaintEditView 클래스의 인터페이스
 //
-
+#include "MyObject.h"
 #pragma once
 
 
 class CPaintEditView : public CView
 {
 public:
-	int num;
-	int sungbin;
-	int count;
+	Object_Type type;
 protected: // serialization에서만 만들어집니다.
 	CPaintEditView();
 	DECLARE_DYNCREATE(CPaintEditView)
