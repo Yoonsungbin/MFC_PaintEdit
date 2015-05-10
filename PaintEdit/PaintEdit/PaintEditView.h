@@ -7,6 +7,8 @@
 
 class CPaintEditView : public CView
 {
+public:
+	int num;
 protected: // serialization에서만 만들어집니다.
 	CPaintEditView();
 	DECLARE_DYNCREATE(CPaintEditView)
