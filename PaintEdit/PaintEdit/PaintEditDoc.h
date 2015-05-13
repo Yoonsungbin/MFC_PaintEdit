@@ -1,7 +1,7 @@
 
 // PaintEditDoc.h : CPaintEditDoc 클래스의 인터페이스
 //
-
+#include "MyObject.h"
 
 #pragma once
 
@@ -14,7 +14,8 @@ protected: // serialization에서만 만들어집니다.
 
 // 특성입니다.
 public:
-
+	CPtrList list;		// void*  형으로 위치들 저장할까 ? or  <Point,Point&> 형으로 할까 고민중
+	MyObject* current; //어떤 타입의 객체인지 정하기위해서 오브젝트 포인터 변수하나설정
 // 작업입니다.
 public:
 
@@ -36,6 +37,7 @@ public:
 #endif
 
 protected:
+	
 
 // 생성된 메시지 맵 함수
 protected:

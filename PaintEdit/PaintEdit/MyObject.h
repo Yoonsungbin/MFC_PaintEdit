@@ -13,24 +13,39 @@ public:
 	virtual ~MyObject();
 
 	void SetColor();
-	COLORREF GetColor();
+	COLORREF GetColor() const{ return color; }
 	void SetThick();
-	int GetThick();
+	int GetThick() const{ return thick; }
 	void SetBoundary();
 	int GetBoundary();
 	void SetObject_Type();
 	int GetObject_Type();
 
-	virtual void set() = 0;
-	virtual void move() = 0;
-	virtual void draw() = 0;
+	virtual void setpoint(int left, int top,int right,int bottom) = 0;
+	virtual void move(int cx,int cy) = 0;
+	virtual void draw(CDC* pDC) = 0;   //draw 함수 생각해보니 각 객체마다 다르게 그려져야되서 가상화 추가
 
 protected:
 	DECLARE_MESSAGE_MAP()
 protected:
 	int thick;		// 두께
 	COLORREF color; // 색깔
-	CPoint point;   // 첫 클릭 시작점
+	CPoint point_start;   // 첫 클릭 시작점
+
+	//friend class CPaineEditView;
 };
 
+
+class MyLine :public MyObject {
+public:
+	MyLine();
+	virtual~MyLine(); 
+	virtual void setpoint(int left, int top, int right, int bottom);
+	virtual void move(int cx, int cy);
+	virtual void draw(CDC* dc);
+private:
+	CPoint point_end;
+
+	//friend class CPaineEditView;
+};
 
