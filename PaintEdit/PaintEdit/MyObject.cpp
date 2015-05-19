@@ -5,57 +5,34 @@
 #include "PaintEdit.h"
 #include "MyObject.h"
 
-
+ULONG_PTR gdiplusToken;
 // MyObject
 
 IMPLEMENT_DYNAMIC(MyObject, CWnd)
 
 MyObject::MyObject()
 {
-	thick = 3;
+	thick = 1;
+	GdiplusStartupInput gdiplusStartupInput;
+	GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 }
 
 MyObject::~MyObject()
 {
+	GdiplusShutdown(gdiplusToken);
 }
 
 void MyObject::move(int cx,int cy){
-	point_start.x += cx;
-	point_start.y += cy;
+	point_Start.x += cx;
+	point_Start.y += cy;
 }
 
 
 void MyObject::setpoint(int left, int top, int right, int bottom){
-	point_start.x = left;
-	point_start.y = top;
+	point_Start.x = left;
+	point_Start.y = top;
 }
 
-MyLine::MyLine() {
-
-}
-MyLine::~MyLine() {
-
-}
-void MyLine::setpoint(int left, int top, int right, int bottom){
-	MyObject::setpoint();
-	point_end.x = right;
-	point_end.y = bottom;
-}
-
-void MyLine::move(int cx, int cy){
-	point_start.x += cx;
-	point_start.y += cy;
-	point_end.x += cx;
-	point_end.y += cy;
-}
-void MyLine::draw(CDC* pDC){  
-	CClientDC dc(this);
-	CPen pen(PS_SOLID, thick, RGB(255, 0, 0));
-	pDC->SelectObject(&pen);
-	pDC->MoveTo(point_start);
-	pDC->LineTo(point_end);
-
-}
 
 
 BEGIN_MESSAGE_MAP(MyObject, CWnd)

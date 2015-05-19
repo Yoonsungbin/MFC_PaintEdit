@@ -14,8 +14,13 @@ protected: // serialization에서만 만들어집니다.
 
 // 특성입니다.
 public:
-	CPtrList list;		// void*  형으로 위치들 저장할까 ? or  <Point,Point&> 형으로 할까 고민중
-	MyObject* current; //어떤 타입의 객체인지 정하기위해서 오브젝트 포인터 변수하나설정
+	CPtrList ObjList; //  Graphic object를 저장해놓는 벡터
+	CPtrList CurrentObj; //현재 객체 타입
+	CPoint point_Start;
+	CPoint point_End;
+	int p_color;
+	int p_thick;
+	BOOL drawing;
 // 작업입니다.
 public:
 

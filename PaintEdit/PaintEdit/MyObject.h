@@ -1,4 +1,6 @@
 #pragma once
+#include <gdiplus.h>
+using namespace Gdiplus;
 
 
 // MyObject
@@ -12,9 +14,9 @@ public:
 	MyObject();
 	virtual ~MyObject();
 
-	void SetColor();
+	void SetColor(COLORREF c){ color = c; }
 	COLORREF GetColor() const{ return color; }
-	void SetThick();
+	void SetThick(int th){ thick = th; }
 	int GetThick() const{ return thick; }
 	void SetBoundary();
 	int GetBoundary();
@@ -30,22 +32,7 @@ protected:
 protected:
 	int thick;		// 두께
 	COLORREF color; // 색깔
-	CPoint point_start;   // 첫 클릭 시작점
+	CPoint point_Start;   // 첫 클릭 시작점
 
 	//friend class CPaineEditView;
 };
-
-
-class MyLine :public MyObject {
-public:
-	MyLine();
-	virtual~MyLine(); 
-	virtual void setpoint(int left, int top, int right, int bottom);
-	virtual void move(int cx, int cy);
-	virtual void draw(CDC* dc);
-private:
-	CPoint point_end;
-
-	//friend class CPaineEditView;
-};
-

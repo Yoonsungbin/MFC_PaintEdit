@@ -30,7 +30,8 @@ END_MESSAGE_MAP()
 CPaintEditDoc::CPaintEditDoc()
 {
 	// TODO: 여기에 일회성 생성 코드를 추가합니다.
-
+	p_thick = 5;
+	p_color = RGB(0, 0, 255);
 }
 
 CPaintEditDoc::~CPaintEditDoc()

@@ -12,6 +12,7 @@
 #include "PaintEditDoc.h"
 #include "PaintEditView.h"
 #include "MyObject.h"
+#include "MyLine.h"
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -39,6 +40,7 @@ CPaintEditView::CPaintEditView()
 
 CPaintEditView::~CPaintEditView()
 {
+	
 }
 
 BOOL CPaintEditView::PreCreateWindow(CREATESTRUCT& cs)
@@ -51,7 +53,7 @@ BOOL CPaintEditView::PreCreateWindow(CREATESTRUCT& cs)
 
 // CPaintEditView 그리기
 
-void CPaintEditView::OnDraw(CDC* /*pDC*/)
+void CPaintEditView::OnDraw(CDC* pDC)
 {
 	CPaintEditDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
@@ -59,6 +61,7 @@ void CPaintEditView::OnDraw(CDC* /*pDC*/)
 		return;
 
 	// TODO: 여기에 원시 데이터에 대한 그리기 코드를 추가합니다.
+	
 }
 
 
@@ -90,12 +93,22 @@ void CPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
 	CPaintEditDoc* pDoc = GetDocument();
+	
+	//초기값 설정
+	pDoc->point_Start = point;
+	pDoc->point_End = point;
+	pDoc->drawing = FALSE;
 	if (type == line){
+		
 		MyLine* line = new MyLine();
 		line->setpoint(point.x, point.y, point.x, point.y);
-		pDoc->current = line;
-		pDoc->list.AddTail(line);
-		//AfxMessageBox(_T("rectangle"), MB_YESNO);
+		line->SetColor(pDoc->p_color);
+		line->SetThick(pDoc->p_thick);
+		pDoc->drawing = TRUE;
+		pDoc->CurrentObj.RemoveAll();
+		pDoc->CurrentObj.AddTail(line);
+		
+		
 	}
 	else {
 		AfxMessageBox(_T("ni hao"), MB_YESNO);
@@ -107,9 +120,20 @@ void CPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 
 void CPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 {
-	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
-	AfxMessageBox(_T("rectangle"), MB_YESNO);
-	Invalidate();
+	CPaintEditDoc* pDoc = GetDocument();
+
+	if (type == line) {
+		CClientDC dc(this);
+		pDoc->point_End = point;
+		MyObject* curr_obj = (MyObject*)pDoc->CurrentObj.GetHead();
+	
+		pDoc->ObjList.AddTail(curr_obj);
+		pDoc->CurrentObj.RemoveAll();
+		pDoc->CurrentObj.AddTail(curr_obj);
+		pDoc->drawing = FALSE;
+				
+	}
+	Invalidate(FALSE);
 	CView::OnLButtonUp(nFlags, point);
 }
 
@@ -119,14 +143,28 @@ void CPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
 	CPaintEditDoc* pDoc = (CPaintEditDoc*)GetDocument();
 	CClientDC dc(this);
-	if (nFlags & MK_LBUTTON){
-		MyObject* my = pDoc->current;
-		my->draw(&dc);
 
-		my->setpoint(point.x, point.y, 0, 0);
-		my->draw(&dc);
+	if (pDoc->CurrentObj.IsEmpty())	return;
+
+	if (nFlags & MK_LBUTTON){
+		
+
+		CPen pen(PS_SOLID, 5, RGB(0,0,255));
+		CPen *oldpen = dc.SelectObject(&pen);
+
+		// 이전에 그린 직선을 지운다.
+		dc.SetROP2(R2_NOT);
+		dc.MoveTo(pDoc->point_Start);
+		dc.LineTo(pDoc->point_End);
+
+		// 새로운 직선을 그린다.
+		dc.SetROP2(R2_NOT);
+		dc.MoveTo(pDoc->point_Start);
+		dc.LineTo(point);
+		pDoc->point_End = point;
+		//Invalidate(FALSE);
 	}
-	
+
 	CView::OnMouseMove(nFlags, point);
 }
 
@@ -135,20 +173,22 @@ void CPaintEditView::OnPaint()
 {
 	CPaintDC dc(this); // device context for painting
 	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
+	// 그리기 메시지에 대해서는 CView::OnPaint()을(를) 호출하지 마십시오.
 
-	CPaintEditDoc* pDoc = (CPaintEditDoc*)GetDocument();
-	POSITION pos = pDoc->list.GetHeadPosition();
 
-	while (pos != NULL){
-		MyObject* my = (MyObject*)pDoc->list.GetNext(pos);
 
-		CPen pen(PS_SOLID, my->GetThick(), my->GetColor());
+	CPaintEditDoc* pDoc = GetDocument();
 
-		my->draw(&dc);
+	POSITION pos = pDoc->ObjList.GetHeadPosition();
+	while (pos)
+	{
+		MyObject* tmp = (MyObject*)pDoc->ObjList.GetNext(pos);
+
+		CPen pen(PS_SOLID, tmp->GetThick(), tmp->GetColor());
+		CPen *oldpen = dc.SelectObject(&pen);
+		tmp->setpoint(pDoc->point_Start.x, pDoc->point_Start.y, pDoc->point_End.x, pDoc->point_End.y);
+		tmp->draw(&dc);
+		dc.SelectObject(&oldpen);
 	}
 
-
-
-
-	// 그리기 메시지에 대해서는 CView::OnPaint()을(를) 호출하지 마십시오.
 }
