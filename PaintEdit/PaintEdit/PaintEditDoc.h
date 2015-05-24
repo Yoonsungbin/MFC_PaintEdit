@@ -21,6 +21,10 @@ public:
 	int p_color;
 	int p_thick;
 	BOOL drawing;
+
+	BOOL textEditing; // Text
+	CArray<TCHAR, TCHAR> textChar; // Text
+	
 // 작업입니다.
 public:
 

@@ -27,6 +27,7 @@ BEGIN_MESSAGE_MAP(CPaintEditView, CView)
 	ON_WM_LBUTTONUP()
 	ON_WM_MOUSEMOVE()
 	ON_WM_PAINT()
+	ON_WM_CHAR()
 END_MESSAGE_MAP()
 
 // CPaintEditView 생성/소멸
@@ -110,6 +111,13 @@ void CPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 		
 		
 	}
+	/////////////////////////// Text ////////////////////////////
+	else if (type == text){
+		// 캐럿 생성
+		// 텍스트 입력받기 및 출력
+		pDoc->textEditing = TRUE;
+	}
+	////////////////////////////////////////////////////////////
 	else {
 		AfxMessageBox(_T("ni hao"), MB_YESNO);
 	}
@@ -191,4 +199,30 @@ void CPaintEditView::OnPaint()
 		dc.SelectObject(&oldpen);
 	}
 
+	///////////////////// Text ////////////////////////
+	//dc.DrawText(pDoc->textChar.GetData(), pDoc->textChar.GetSize(), CRect(textPoint.x, textPoint.y, textPoint.x + 300, textPoint.y + 50), DT_LEFT);
+	///////////////////////////////////////////////////
 }
+
+
+void CPaintEditView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) // Text
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	CPaintEditDoc* pDoc = GetDocument();
+	if (pDoc->textEditing == 1){
+		if (nChar == _T('\b')){
+			if (pDoc->textChar.GetSize() > 0){
+				pDoc->textChar.RemoveAt(pDoc->textChar.GetSize() - 1);
+			}
+		}
+		else if (nChar == VK_RETURN){
+			pDoc->textEditing = FALSE;
+		}
+		else{
+			pDoc->textChar.Add(nChar);
+		}
+		Invalidate();
+	}
+	CView::OnChar(nChar, nRepCnt, nFlags);
+}
+ 
