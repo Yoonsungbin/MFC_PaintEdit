@@ -103,6 +103,7 @@
     <ClInclude Include="MyLine.h" />
     <ClInclude Include="MyObject.h" />
     <ClInclude Include="MyPolyLine.h" />
+    <ClInclude Include="MyText.h" />
     <ClInclude Include="PaintEdit.h" />
     <ClInclude Include="PaintEditDoc.h" />
     <ClInclude Include="PaintEditView.h" />
@@ -115,6 +116,7 @@
     <ClCompile Include="MyLine.cpp" />
     <ClCompile Include="MyObject.cpp" />
     <ClCompile Include="MyPolyLine.cpp" />
+    <ClCompile Include="MyText.cpp" />
     <ClCompile Include="PaintEdit.cpp" />
     <ClCompile Include="PaintEditDoc.cpp" />
     <ClCompile Include="PaintEditView.cpp" />
