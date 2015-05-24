@@ -2,6 +2,7 @@
 // PaintEditDoc.h : CPaintEditDoc 클래스의 인터페이스
 //
 #include "MyObject.h"
+#include "MyText.h"
 
 #pragma once
 
@@ -21,10 +22,8 @@ public:
 	int p_color;
 	int p_thick;
 	BOOL drawing;
+	MyText* pText; // Text
 
-	BOOL textEditing; // Text
-	CArray<TCHAR, TCHAR> textChar; // Text
-	
 // 작업입니다.
 public:
 

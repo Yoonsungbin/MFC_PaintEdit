@@ -13,6 +13,8 @@
 #include "PaintEditView.h"
 #include "MyObject.h"
 #include "MyLine.h"
+#include "MyText.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -34,9 +36,9 @@ END_MESSAGE_MAP()
 
 CPaintEditView::CPaintEditView()
 {
-	type = line;
 	// TODO: 여기에 생성 코드를 추가합니다.
-
+	type = text;
+	textEditing = FALSE; // Text
 }
 
 CPaintEditView::~CPaintEditView()
@@ -89,7 +91,7 @@ CPaintEditDoc* CPaintEditView::GetDocument() const // 디버그되지 않은 버전은 인�
 
 // CPaintEditView 메시지 처리기
 
-
+ 
 void CPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
@@ -113,13 +115,16 @@ void CPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 	}
 	/////////////////////////// Text ////////////////////////////
 	else if (type == text){
+		// Text 생성
+		MyText* text = new MyText(point);
+		pDoc->pText = text;
 		// 캐럿 생성
 		// 텍스트 입력받기 및 출력
-		pDoc->textEditing = TRUE;
+		textEditing = TRUE;
 	}
 	////////////////////////////////////////////////////////////
 	else {
-		AfxMessageBox(_T("ni hao"), MB_YESNO);
+		AfxMessageBox(_T("안녕하세요~~ㅎㅎ"), MB_YESNO);
 	}
 
 	CView::OnLButtonDown(nFlags, point);
@@ -200,7 +205,12 @@ void CPaintEditView::OnPaint()
 	}
 
 	///////////////////// Text ////////////////////////
-	//dc.DrawText(pDoc->textChar.GetData(), pDoc->textChar.GetSize(), CRect(textPoint.x, textPoint.y, textPoint.x + 300, textPoint.y + 50), DT_LEFT);
+	dc.SelectObject(pDoc->pText->font);
+	CRect rect;
+	rect.SetRect(pDoc->pText->point.x, pDoc->pText->point.y, pDoc->pText->point.x + pDoc->pText->textSize + pDoc->pText->text.GetLength() * 100, pDoc->pText->point.y + pDoc->pText->textSize + pDoc->pText->text.GetLength() * 100);
+	dc.SetBkColor(pDoc->pText->bgColor);
+	dc.SetTextColor(pDoc->pText->textColor);
+	dc.DrawText(pDoc->pText->text, rect, NULL);
 	///////////////////////////////////////////////////
 }
 
@@ -209,17 +219,17 @@ void CPaintEditView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) // Text
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
 	CPaintEditDoc* pDoc = GetDocument();
-	if (pDoc->textEditing == 1){
+	if (textEditing == TRUE){
 		if (nChar == _T('\b')){
-			if (pDoc->textChar.GetSize() > 0){
-				pDoc->textChar.RemoveAt(pDoc->textChar.GetSize() - 1);
+			if (pDoc->pText->text.GetLength() > 0){
+				pDoc->pText->text.GetBufferSetLength(pDoc->pText->text.GetLength() - 1);
 			}
 		}
 		else if (nChar == VK_RETURN){
-			pDoc->textEditing = FALSE;
+			textEditing = FALSE;
 		}
 		else{
-			pDoc->textChar.Add(nChar);
+			pDoc->pText->text.AppendChar(nChar);
 		}
 		Invalidate();
 	}

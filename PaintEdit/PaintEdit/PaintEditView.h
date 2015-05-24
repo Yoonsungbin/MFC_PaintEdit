@@ -9,6 +9,8 @@ class CPaintEditView : public CView
 {
 public:
 	Object_Type type;
+	BOOL textEditing; // Text
+
 protected: // serialization에서만 만들어집니다.
 	CPaintEditView();
 	DECLARE_DYNCREATE(CPaintEditView)
@@ -51,4 +53,3 @@ public:
 inline CPaintEditDoc* CPaintEditView::GetDocument() const
    { return reinterpret_cast<CPaintEditDoc*>(m_pDocument); }
 #endif
-
