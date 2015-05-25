@@ -1,19 +1,17 @@
 #pragma once
-
-// YObject 명령 대상입니다.
-
-class YObject : public CObject
+#include "afx.h"
+class YObject :
+	public CObject
 {
 public:
 	YObject();
-	virtual ~YObject();
+	~YObject();
 
 	virtual void moveAll() = 0;
-	virtual void delteAll() = 0;
+	virtual void deleteAll() = 0;
 	virtual void draw(CDC*) = 0;
 
 public:
-	CRgn rgn;  //리젼
+	CRgn rgn; //리젼
 };
-
 

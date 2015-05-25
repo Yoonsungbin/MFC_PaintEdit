@@ -1,18 +1,14 @@
 #pragma once
 #include "YObject.h"
-
-// YTwoDimension
-
-class YTwoDimension : public YObject
+class YTwoDimension :
+	public YObject
 {
-	DECLARE_DYNAMIC(YTwoDimension)
-
 public:
 	YTwoDimension();
-	virtual ~YTwoDimension();
+	~YTwoDimension();
 
-protected:
-	DECLARE_MESSAGE_MAP()
+	virtual void moveAll() = 0;
+	virtual void deleteAll() = 0;
+	virtual void draw(CDC*) = 0;
 };
-
 
