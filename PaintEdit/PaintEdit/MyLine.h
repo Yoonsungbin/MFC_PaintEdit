@@ -6,7 +6,7 @@ public:
 	MyLine();
 	MyLine(MyLine *);
 	virtual~MyLine();
-	virtual void setpoint(int left, int top, int right, int bottom);
+	void setpoint(int left, int top, int right, int bottom);
 	virtual void move(int cx, int cy);
 	virtual void draw(CDC* dc);
 private:

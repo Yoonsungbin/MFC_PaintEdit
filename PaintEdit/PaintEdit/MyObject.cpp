@@ -22,13 +22,7 @@ MyObject::~MyObject()
 	GdiplusShutdown(gdiplusToken);
 }
 
-// 쓸필요없을듯~
-void MyObject::move(int cx,int cy){
-	point_Start.x += cx;
-	point_Start.y += cy;
-}
 
-// 쓸필요없을듯~
 void MyObject::setpoint(int left, int top, int right, int bottom){
 	point_Start.x = left;
 	point_Start.y = top;

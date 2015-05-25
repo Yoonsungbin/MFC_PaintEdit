@@ -235,4 +235,3 @@ void CPaintEditView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) // Text
 	}
 	CView::OnChar(nChar, nRepCnt, nFlags);
 }
- 
