@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{778B1ACD-C2DA-4359-B70B-047C92C8FA95}</ProjectGuid>
+    <ProjectGuid>{283E4ABE-CF4D-4133-BAC1-8204EE77690B}</ProjectGuid>
     <RootNamespace>YPaintEdit</RootNamespace>
     <Keyword>MFCProj</Keyword>
   </PropertyGroup>
@@ -155,9 +155,4 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
-  <ProjectExtensions>
-    <VisualStudio>
-      <UserProperties RESOURCE_FILE="YPaintEdit.rc" />
-    </VisualStudio>
-  </ProjectExtensions>
 </Project>
