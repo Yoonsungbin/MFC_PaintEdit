@@ -14,6 +14,8 @@
 #include "MyObject.h"
 #include "MyLine.h"
 #include "MyText.h"
+#include "MyEllipse.h"
+#include "MyRectangle.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -34,10 +36,10 @@ END_MESSAGE_MAP()
 
 // CPaintEditView 생성/소멸
 
-CPaintEditView::CPaintEditView()
+CPaintEditView::CPaintEditView()//타입 선택 여기서 할꺼야
 {
 	// TODO: 여기에 생성 코드를 추가합니다.
-	type = text;
+	type = ellipse;//타입 선택 임시적으로 하는 곳
 	textEditing = FALSE; // Text
 }
 
@@ -101,6 +103,8 @@ void CPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 	pDoc->point_Start = point;
 	pDoc->point_End = point;
 	pDoc->drawing = FALSE;
+
+	//라인일 경우
 	if (type == line){
 		
 		MyLine* line = new MyLine();
@@ -122,6 +126,23 @@ void CPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 		// 텍스트 입력받기 및 출력
 		textEditing = TRUE;
 	}
+///////////////타원//////////////////////
+	else if (type == ellipse)
+	{
+		MyEllipse* Ellipse = new MyEllipse();//동적 객체 생성
+		//void setpoint(int left, int top, int right, int bottom);
+
+	
+		Ellipse->setpoint(point.x, point.y, point.x, point.y);//왼쪽 위 오른쪽 아래
+		//pDoc->CurrentObj.RemoveAll();
+		pDoc->CurrentObj.AddTail(Ellipse);
+		SetCapture();//마우스 캡처 시작
+	}
+	else if (type == rectangle)
+	{
+
+
+	}
 	////////////////////////////////////////////////////////////
 	else {
 		AfxMessageBox(_T("안녕하세요~~ㅎㅎ"), MB_YESNO);
@@ -134,7 +155,7 @@ void CPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 void CPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	CPaintEditDoc* pDoc = GetDocument();
-
+	CClientDC dc(this);
 	if (type == line) {
 		CClientDC dc(this);
 		pDoc->point_End = point;
@@ -146,6 +167,15 @@ void CPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 		pDoc->drawing = FALSE;
 				
 	}
+	if (type == ellipse)
+	{
+		
+		
+		dc.Ellipse(pDoc->point_Start.x, pDoc->point_Start.y, point.x, point.y);
+		ReleaseCapture();//마우스 캡처 해제
+
+	}
+
 	Invalidate(FALSE);
 	CView::OnLButtonUp(nFlags, point);
 }
@@ -158,7 +188,7 @@ void CPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 	CClientDC dc(this);
 
 	if (pDoc->CurrentObj.IsEmpty())	return;
-
+	/*
 	if (nFlags & MK_LBUTTON){
 		
 
@@ -177,6 +207,27 @@ void CPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 		pDoc->point_End = point;
 		//Invalidate(FALSE);
 	}
+	*/
+	if (type == ellipse)
+	{
+		if(GetCapture()){  //만약 클릭되어 그려지고 있으면 //pDoc->ellipse_flag == true)
+
+			
+			//CPen pen(PS_DASH, 2, RGB(255, 255, 255));
+			//CPen *pOldpen = dc.SelectStockObject(&pen);
+			dc.SetROP2(R2_NOP);//선을 반전
+			//dc.SelectStockObject(PS_DASH);
+			dc.SelectStockObject(BLACK_PEN);
+
+			//dc.Ellipse(pDoc->point_Start.x, pDoc->point_Start.y, pDoc->point_End.x, pDoc->point_End.y);
+			dc.Ellipse(pDoc->point_Start.x, pDoc->point_Start.y, point.x, point.y);
+			dc.Ellipse(pDoc->point_Start.x, pDoc->point_Start.y, point.x, point.y);
+		
+		}
+
+
+	}
+
 
 	CView::OnMouseMove(nFlags, point);
 }

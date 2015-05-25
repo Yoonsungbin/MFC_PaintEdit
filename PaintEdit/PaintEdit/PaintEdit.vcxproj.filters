@@ -51,6 +51,12 @@
     <ClInclude Include="MyText.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="MyEllipse.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="MyRectangle.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PaintEdit.cpp">
@@ -78,6 +84,12 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="MyText.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="MyEllipse.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="MyRectangle.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

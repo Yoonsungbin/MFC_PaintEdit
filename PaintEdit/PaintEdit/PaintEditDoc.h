@@ -3,6 +3,7 @@
 //
 #include "MyObject.h"
 #include "MyText.h"
+#include "MyEllipse.h"
 
 #pragma once
 
@@ -23,6 +24,10 @@ public:
 	int p_thick;
 	BOOL drawing;
 	MyText* pText; // Text
+	MyEllipse* pEllipse;
+
+//  MyEllipse* pEllipse;
+//	MyRectangle* pRectangle;
 
 // 작업입니다.
 public:
