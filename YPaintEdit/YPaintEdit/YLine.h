@@ -5,9 +5,25 @@ class YLine :
 {
 public:
 	YLine();
+	YLine(CPoint start, CPoint end);
 	~YLine();
-	virtual void moveAll() = 0;
-	virtual void deleteAll() = 0;
-	virtual void draw(CDC*) = 0;
+	virtual void moveAll();
+	virtual void deleteAll();
+	virtual void draw(CDC* cPC);
+
+	virtual void move();
+	virtual void changeLineColor();
+	
+	virtual void setRgn();
+	BOOL virtual checkRgn(CPoint point);
+
+	//void setNPoint(CPoint point){nPoint = point;}
+	void setPoint(CPoint point){ ePoint = point; }
+
+private:
+	CRect rect;
+	CPoint sPoint;
+	CPoint ePoint;
+	//CPoint nPoint;
 };
 

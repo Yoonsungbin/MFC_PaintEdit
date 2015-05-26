@@ -34,6 +34,10 @@ IMPLEMENT_DYNCREATE(CYPaintEditView, CView)
 BEGIN_MESSAGE_MAP(CYPaintEditView, CView)
 	ON_WM_CONTEXTMENU()
 	ON_WM_RBUTTONUP()
+	ON_WM_LBUTTONDOWN()
+	ON_WM_LBUTTONUP()
+	ON_WM_MOUSEMOVE()
+	ON_WM_PAINT()
 END_MESSAGE_MAP()
 
 // CYPaintEditView 생성/소멸
@@ -41,6 +45,8 @@ END_MESSAGE_MAP()
 CYPaintEditView::CYPaintEditView()
 {
 	// TODO: 여기에 생성 코드를 추가합니다.
+
+	type = line;
 
 }
 
@@ -104,3 +110,136 @@ CYPaintEditDoc* CYPaintEditView::GetDocument() const // 디버그되지 않은 버전은 �
 
 
 // CYPaintEditView 메시지 처리기
+
+
+void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+
+	//초기값 설정
+	pDoc->sPoint = point;
+	pDoc->ePoint = point;
+	pDoc->drawing = FALSE;
+	pDoc->isExist = FALSE;
+
+	if (type == line){
+		YLine* line = new YLine(point, point);
+		line->setLineColor(RGB(0, 0, 255));
+		line->SetThick(1);
+		line->setSelect(TRUE);
+		pDoc->drawing = TRUE;
+		pDoc->currentObj = line;
+		//SetCapture();
+	}
+	else if (type == default){
+		POSITION pos = pDoc->obj_List.GetTailPosition();
+		while (pos) {
+			YObject* tmp = (YObject*)pDoc->obj_List.GetPrev(pos);
+			
+			if (tmp->checkRgn(point)){
+				pDoc->isExist = TRUE;
+				break;
+			}
+			pDoc->isExist = FALSE;
+		}
+	}
+	CView::OnLButtonDown(nFlags, point);
+}
+
+void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+	CClientDC dc(this);
+
+	if (nFlags & MK_LBUTTON){
+
+		CPen pen(PS_SOLID, 1, RGB(0, 0, 255));
+		CPen *oldpen = dc.SelectObject(&pen);
+		if (type == line){
+			pDoc->currentObj->setPoint(point);
+			// 이전에 그린 직선을 지운다.
+			dc.SetROP2(R2_NOT);
+			dc.MoveTo(pDoc->sPoint);
+			dc.LineTo(pDoc->ePoint);
+
+			// 새로운 직선을 그린다.
+			dc.SetROP2(R2_NOT);
+			dc.MoveTo(pDoc->sPoint);
+			dc.LineTo(point);
+			pDoc->ePoint = point;
+
+			//리젼
+			//pDoc->currentObj->setRgn();
+	
+		}
+		//Invalidate(FALSE);  // 적용 & 적용x 보여지는 방식다름 (첫 시작점)
+	}
+	
+	CView::OnMouseMove(nFlags, point);
+}
+
+void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+	CClientDC dc(this);
+	pDoc->ePoint = point;
+	if (type == line) {
+
+		YLine* line = new YLine(pDoc->sPoint, pDoc->ePoint);
+		pDoc->currentObj = line;
+		
+		pDoc->currentObj->setRgn();
+
+		pDoc->obj_List.AddTail(pDoc->currentObj);
+		pDoc->currentObj = NULL;
+		pDoc->drawing = FALSE;
+		type = default;
+	//	ReleaseCapture();
+		
+	}
+	else if (type == default){
+		type = line;
+		POSITION pos = pDoc->obj_List.GetHeadPosition();
+		while (pos){
+			YObject* tmp = (YObject*)pDoc->obj_List.GetNext(pos);
+			tmp->setSelect(FALSE);
+			tmp->draw(&dc);
+		}
+	}
+	Invalidate(FALSE);
+	CView::OnLButtonUp(nFlags, point);
+}
+
+
+
+
+void CYPaintEditView::OnPaint()
+{
+	CPaintDC dc(this); // device context for painting
+	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
+	// 그리기 메시지에 대해서는 CView::OnPaint()을(를) 호출하지 마십시오.
+
+	CYPaintEditDoc* pDoc = GetDocument();
+	
+	POSITION pos = pDoc->obj_List.GetHeadPosition();
+
+	while (pos) {
+		YObject* tmp = (YObject*)pDoc->obj_List.GetNext(pos);
+		tmp->setNPoint(pDoc->ePoint);
+		CPen pen(PS_SOLID, 1, RGB(0, 0, 255));
+		CPen *oldPen = dc.SelectObject(&pen);
+		tmp->draw(&dc);
+		dc.SelectObject(&oldPen);
+		
+	}
+	if (pDoc->drawing){			// 마우스 움직이는 도중 계속 실행되는 함수
+		//CPen pen(PS_SOLID, 4, RGB(200, 0, 0));
+		//CPen *oldPen = dc.SelectObject(&pen);
+		pDoc->currentObj->setNPoint(pDoc->ePoint);
+		pDoc->currentObj->draw(&dc);
+		//dc.SelectObject(&oldPen);
+	}
+}

@@ -10,3 +10,4 @@ YOneDimension::YOneDimension()
 YOneDimension::~YOneDimension()
 {
 }
+
