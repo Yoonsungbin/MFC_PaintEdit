@@ -13,20 +13,20 @@ public:
 	virtual void draw(CDC*);
 
 	// Setter
-	void changePoint(CPoint nPoint);
-	void changeText(CString nText);
-	void changeFont(CFont nFont);
-	void changeFontColor(COLORREF nColor);
-	void changeBkColor(COLORREF nColor);
-	void changeFontSize(int nFontSize);
+	void changePoint(CPoint nPoint){ point = nPoint; }
+	void changeText(CString nText) { text = nText;  }
+	void changeFont(CFont nFont) { font = nFont; }
+	void changeFontColor(COLORREF nColor) { fontColor = nColor; }
+	void changeBkColor(COLORREF nColor) { bkColor = nColor; }
+	void changeFontSize(int nFontSize) { fontSize = nFontSize; }
 
 	// Getter
-	CPoint getPoint();
-	CString getText();
-	CFont getFont();
-	COLORREF getFontColor();
-	COLORREF getBkColor();
-	int getFontSize();
+	CPoint getPoint() { return point; }
+	CString getText() { return text; }
+	CFont getFont() { return font; }
+	COLORREF getFontColor() { return fontColor; }
+	COLORREF getBkColor() { return bkColor; }
+	int getFontSize() { return fontSize; }
 
 	// Variables
 private:
