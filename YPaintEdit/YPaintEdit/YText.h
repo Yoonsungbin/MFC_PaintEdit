@@ -3,16 +3,17 @@
 class YText : public YObject
 {
 public:
-	// Constructor, Destructor
+	// Constructors, Destructor
 	YText();
+	YText(CPoint sPoint);
 	~YText();
-
+	
 	// Virtual
-	virtual void moveAll();
-	virtual void deleteAll();
-	virtual void draw(CDC*);
+	void moveAll();
+	void deleteAll();
+	void draw(CDC*);
 
-	// Setter
+	// Accessor
 	void changePoint(CPoint nPoint){ point = nPoint; }
 	void changeText(CString nText) { text = nText;  }
 	void changeFont(CFont nFont) { font = nFont; }
@@ -20,7 +21,7 @@ public:
 	void changeBkColor(COLORREF nColor) { bkColor = nColor; }
 	void changeFontSize(int nFontSize) { fontSize = nFontSize; }
 
-	// Getter
+	// Mutator
 	CPoint getPoint() { return point; }
 	CString getText() { return text; }
 	CFont getFont() { return font; }
