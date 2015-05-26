@@ -24,12 +24,14 @@ protected: // serialization에서만 만들어집니다.
 
 // 특성입니다.
 public:
+	YObject_Type yType;
 	CPtrList obj_List;
 	YObject* currentObj;
 	CPoint sPoint;
 	CPoint ePoint;
 	BOOL drawing = FALSE; //그리기 상태 확인변수
-	BOOL isExist; //영역안에 존재하는지
+	BOOL isExist = FALSE; //영역안에 존재하는지
+	//BOOL isSelected =FALSE;
 
 // 작업입니다.
 public:

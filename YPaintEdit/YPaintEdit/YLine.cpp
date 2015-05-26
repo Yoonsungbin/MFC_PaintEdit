@@ -43,7 +43,7 @@ void YLine::draw(CDC* pDC){
 	pDC->LineTo(ePoint);
 	pDC->SelectObject(&oldPen);
 
-	if (selected){
+	if (isSelected){
 		/*
 		CRect rect;
 		rect.SetRect(sPoint, ePoint);

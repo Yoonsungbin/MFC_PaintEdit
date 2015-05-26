@@ -46,7 +46,6 @@ CYPaintEditView::CYPaintEditView()
 {
 	// TODO: 여기에 생성 코드를 추가합니다.
 
-	type = line;
 
 }
 
@@ -121,9 +120,9 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 	pDoc->sPoint = point;
 	pDoc->ePoint = point;
 	pDoc->drawing = FALSE;
-	pDoc->isExist = FALSE;
-
-	if (type == line){
+	//pDoc->isExist = FALSE;
+	//pDoc->isSelected = FALSE;
+	if (pDoc->yType == line){
 		YLine* line = new YLine(point, point);
 		line->setLineColor(RGB(0, 0, 255));
 		line->SetThick(1);
@@ -132,28 +131,31 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 		pDoc->currentObj = line;
 		//SetCapture();
 	}
-	else if (type == default){
+	else if (pDoc->yType == default){
+	//	pDoc->drawing = FALSE;
+	//	pDoc->isSelected = FALSE;
+
 		POSITION pos = pDoc->obj_List.GetTailPosition();
 		while (pos) {
 			YObject* tmp = (YObject*)pDoc->obj_List.GetPrev(pos);
-			//tmp->setSelect(FALSE);
+			//tmp->setSelect(TRUE);
 			
 			if (tmp->checkRgn(point)){
 				pDoc->isExist = TRUE;
 				if (tmp->getSelect()){
+					//MessageBox(_T("ASD"));
 					tmp->setSelect(FALSE);
 				}
 				else{
+					//MessageBox(_T("v"));
 					tmp->setSelect(TRUE);
 				}
-			//	tmp->setSelect(TRUE);
 				pDoc->currentObj = tmp;
 				pDoc->currentObj->drawRgn(tmp->getSPoint(), tmp->getEPoint());
 				break;
 			}
 			pDoc->isExist = FALSE;
 		}
-
 	}
 	CView::OnLButtonDown(nFlags, point);
 }
@@ -168,7 +170,7 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 
 		CPen pen(PS_SOLID, 1, RGB(0, 0, 255));
 		CPen *oldpen = dc.SelectObject(&pen);
-		if (type == line){
+		if (pDoc->yType == line){
 			pDoc->currentObj->setEPoint(point);
 			// 이전에 그린 직선을 지운다.
 			dc.SetROP2(R2_NOT);
@@ -199,30 +201,31 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 	CYPaintEditDoc* pDoc = GetDocument();
 	CClientDC dc(this);
 	pDoc->ePoint = point;
-	if (type == line) {
+	if (pDoc->yType == line) {
 
 		YLine* line = new YLine(pDoc->sPoint, pDoc->ePoint);
 		pDoc->currentObj = line;
 		
 		pDoc->currentObj->setRgn();
-
+		pDoc->currentObj->setSelect(FALSE);
 		pDoc->obj_List.AddTail(pDoc->currentObj);
 		pDoc->currentObj = NULL;
 		pDoc->drawing = FALSE;
-		type = default;
+		pDoc->yType = default;
 		//ReleaseCapture();
 		
 	}
-	else if (type == default){
-		type = line;
+	else if (pDoc->yType == default){
+		//type = line;
 		POSITION pos = pDoc->obj_List.GetHeadPosition();
 		while (pos){
 			YObject* tmp = (YObject*)pDoc->obj_List.GetNext(pos);
 		//pDoc->currentObj->drawRgn(pDoc->sPoint, pDoc->ePoint);
 			tmp->draw(&dc);
-			tmp->setSelect(FALSE);
+			tmp->setSelect(TRUE);
 			
 		}
+		pDoc->yType = line;
 	}
 	Invalidate(FALSE);
 	CView::OnLButtonUp(nFlags, point);
@@ -256,3 +259,4 @@ void CYPaintEditView::OnPaint()
 		//dc.SelectObject(&oldPen);
 	}
 }
+

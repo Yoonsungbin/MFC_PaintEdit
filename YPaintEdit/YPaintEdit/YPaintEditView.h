@@ -35,7 +35,6 @@ public:
 
 // 작업입니다.
 public:
-	YObject_Type type;
 
 // 재정의입니다.
 public:
