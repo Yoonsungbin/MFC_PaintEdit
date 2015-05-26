@@ -15,6 +15,7 @@
 
 #pragma once
 #include "YObject.h"
+#include "YText.h"
 
 class CYPaintEditDoc : public CDocument
 {
@@ -33,6 +34,9 @@ public:
 	BOOL isExist = FALSE; //영역안에 존재하는지
 	//BOOL isSelected =FALSE;
 
+	BOOL textEditing; // Text
+	YText *ptext; // Text
+	CString tmp; // Text
 // 작업입니다.
 public:
 

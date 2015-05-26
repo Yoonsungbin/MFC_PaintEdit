@@ -27,7 +27,7 @@ public:
 	
 	// Accessor
 	void setText(CString nText) { text = nText;  }
-	void setFont(CFont* nFont) { font = nFont; }
+	void setFont(CString nFont) { font = nFont; }
 	void setFontColor(COLORREF nColor) { fontColor = nColor; }
 	void setBkColor(COLORREF nColor) { bkColor = nColor; }
 	void setFontSize(int nFontSize) { fontSize = nFontSize; }
@@ -36,7 +36,7 @@ public:
 	// Mutator
 	CRect getRect() { return rect; }
 	CString getText() { return text; }
-	CFont* getFont() { return font; }
+	CString getFont() { return font; }
 	COLORREF getFontColor() { return fontColor; }
 	COLORREF getBkColor() { return bkColor; }
 	int getFontSize() { return fontSize; }
@@ -48,7 +48,7 @@ private:
 	CPoint ePoint;
 	CRect rect;
 	CString text;
-	CFont* font;
+	CString font;
 	COLORREF fontColor;
 	COLORREF bkColor;
 	int fontSize;

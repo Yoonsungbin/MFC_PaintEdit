@@ -38,6 +38,7 @@ BEGIN_MESSAGE_MAP(CYPaintEditView, CView)
 	ON_WM_LBUTTONUP()
 	ON_WM_MOUSEMOVE()
 	ON_WM_PAINT()
+	ON_WM_CHAR()
 END_MESSAGE_MAP()
 
 // CYPaintEditView 생성/소멸
@@ -129,7 +130,22 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 		pDoc->currentObj = line;
 		//SetCapture();
 	}
-
+	
+	////////////////////////// Text ///////////////////////////
+	else if (pDoc->yType == text){
+		if (pDoc->textEditing == FALSE){
+			YText* text = new YText(point);
+			pDoc->ptext = text;
+			pDoc->textEditing = TRUE;
+		}
+		else {
+			pDoc->obj_List.AddTail(pDoc->ptext);
+			pDoc->tmp.Empty();
+			pDoc->textEditing = FALSE;
+		}
+	}
+	///////////////////////////////////////////////////////////
+	
 	else if (pDoc->yType == ellipse)
 	{
 		YEllipse* ellipse = new YEllipse(point, point);
@@ -301,4 +317,50 @@ void CYPaintEditView::OnPaint()
 		pDoc->currentObj->draw(&dc);
 		//dc.SelectObject(&oldPen);
 	}
+
+	////////////////////////////// Text ////////////////////////////////
+	if (pDoc->textEditing){
+		CFont f;
+		f.CreatePointFont(pDoc->ptext->getFontSize(),pDoc->ptext->getFont());
+		dc.SelectObject(f);
+		dc.SetBkColor(pDoc->ptext->getBkColor());
+		dc.SetTextColor(pDoc->ptext->getFontColor());
+		CPoint p;
+		p.x = pDoc->ptext->getEPoint().x + pDoc->ptext->getFontSize() + pDoc->ptext->getText().GetLength() * 100;
+		p.y = pDoc->ptext->getEPoint().y + pDoc->ptext->getFontSize() + pDoc->ptext->getText().GetLength() * 100;
+		pDoc->ptext->setEPoint(p);
+		pDoc->ptext->drawRgn(pDoc->ptext->getSPoint(), pDoc->ptext->getEPoint());
+
+		//CPen m_penDot(PS_DOT, 1, RGB(255, 1, 1));
+		//dc.SelectObject(&m_penDot);
+		//dc.SetROP2(R2_XORPEN);
+
+		dc.DrawText(pDoc->ptext->getText(), pDoc->ptext->getRect(), NULL);
+	}
+	////////////////////////////////////////////////////////////////////
+}
+
+void CYPaintEditView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) // Text
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+	if (pDoc->textEditing == TRUE){
+		if (nChar == _T('\b')){
+			if (pDoc->ptext->getText().GetLength() > 0){
+				pDoc->tmp.GetBufferSetLength(pDoc->tmp.GetLength() - 1);
+				pDoc->ptext->setText(pDoc->tmp);
+			}
+		}
+		else if (nChar == VK_RETURN){
+			pDoc->textEditing = FALSE;
+			pDoc->obj_List.AddTail(pDoc->ptext);
+			pDoc->tmp.Empty();
+		}
+		else{
+			pDoc->tmp.AppendChar(nChar);
+			pDoc->ptext->setText(pDoc->tmp);
+		}
+		Invalidate();
+	}
+	CView::OnChar(nChar, nRepCnt, nFlags);
 }

@@ -7,10 +7,10 @@ YText::YText()
 }
 YText::YText(CPoint point){
 	sPoint = point;
-	fontSize = 500;
-	(*font).CreatePointFont(fontSize, _T("±¼¸²"));
-	fontColor = RGB(255, 0, 0);
-	bkColor = RGB(0, 255, 0);
+	fontSize = 1000;
+	font = _T("±¼¸²");
+	fontColor = RGB(1, 0, 0);
+	bkColor = RGB(255, 255, 0);
 }
 YText::~YText()
 {
@@ -24,8 +24,13 @@ void YText::moveAll(){
 void YText::deleteAll(){
 
 }
-void YText::draw(CDC*){
-
+void YText::draw(CDC* dc){
+	CFont f;
+	f.CreatePointFont(fontSize, font);
+	dc->SelectObject(f);
+	dc->SetBkColor(bkColor);
+	dc->SetTextColor(fontColor);
+	dc->DrawText(text, rect, NULL);
 }
 void YText::setRgn(){
 	int left, top, right, bottom;

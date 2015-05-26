@@ -40,7 +40,8 @@ END_MESSAGE_MAP()
 CYPaintEditDoc::CYPaintEditDoc()
 {
 	// TODO: 여기에 일회성 생성 코드를 추가합니다.
-	yType = ellipse;
+	yType = text;
+	textEditing = FALSE; // Text
 }
 
 CYPaintEditDoc::~CYPaintEditDoc()
