@@ -32,7 +32,7 @@ public:
 	CPoint ePoint;
 	BOOL drawing = FALSE; //그리기 상태 확인변수
 	BOOL isExist = FALSE; //영역안에 존재하는지
-	//BOOL isSelected =FALSE;
+	BOOL isSelected =FALSE;
 
 	BOOL textEditing; // Text
 	YText *ptext; // Text

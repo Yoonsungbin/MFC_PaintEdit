@@ -39,6 +39,9 @@ BEGIN_MESSAGE_MAP(CYPaintEditView, CView)
 	ON_WM_MOUSEMOVE()
 	ON_WM_PAINT()
 	ON_WM_CHAR()
+	ON_COMMAND(ID_BUTTON3, &CYPaintEditView::MenuLineButton)
+	ON_COMMAND(ID_BUTTON2, &CYPaintEditView::MenuDefaultButton)
+	ON_COMMAND(ID_BUTTON7, &CYPaintEditView::MenuTextButton)
 END_MESSAGE_MAP()
 
 // CYPaintEditView 생성/소멸
@@ -119,18 +122,19 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 	pDoc->sPoint = point;
 	pDoc->ePoint = point;
 	pDoc->drawing = FALSE;
-	//pDoc->isExist = FALSE;
-	//pDoc->isSelected = FALSE;
+
 	if (pDoc->yType == line){
+		//초기화
 		YLine* line = new YLine(point, point);
 		line->setLineColor(RGB(0, 0, 255));
 		line->SetThick(1);
 		line->setSelect(TRUE);
 		pDoc->drawing = TRUE;
+		pDoc->isSelected = FALSE;
 		pDoc->currentObj = line;
-		//SetCapture();
+
 	}
-	
+
 	////////////////////////// Text ///////////////////////////
 	else if (pDoc->yType == text){
 		if (pDoc->textEditing == FALSE){
@@ -145,44 +149,39 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 		}
 	}
 	///////////////////////////////////////////////////////////
-	
-	else if (pDoc->yType == ellipse)
-	{
-		YEllipse* ellipse = new YEllipse(point, point);
-		
-		SetCapture();//마우스 캡쳐 시작
-		dc.Ellipse(pDoc->sPoint.x, pDoc->sPoint.y, pDoc->sPoint.x, pDoc->sPoint.y);
-
-
-
-	}
-
 	else if (pDoc->yType == default){
-	//	pDoc->drawing = FALSE;
-	//	pDoc->isSelected = FALSE;
+		if (pDoc->isSelected){
+			dx_sPoint = point;
+		}
 
 		POSITION pos = pDoc->obj_List.GetTailPosition();
 		while (pos) {
 			YObject* tmp = (YObject*)pDoc->obj_List.GetPrev(pos);
-			//tmp->setSelect(TRUE);
-			
 			if (tmp->checkRgn(point)){
 				pDoc->isExist = TRUE;
+				/*
+				//리젼반전을 위해서
 				if (tmp->getSelect()){
-					//MessageBox(_T("ASD"));
-					tmp->setSelect(FALSE);
+				tmp->setSelect(FALSE);
+				pDoc->isSelected = FALSE;
 				}
 				else{
-					//MessageBox(_T("v"));
-					tmp->setSelect(TRUE);
+				tmp->setSelect(TRUE);
+				pDoc->isSelected = TRUE;
 				}
+				*/
+				tmp->setSelect(TRUE);
+				pDoc->isSelected = TRUE;
 				pDoc->currentObj = tmp;
 				pDoc->currentObj->drawRgn(tmp->getSPoint(), tmp->getEPoint());
+				//pDoc->currentObj->draw(&dc);
 				break;
 			}
 			pDoc->isExist = FALSE;
 		}
+
 	}
+	//SetCapture();
 	CView::OnLButtonDown(nFlags, point);
 }
 
@@ -195,9 +194,12 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 	if (nFlags & MK_LBUTTON){
 
 		CPen pen(PS_SOLID, 1, RGB(0, 0, 255));
-		CPen *oldpen = dc.SelectObject(&pen);
+		CPen *oldPen = dc.SelectObject(&pen);
+		YObject* tmp = (YObject*)pDoc->currentObj;
 
 		if (pDoc->yType == line){
+
+
 			pDoc->currentObj->setEPoint(point);
 			// 이전에 그린 직선을 지운다.
 			dc.SetROP2(R2_NOT);
@@ -211,40 +213,29 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 			pDoc->ePoint = point;
 
 			//리젼
-			//pDoc->currentObj->setRgn();
 			pDoc->currentObj->drawRgn(pDoc->sPoint, pDoc->ePoint);
-			
-	
+
+
 		}
-
-		else if (pDoc->yType == ellipse){
-		
-			
-		//	pDoc->currentObj->(point);
-
-			dc.SetROP2(R2_XORPEN);;//선을 반전
-			dc.SelectStockObject(NULL_BRUSH);
-			CPen m_penDot(PS_DOT, 1, RGB(1, 1, 1));
-			dc.SelectObject(&m_penDot);
-			dc.SetROP2(R2_XORPEN);
-
-		
-			dc.Ellipse(pDoc->sPoint.x, pDoc->sPoint.y, pDoc->ePoint.x, pDoc->ePoint.y);
+		else if (pDoc->yType == default){
+			CPoint t_point = point - pDoc->ePoint;
 			pDoc->ePoint = point;
-			dc.Ellipse(pDoc->sPoint.x, pDoc->sPoint.y, point.x, point.y);
-		
-			
-
-			//pDoc->currentObj->drawRgn(pDoc->sPoint, pDoc->ePoint);
-			
-			
+			if (pDoc->isSelected){
+				//선택 됨
+				pDoc->currentObj->moveAll(t_point.x, t_point.y);
+				pDoc->currentObj->drawRgn(pDoc->currentObj->getSPoint(), pDoc->currentObj->getEPoint());
+			}
+			else {
+				//선택안됨
+			}
 		}
 
+		dc.SelectObject(&oldPen);
 
 
 		Invalidate();  // 적용 & 적용x 보여지는 방식다름 (첫 시작점)
 	}
-	
+
 	CView::OnMouseMove(nFlags, point);
 }
 
@@ -254,41 +245,45 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 	CYPaintEditDoc* pDoc = GetDocument();
 	CClientDC dc(this);
 	pDoc->ePoint = point;
+
 	if (pDoc->yType == line) {
 
 		YLine* line = new YLine(pDoc->sPoint, pDoc->ePoint);
 		pDoc->currentObj = line;
-		
+
 		pDoc->currentObj->setRgn();
 		pDoc->currentObj->setSelect(FALSE);
 		pDoc->obj_List.AddTail(pDoc->currentObj);
 		pDoc->currentObj = NULL;
 		pDoc->drawing = FALSE;
 		pDoc->yType = default;
-		//ReleaseCapture();
-		
-	}
-
-
-	else if (pDoc->yType == ellipse)
-	{
-		dc.Ellipse(pDoc->sPoint.x, pDoc->sPoint.y, point.x, point.y);
-		ReleaseCapture();
 
 	}
-
 	else if (pDoc->yType == default){
 		//type = line;
+		/*
 		POSITION pos = pDoc->obj_List.GetHeadPosition();
 		while (pos){
-			YObject* tmp = (YObject*)pDoc->obj_List.GetNext(pos);
+		YObject* tmp = (YObject*)pDoc->obj_List.GetNext(pos);
 		//pDoc->currentObj->drawRgn(pDoc->sPoint, pDoc->ePoint);
-			tmp->draw(&dc);
-			tmp->setSelect(TRUE);
-			
+		tmp->draw(&dc);
+
 		}
-		pDoc->yType = line;
+		*/
+		//pDoc->currentObj->reRgn();
+		//pDoc->currentObj->setRgn();
+		POSITION pos = pDoc->obj_List.GetTailPosition();
+
+		while (pos) {
+			YObject* tmp = (YObject*)pDoc->obj_List.GetPrev(pos);
+			tmp->setSelect(FALSE);
+			pDoc->isSelected = FALSE;
+			pDoc->isExist = FALSE;
+		}
+
+		//	pDoc->yType = line;
 	}
+	//	ReleaseCapture();
 	Invalidate(FALSE);
 	CView::OnLButtonUp(nFlags, point);
 }
@@ -300,7 +295,7 @@ void CYPaintEditView::OnPaint()
 	// 그리기 메시지에 대해서는 CView::OnPaint()을(를) 호출하지 마십시오.
 
 	CYPaintEditDoc* pDoc = GetDocument();
-	
+
 	POSITION pos = pDoc->obj_List.GetHeadPosition();
 
 	while (pos) {
@@ -309,19 +304,18 @@ void CYPaintEditView::OnPaint()
 		CPen *oldPen = dc.SelectObject(&pen);
 		tmp->draw(&dc);
 		dc.SelectObject(&oldPen);
-		
+
 	}
 	if (pDoc->drawing){			// 마우스 움직이는 도중 계속 실행되는 함수
-		//CPen pen(PS_SOLID, 4, RGB(200, 0, 0));
-		//CPen *oldPen = dc.SelectObject(&pen);
+		pDoc->currentObj->setSPoint(pDoc->sPoint);
+		pDoc->currentObj->setEPoint(pDoc->ePoint);
 		pDoc->currentObj->draw(&dc);
-		//dc.SelectObject(&oldPen);
 	}
 
 	////////////////////////////// Text ////////////////////////////////
 	if (pDoc->textEditing){
 		CFont f;
-		f.CreatePointFont(pDoc->ptext->getFontSize(),pDoc->ptext->getFont());
+		f.CreatePointFont(pDoc->ptext->getFontSize(), pDoc->ptext->getFont());
 		dc.SelectObject(f);
 		dc.SetBkColor(pDoc->ptext->getBkColor());
 		dc.SetTextColor(pDoc->ptext->getFontColor());
@@ -358,4 +352,32 @@ void CYPaintEditView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) // Text
 		Invalidate();
 	}
 	CView::OnChar(nChar, nRepCnt, nFlags);
+}
+
+
+void CYPaintEditView::MenuLineButton()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+
+	pDoc->yType = line;
+	
+}
+
+
+void CYPaintEditView::MenuDefaultButton()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+
+	pDoc->yType = default;
+}
+
+
+void CYPaintEditView::MenuTextButton()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+
+	pDoc->yType = text;
 }

@@ -11,7 +11,7 @@ public:
 
 	// Virtual
 	void setType(YObject_Type t) { yType = t; }
-	void moveAll();
+	void moveAll(int s, int e);
 	void deleteAll();
 	void draw(CDC*);
 
@@ -19,7 +19,7 @@ public:
 	void setEPoint(CPoint point) { ePoint = point; }
 	CPoint getSPoint() { return sPoint; }
 	CPoint getEPoint() { return ePoint; }
-	void setRgn();
+	virtual void setRgn();
 	BOOL checkRgn(CPoint point);
 	void drawRgn(CPoint point, CPoint point2) { rect.SetRect(point.x, point.y, point2.x, point2.y); }
 	void setSelect(BOOL select) { isSelected = select; }

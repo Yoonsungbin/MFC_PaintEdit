@@ -35,7 +35,7 @@ public:
 
 // 작업입니다.
 public:
-
+	CPoint	dx_sPoint;
 // 재정의입니다.
 public:
 	virtual void OnDraw(CDC* pDC);  // 이 뷰를 그리기 위해 재정의되었습니다.
@@ -64,6 +64,9 @@ public:
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnPaint();
 	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
+	afx_msg void MenuLineButton();
+	afx_msg void MenuDefaultButton();
+	afx_msg void MenuTextButton();
 };
 
 #ifndef _DEBUG  // YPaintEditView.cpp의 디버그 버전

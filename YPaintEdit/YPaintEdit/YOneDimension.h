@@ -12,7 +12,7 @@ public:
 	void SetThick(int th){ lineThick = th; }
 	int GetThick() const{ return lineThick; }
 
-	virtual void moveAll() = 0;
+	virtual void moveAll(int s, int e) = 0;
 	virtual void deleteAll() = 0;
 	virtual void draw(CDC*) = 0;
 
