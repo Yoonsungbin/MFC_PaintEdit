@@ -126,61 +126,69 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 	switch (pDoc->yType){
 	case line:
 	{
-		//초기화
-		YLine* line = new YLine(point, point);
-		line->setLineColor(RGB(0, 0, 255));
-		line->SetThick(1);
-		line->setSelect(TRUE);
-		pDoc->drawing = TRUE;
-		pDoc->isSelected = FALSE;
-		pDoc->currentObj = line;
-		break;
+				 //초기화
+				 YLine* line = new YLine(point, point);
+				 line->setLineColor(RGB(0, 0, 255));
+				 line->SetThick(1);
+				 line->setSelect(TRUE);
+				 pDoc->drawing = TRUE;
+				 pDoc->isSelected = FALSE;
+				 pDoc->currentObj = line;
+				 break;
 	}
 	case text:
 	{
-		if (pDoc->textEditing == FALSE){
-			YText* text = new YText(point);
-			pDoc->ptext = text;
-			pDoc->textEditing = TRUE;
-		}
-		else {
-			pDoc->obj_List.AddTail(pDoc->ptext);
-			pDoc->tmp.Empty();
-			pDoc->textEditing = FALSE;
-		}
-		break;
+				 if (pDoc->textEditing == FALSE){
+					 YText* text = new YText(point);
+					 pDoc->ptext = text;
+					 pDoc->textEditing = TRUE;
+				 }
+				 else {
+					 pDoc->obj_List.AddTail(pDoc->ptext);
+					 pDoc->tmp.Empty();
+					 pDoc->textEditing = FALSE;
+				 }
+				 break;
 
+	}
+
+	case ellipse:
+	{
+					YEllipse* ellipse = new YEllipse(point, point);
+
+					SetCapture();//마우스 캡쳐 시작
+					dc.Ellipse(pDoc->sPoint.x, pDoc->sPoint.y, pDoc->sPoint.x, pDoc->sPoint.y);
 	}
 	case choice:
 	{
-		if (pDoc->isSelected){
-			dx_sPoint = point;
-		}
-		POSITION pos = pDoc->obj_List.GetTailPosition();
-		while (pos) {
-			YObject* tmp = (YObject*)pDoc->obj_List.GetPrev(pos);
-			if (tmp->checkRgn(point)){
-				pDoc->isExist = TRUE;
-				/*
-				//리젼반전을 위해서
-				if (tmp->getSelect()){
-				tmp->setSelect(FALSE);
-				pDoc->isSelected = FALSE;
-				}
-				else{
-				tmp->setSelect(TRUE);
-				pDoc->isSelected = TRUE;
-				}
-				*/
-				tmp->setSelect(TRUE);
-				pDoc->isSelected = TRUE;
-				pDoc->currentObj = tmp;
-				//pDoc->currentObj->draw(&dc);
-				break;
-			}
-			pDoc->isExist = FALSE;
-		}
-		break;
+				   if (pDoc->isSelected){
+					   dx_sPoint = point;
+				   }
+				   POSITION pos = pDoc->obj_List.GetTailPosition();
+				   while (pos) {
+					   YObject* tmp = (YObject*)pDoc->obj_List.GetPrev(pos);
+					   if (tmp->checkRgn(point)){
+						   pDoc->isExist = TRUE;
+						   /*
+						   //리젼반전을 위해서
+						   if (tmp->getSelect()){
+						   tmp->setSelect(FALSE);
+						   pDoc->isSelected = FALSE;
+						   }
+						   else{
+						   tmp->setSelect(TRUE);
+						   pDoc->isSelected = TRUE;
+						   }
+						   */
+						   tmp->setSelect(TRUE);
+						   pDoc->isSelected = TRUE;
+						   pDoc->currentObj = tmp;
+						   //pDoc->currentObj->draw(&dc);
+						   break;
+					   }
+					   pDoc->isExist = FALSE;
+				   }
+				   break;
 	}
 	}
 	//SetCapture();
@@ -199,7 +207,7 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 		CPen *oldPen = dc.SelectObject(&pen);
 		YObject* tmp = (YObject*)pDoc->currentObj;
 
-		
+
 		if (pDoc->yType == line){
 			pDoc->currentObj->setEPoint(point);
 			// 이전에 그린 직선을 지운다.
@@ -212,8 +220,33 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 			dc.LineTo(point);
 			pDoc->ePoint = point;
 		}
+
+		else if (pDoc->yType == ellipse){
+
+
+			//	pDoc->currentObj->(point);
+
+			dc.SetROP2(R2_XORPEN);;//선을 반전
+			dc.SelectStockObject(NULL_BRUSH);
+			CPen m_penDot(PS_DOT, 1, RGB(1, 1, 1));
+			dc.SelectObject(&m_penDot);
+			dc.SetROP2(R2_XORPEN);
+
+
+			dc.Ellipse(pDoc->sPoint.x, pDoc->sPoint.y, pDoc->ePoint.x, pDoc->ePoint.y);
+			pDoc->ePoint = point;
+			dc.Ellipse(pDoc->sPoint.x, pDoc->sPoint.y, point.x, point.y);
+
+
+
+			//pDoc->currentObj->drawRgn(pDoc->sPoint, pDoc->ePoint);
+
+
+
+		}
+
 		else if (pDoc->yType == choice){
-			
+
 
 			CPoint t_point = point - pDoc->ePoint;
 			pDoc->ePoint = point;
@@ -251,44 +284,52 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 	switch (pDoc->yType){
 	case line:
 	{
-		YLine* line = new YLine(pDoc->sPoint, pDoc->ePoint);
-		pDoc->currentObj = line;
-		pDoc->currentObj->setRgn();
-		pDoc->currentObj->setSelect(FALSE);
-		pDoc->obj_List.AddTail(pDoc->currentObj);
-		pDoc->currentObj = NULL;
-		pDoc->drawing = FALSE;
-		break;
+				 YLine* line = new YLine(pDoc->sPoint, pDoc->ePoint);
+				 pDoc->currentObj = line;
+				 pDoc->currentObj->setRgn();
+				 pDoc->currentObj->setSelect(FALSE);
+				 pDoc->obj_List.AddTail(pDoc->currentObj);
+				 pDoc->currentObj = NULL;
+				 pDoc->drawing = FALSE;
+				 break;
 	}
 	case text:
 	{
-		break;
+				 break;
+	}
+
+	case ellipse:
+	{
+		dc.Ellipse(pDoc->sPoint.x, pDoc->sPoint.y, point.x, point.y);
+		ReleaseCapture();
+
+	
 	}
 	case choice:
 	{
-		//type = line;
-		/*
-		POSITION pos = pDoc->obj_List.GetHeadPosition();
-		while (pos){
-		YObject* tmp = (YObject*)pDoc->obj_List.GetNext(pos);
-		//pDoc->currentObj->drawRgn(pDoc->sPoint, pDoc->ePoint);
-		tmp->draw(&dc);
+				   //type = line;
+				   /*
+				   POSITION pos = pDoc->obj_List.GetHeadPosition();
+				   while (pos){
+				   YObject* tmp = (YObject*)pDoc->obj_List.GetNext(pos);
+				   //pDoc->currentObj->drawRgn(pDoc->sPoint, pDoc->ePoint);
+				   tmp->draw(&dc);
 
-		}
-		*/
-		//pDoc->currentObj->reRgn();
-		//pDoc->currentObj->setRgn();
-		POSITION pos = pDoc->obj_List.GetTailPosition();
+				   }
+				   */
+				   //pDoc->currentObj->reRgn();
+				   //pDoc->currentObj->setRgn();
+				   POSITION pos = pDoc->obj_List.GetTailPosition();
 
-		while (pos) {
-			YObject* tmp = (YObject*)pDoc->obj_List.GetPrev(pos);
-			tmp->setSelect(FALSE);
-			pDoc->isSelected = FALSE;
-			pDoc->isExist = FALSE;
-		}
+				   while (pos) {
+					   YObject* tmp = (YObject*)pDoc->obj_List.GetPrev(pos);
+					   tmp->setSelect(FALSE);
+					   pDoc->isSelected = FALSE;
+					   pDoc->isExist = FALSE;
+				   }
 
-		//	pDoc->yType = line;
-		break;
+				   //	pDoc->yType = line;
+				   break;
 	}
 	}
 
@@ -329,7 +370,7 @@ void CYPaintEditView::OnPaint()
 		dc.SetTextColor(pDoc->ptext->getFontColor());
 		CPoint p;
 		p.x = pDoc->ptext->getSPoint().x + pDoc->ptext->getText().GetLength() * 100;
-		p.y = pDoc->ptext->getSPoint().y + pDoc->ptext->getFontSize()/7;
+		p.y = pDoc->ptext->getSPoint().y + pDoc->ptext->getFontSize() / 7;
 		pDoc->ptext->setEPoint(p);
 		pDoc->ptext->drawRgn(pDoc->ptext->getSPoint(), pDoc->ptext->getEPoint());
 		dc.DrawText(pDoc->ptext->getText(), pDoc->ptext->getRect(), NULL);

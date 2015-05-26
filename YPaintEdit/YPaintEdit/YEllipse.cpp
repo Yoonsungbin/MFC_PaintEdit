@@ -19,7 +19,7 @@ YEllipse::YEllipse(CPoint start, CPoint end)
 	ePoint = end;
 }
 
-void YEllipse::moveAll()
+void YEllipse::moveAll(int s, int e)
 {
 
 }
@@ -91,7 +91,6 @@ void YEllipse::setRgn(){
 	rgn.CreateRectRgn(left, top, right, bottom);
 	*/
 }
-
 
 
 

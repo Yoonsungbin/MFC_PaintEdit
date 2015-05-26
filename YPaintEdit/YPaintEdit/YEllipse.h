@@ -1,36 +1,40 @@
 #pragma once
 #include "YTwoDimension.h"
-class YEllipse :
-	public YTwoDimension
+class YEllipse :public YTwoDimension
 {
 public:
 	YEllipse();
 	YEllipse(CPoint start, CPoint end);
 	~YEllipse();
 
-	virtual void moveAll();
-	virtual void deleteAll();
-	virtual void draw(CDC*);
 
-	virtual void move();
-	virtual void changeLineColor();
+	void setType(YObject_Type t){ yType = t; }
+	void moveAll(int s, int e) ;
+	void deleteAll() ;
+	void draw(CDC*) ;
 
-	virtual void setRgn();
-	BOOL virtual checkRgn(CPoint point);
+	void move();
+	void changeLineColor();
 
-	virtual void setSPoint(CPoint point){
+	void setRgn();
+	BOOL  checkRgn(CPoint point);
+
+	void setSPoint(CPoint point){
 		sPoint = point;
 	}
-	virtual CPoint getSPoint(){ return sPoint; }
-	virtual void setEPoint(CPoint point){
+	CPoint getSPoint(){ return sPoint; }
+	void setEPoint(CPoint point){
 		ePoint = point;
 	}
-	virtual CPoint getEPoint(){ return ePoint; }
+	CPoint getEPoint(){ return ePoint; }
+
+
+	void setSelect(BOOL select) { isSelected = select; }
 
 
 
-	virtual void ChangeinColor();
-	virtual void ChangeSize(); //크기변경
+	void ChangeinColor();
+	void ChangeSize(); //크기변경
 
 
 private:
