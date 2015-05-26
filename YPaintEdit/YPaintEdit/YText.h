@@ -1,7 +1,7 @@
 #pragma once
 #include "YObject.h"
 class YText : public YObject
-{
+{/*
 public:
 	// Constructors, Destructor
 	YText();
@@ -36,5 +36,5 @@ private:
 	CFont font;
 	COLORREF fontColor;
 	COLORREF bkColor;
-	int fontSize;
+	int fontSize;*/
 };

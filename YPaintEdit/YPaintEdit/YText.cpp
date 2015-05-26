@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "YText.h"
-
-
+/*
 // Constructors, Destructor
 YText::YText()
 {
@@ -28,3 +27,4 @@ void deleteAll(){
 void draw(CDC*){
 
 }
+*/
