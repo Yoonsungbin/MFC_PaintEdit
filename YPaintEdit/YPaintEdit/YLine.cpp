@@ -38,14 +38,13 @@ void YLine::draw(CDC* pDC){
 	graphics.DrawLine(&pen1, sPoint.x, sPoint.y, nPoint.x, nPoint.y);
 	*/
 
-	
 	pDC->SelectObject(&pen);
 	pDC->MoveTo(sPoint);
 	pDC->LineTo(ePoint);
 	pDC->SelectObject(&oldPen);
 
 	if (selected){
-		
+		/*
 		CRect rect;
 		rect.SetRect(sPoint, ePoint);
 		
@@ -58,27 +57,19 @@ void YLine::draw(CDC* pDC){
 		pDC->SelectStockObject(NULL_BRUSH);
 		pDC->Rectangle(rect.left, rect.top, rect.right, rect.bottom);
 		pDC->SelectObject(&oldPen);
-		
-
+		*/
+		CPen pen1(PS_DOT, 1, BLACK_PEN);
+		CPen* oldPen = pDC->SelectObject(&pen1);
+		pDC->SelectStockObject(NULL_BRUSH);
 		pDC->Rectangle(rect);
 	}
 	else {
-		CRect rect;
-		rect.SetRect(sPoint, ePoint);
-		/*
-		rect.left = static_cast<int>(rect.left - (4 * 0.9) + 0.5);
-		rect.top = static_cast<int>(rect.top - (4 * 0.9) + 0.5);
-		rect.right = static_cast<int>(rect.right + (4 * 0.9) + 0.5);
-		rect.bottom = static_cast<int>(rect.bottom + (4 * 0.9) + 0.5);
-		*/
-		rect.left = sPoint.x;
-		rect.top = sPoint.y;
-		rect.right = ePoint.x;
-		rect.bottom = ePoint.y;
+		
 		CPen pen1(PS_DOT, 1, WHITE_PEN);
-		pDC->SelectObject(pen1);
+		CPen* oldPen = pDC->SelectObject(&pen1);
 		pDC->SelectStockObject(NULL_BRUSH);
-		pDC->Rectangle(rect.left, rect.top, rect.right, rect.bottom);
+		pDC->Rectangle(rect);
+		
 	}
 	
 }
@@ -116,22 +107,7 @@ void YLine::setRgn(){
 		right = sPoint.x;
 		bottom = sPoint.y;
 	}
-	/*
-	CRect rect;
-	rect.SetRect(sPoint, ePoint);
-
-	rect.left = static_cast<int>(rect.left - (lineThick * 0.9) - 5);
-	rect.top = static_cast<int>(rect.top - (lineThick * 0.9) - 5);
-	rect.right = static_cast<int>(rect.right + (lineThick * 0.9) + 5);
-	rect.bottom = static_cast<int>(rect.bottom + (lineThick * 0.9) + 5);
-
-	sPoint.x = rect.left;
-	sPoint.y = rect.top;
-
-	rgn.DeleteObject();
-	rgn.CreateRectRgn(rect.left, rect.top, rect.right, rect.bottom);
-	*/
-	rect.SetRect(left, top, right, bottom);
+	
 	rgn.CreateRectRgn(left, top, right, bottom);
 }
 
@@ -145,4 +121,9 @@ BOOL YLine::checkRgn(CPoint point)
 
 	return FALSE;
 }
+void YLine::drawRgn(CPoint point, CPoint point2){
+	
+	rect.SetRect(point.x, point.y, point2.x, point2.y);  //사각형설정
+}
+
 

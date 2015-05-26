@@ -13,17 +13,24 @@ public:
 
 	virtual void move();
 	virtual void changeLineColor();
-	
+
 	virtual void setRgn();
 	BOOL virtual checkRgn(CPoint point);
 
-	//void setNPoint(CPoint point){nPoint = point;}
-	void setPoint(CPoint point){ ePoint = point; }
+	virtual void setSPoint(CPoint point){
+		sPoint = point;
+	}
+	virtual CPoint getSPoint(){ return sPoint; }
+	virtual void setEPoint(CPoint point){
+		ePoint = point;
+	}
+	virtual CPoint getEPoint(){ return ePoint; }
+
+	virtual void drawRgn(CPoint point, CPoint point2);
 
 private:
 	CRect rect;
 	CPoint sPoint;
 	CPoint ePoint;
-	//CPoint nPoint;
 };
 

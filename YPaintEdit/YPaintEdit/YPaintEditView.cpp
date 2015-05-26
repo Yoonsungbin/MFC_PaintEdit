@@ -136,13 +136,24 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 		POSITION pos = pDoc->obj_List.GetTailPosition();
 		while (pos) {
 			YObject* tmp = (YObject*)pDoc->obj_List.GetPrev(pos);
+			//tmp->setSelect(FALSE);
 			
 			if (tmp->checkRgn(point)){
 				pDoc->isExist = TRUE;
+				if (tmp->getSelect()){
+					tmp->setSelect(FALSE);
+				}
+				else{
+					tmp->setSelect(TRUE);
+				}
+			//	tmp->setSelect(TRUE);
+				pDoc->currentObj = tmp;
+				pDoc->currentObj->drawRgn(tmp->getSPoint(), tmp->getEPoint());
 				break;
 			}
 			pDoc->isExist = FALSE;
 		}
+
 	}
 	CView::OnLButtonDown(nFlags, point);
 }
@@ -158,7 +169,7 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 		CPen pen(PS_SOLID, 1, RGB(0, 0, 255));
 		CPen *oldpen = dc.SelectObject(&pen);
 		if (type == line){
-			pDoc->currentObj->setPoint(point);
+			pDoc->currentObj->setEPoint(point);
 			// 이전에 그린 직선을 지운다.
 			dc.SetROP2(R2_NOT);
 			dc.MoveTo(pDoc->sPoint);
@@ -172,9 +183,11 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 
 			//리젼
 			//pDoc->currentObj->setRgn();
+			pDoc->currentObj->drawRgn(pDoc->sPoint, pDoc->ePoint);
+			
 	
 		}
-		//Invalidate(FALSE);  // 적용 & 적용x 보여지는 방식다름 (첫 시작점)
+		Invalidate();  // 적용 & 적용x 보여지는 방식다름 (첫 시작점)
 	}
 	
 	CView::OnMouseMove(nFlags, point);
@@ -197,7 +210,7 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 		pDoc->currentObj = NULL;
 		pDoc->drawing = FALSE;
 		type = default;
-	//	ReleaseCapture();
+		//ReleaseCapture();
 		
 	}
 	else if (type == default){
@@ -205,8 +218,10 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 		POSITION pos = pDoc->obj_List.GetHeadPosition();
 		while (pos){
 			YObject* tmp = (YObject*)pDoc->obj_List.GetNext(pos);
-			tmp->setSelect(FALSE);
+		//pDoc->currentObj->drawRgn(pDoc->sPoint, pDoc->ePoint);
 			tmp->draw(&dc);
+			tmp->setSelect(FALSE);
+			
 		}
 	}
 	Invalidate(FALSE);
@@ -228,7 +243,6 @@ void CYPaintEditView::OnPaint()
 
 	while (pos) {
 		YObject* tmp = (YObject*)pDoc->obj_List.GetNext(pos);
-		tmp->setNPoint(pDoc->ePoint);
 		CPen pen(PS_SOLID, 1, RGB(0, 0, 255));
 		CPen *oldPen = dc.SelectObject(&pen);
 		tmp->draw(&dc);
@@ -238,7 +252,6 @@ void CYPaintEditView::OnPaint()
 	if (pDoc->drawing){			// 마우스 움직이는 도중 계속 실행되는 함수
 		//CPen pen(PS_SOLID, 4, RGB(200, 0, 0));
 		//CPen *oldPen = dc.SelectObject(&pen);
-		pDoc->currentObj->setNPoint(pDoc->ePoint);
 		pDoc->currentObj->draw(&dc);
 		//dc.SelectObject(&oldPen);
 	}
