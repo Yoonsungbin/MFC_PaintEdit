@@ -199,6 +199,7 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 		CPen *oldPen = dc.SelectObject(&pen);
 		YObject* tmp = (YObject*)pDoc->currentObj;
 
+		
 		if (pDoc->yType == line){
 			pDoc->currentObj->setEPoint(point);
 			// 이전에 그린 직선을 지운다.
@@ -212,8 +213,20 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 			pDoc->ePoint = point;
 		}
 		else if (pDoc->yType == choice){
+			
+
 			CPoint t_point = point - pDoc->ePoint;
 			pDoc->ePoint = point;
+			POSITION pos = pDoc->obj_List.GetTailPosition();
+			while (pos) {
+				YObject* tmp = (YObject*)pDoc->obj_List.GetPrev(pos);
+				if (tmp->checkRgn(point)){
+					pDoc->currentObj = tmp;
+					pDoc->isSelected = TRUE;
+					pDoc->currentObj->setRgn();
+					break; //하나라고 가정
+				}
+			}
 			if (pDoc->isSelected){
 				//선택 됨
 				pDoc->currentObj->moveAll(t_point.x, t_point.y);
@@ -222,7 +235,7 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 				//선택안됨
 			}
 		}
-		dc.SelectObject(&oldPen);
+		//dc.SelectObject(&oldPen);
 		Invalidate();  // 적용 & 적용x 보여지는 방식다름 (첫 시작점)
 	}
 	CView::OnMouseMove(nFlags, point);
@@ -240,13 +253,11 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 	{
 		YLine* line = new YLine(pDoc->sPoint, pDoc->ePoint);
 		pDoc->currentObj = line;
-
 		pDoc->currentObj->setRgn();
 		pDoc->currentObj->setSelect(FALSE);
 		pDoc->obj_List.AddTail(pDoc->currentObj);
 		pDoc->currentObj = NULL;
 		pDoc->drawing = FALSE;
-		pDoc->yType = choice;
 		break;
 	}
 	case text:
@@ -320,6 +331,7 @@ void CYPaintEditView::OnPaint()
 		p.x = pDoc->ptext->getSPoint().x + pDoc->ptext->getText().GetLength() * 100;
 		p.y = pDoc->ptext->getSPoint().y + pDoc->ptext->getFontSize()/7;
 		pDoc->ptext->setEPoint(p);
+		pDoc->ptext->drawRgn(pDoc->ptext->getSPoint(), pDoc->ptext->getEPoint());
 		dc.DrawText(pDoc->ptext->getText(), pDoc->ptext->getRect(), NULL);
 	}
 	////////////////////////////////////////////////////////////////////

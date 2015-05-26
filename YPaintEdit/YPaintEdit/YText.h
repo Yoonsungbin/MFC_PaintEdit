@@ -22,7 +22,7 @@ public:
 	virtual void setRgn();
 	BOOL checkRgn(CPoint point);
 	void setSelect(BOOL select) { isSelected = select; }
-
+	void drawRgn(CPoint point, CPoint point2) { rect.SetRect(point.x, point.y, point2.x, point2.y); }
 	
 	// Accessor
 	void setText(CString nText) { text = nText;  }

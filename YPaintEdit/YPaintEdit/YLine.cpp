@@ -102,7 +102,8 @@ void YLine::setRgn(){
 		right = sPoint.x;
 		bottom = sPoint.y;
 	}
-	
+	//이전꺼지우고 새로만듬
+	rgn.DeleteObject();   
 	rgn.CreateRectRgn(left, top, right, bottom);
 }
 
