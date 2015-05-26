@@ -8,9 +8,9 @@ public:
 	YEllipse(CPoint start, CPoint end);
 	~YEllipse();
 
-	virtual void moveAll() = 0;
-	virtual void deleteAll() = 0;
-	virtual void draw(CDC*) = 0;
+	virtual void moveAll();
+	virtual void deleteAll();
+	virtual void draw(CDC*);
 
 	virtual void move();
 	virtual void changeLineColor();
@@ -30,8 +30,8 @@ public:
 	virtual void drawRgn(CPoint point, CPoint point2);
 
 
-	virtual void ChangeinColor() = 0;
-	virtual void ChangeSize() = 0; //크기변경
+	virtual void ChangeinColor();
+	virtual void ChangeSize(); //크기변경
 
 
 private:
