@@ -326,15 +326,10 @@ void CYPaintEditView::OnPaint()
 		dc.SetBkColor(pDoc->ptext->getBkColor());
 		dc.SetTextColor(pDoc->ptext->getFontColor());
 		CPoint p;
-		p.x = pDoc->ptext->getEPoint().x + pDoc->ptext->getFontSize() + pDoc->ptext->getText().GetLength() * 100;
-		p.y = pDoc->ptext->getEPoint().y + pDoc->ptext->getFontSize() + pDoc->ptext->getText().GetLength() * 100;
+		p.x = pDoc->ptext->getSPoint().x + pDoc->ptext->getText().GetLength() * 100;
+		p.y = pDoc->ptext->getSPoint().y + pDoc->ptext->getFontSize()/7;
 		pDoc->ptext->setEPoint(p);
 		pDoc->ptext->drawRgn(pDoc->ptext->getSPoint(), pDoc->ptext->getEPoint());
-
-		//CPen m_penDot(PS_DOT, 1, RGB(255, 1, 1));
-		//dc.SelectObject(&m_penDot);
-		//dc.SetROP2(R2_XORPEN);
-
 		dc.DrawText(pDoc->ptext->getText(), pDoc->ptext->getRect(), NULL);
 	}
 	////////////////////////////////////////////////////////////////////
