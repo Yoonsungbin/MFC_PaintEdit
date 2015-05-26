@@ -113,7 +113,7 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
 	CYPaintEditDoc* pDoc = GetDocument();
-
+	CClientDC dc(this);
 	//초기값 설정
 	pDoc->sPoint = point;
 	pDoc->ePoint = point;
@@ -129,6 +129,18 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 		pDoc->currentObj = line;
 		//SetCapture();
 	}
+
+	else if (pDoc->yType == ellipse)
+	{
+		YEllipse* ellipse = new YEllipse(point, point);
+		
+		SetCapture();//마우스 캡쳐 시작
+		dc.Ellipse(pDoc->sPoint.x, pDoc->sPoint.y, pDoc->sPoint.x, pDoc->sPoint.y);
+
+
+
+	}
+
 	else if (pDoc->yType == default){
 	//	pDoc->drawing = FALSE;
 	//	pDoc->isSelected = FALSE;
@@ -168,6 +180,7 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 
 		CPen pen(PS_SOLID, 1, RGB(0, 0, 255));
 		CPen *oldpen = dc.SelectObject(&pen);
+
 		if (pDoc->yType == line){
 			pDoc->currentObj->setEPoint(point);
 			// 이전에 그린 직선을 지운다.
@@ -187,6 +200,32 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 			
 	
 		}
+
+		else if (pDoc->yType == ellipse){
+		
+			
+		//	pDoc->currentObj->(point);
+
+			dc.SetROP2(R2_XORPEN);;//선을 반전
+			dc.SelectStockObject(NULL_BRUSH);
+			CPen m_penDot(PS_DOT, 1, RGB(1, 1, 1));
+			dc.SelectObject(&m_penDot);
+			dc.SetROP2(R2_XORPEN);
+
+		
+			dc.Ellipse(pDoc->sPoint.x, pDoc->sPoint.y, pDoc->ePoint.x, pDoc->ePoint.y);
+			pDoc->ePoint = point;
+			dc.Ellipse(pDoc->sPoint.x, pDoc->sPoint.y, point.x, point.y);
+		
+			
+
+			//pDoc->currentObj->drawRgn(pDoc->sPoint, pDoc->ePoint);
+			
+			
+		}
+
+
+
 		Invalidate();  // 적용 & 적용x 보여지는 방식다름 (첫 시작점)
 	}
 	
@@ -213,6 +252,15 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 		//ReleaseCapture();
 		
 	}
+
+
+	else if (pDoc->yType == ellipse)
+	{
+		dc.Ellipse(pDoc->sPoint.x, pDoc->sPoint.y, point.x, point.y);
+		ReleaseCapture();
+
+	}
+
 	else if (pDoc->yType == default){
 		//type = line;
 		POSITION pos = pDoc->obj_List.GetHeadPosition();
