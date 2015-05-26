@@ -45,8 +45,6 @@ END_MESSAGE_MAP()
 CYPaintEditView::CYPaintEditView()
 {
 	// TODO: 여기에 생성 코드를 추가합니다.
-
-
 }
 
 CYPaintEditView::~CYPaintEditView()
@@ -231,9 +229,6 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 	CView::OnLButtonUp(nFlags, point);
 }
 
-
-
-
 void CYPaintEditView::OnPaint()
 {
 	CPaintDC dc(this); // device context for painting
@@ -259,4 +254,3 @@ void CYPaintEditView::OnPaint()
 		//dc.SelectObject(&oldPen);
 	}
 }
-

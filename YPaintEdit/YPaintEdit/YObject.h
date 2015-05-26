@@ -25,7 +25,6 @@ public:
 	/*
 	도형을 만들면 rgn을 설정해야하는데 도형의 시작점과 끝점으로 rgn 을 생성함. rgn.create를 setrgb에서하는거 보면 알수있을꺼임
 	그 다음 생성된 리젼은 getrgn으로 가져와서 반환값이 crgn변수임 그변수를통해 checkrgn함수에서  PtInRegion 메소드를 통해 리젼안에 있는지 판별
-	
 	*/
 	virtual void setRgn() = 0; //리젼 시작점 끝점으로 생성
 	CRgn* getRgn(){ return &rgn; }  //리젼가져오는 함수
