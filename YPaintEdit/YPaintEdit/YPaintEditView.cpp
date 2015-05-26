@@ -39,6 +39,9 @@ BEGIN_MESSAGE_MAP(CYPaintEditView, CView)
 	ON_WM_MOUSEMOVE()
 	ON_WM_PAINT()
 	ON_WM_CHAR()
+	ON_COMMAND(ID_BUTTON3, &CYPaintEditView::MenuLineButton)
+	ON_COMMAND(ID_BUTTON2, &CYPaintEditView::MenuDefaultButton)
+	ON_COMMAND(ID_BUTTON7, &CYPaintEditView::MenuTextButton)
 END_MESSAGE_MAP()
 
 // CYPaintEditView 생성/소멸
@@ -256,15 +259,6 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 		pDoc->yType = default;
 
 	}
-
-
-	else if (pDoc->yType == ellipse)
-	{
-		dc.Ellipse(pDoc->sPoint.x, pDoc->sPoint.y, point.x, point.y);
-		ReleaseCapture();
-
-	}
-
 	else if (pDoc->yType == default){
 		//type = line;
 		/*
@@ -363,4 +357,32 @@ void CYPaintEditView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) // Text
 		Invalidate();
 	}
 	CView::OnChar(nChar, nRepCnt, nFlags);
+}
+
+
+void CYPaintEditView::MenuLineButton()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+
+	pDoc->yType = line;
+	
+}
+
+
+void CYPaintEditView::MenuDefaultButton()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+
+	pDoc->yType = default;
+}
+
+
+void CYPaintEditView::MenuTextButton()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+
+	pDoc->yType = text;
 }

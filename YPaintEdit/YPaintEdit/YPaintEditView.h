@@ -64,6 +64,9 @@ public:
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnPaint();
 	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
+	afx_msg void MenuLineButton();
+	afx_msg void MenuDefaultButton();
+	afx_msg void MenuTextButton();
 };
 
 #ifndef _DEBUG  // YPaintEditView.cpp의 디버그 버전
