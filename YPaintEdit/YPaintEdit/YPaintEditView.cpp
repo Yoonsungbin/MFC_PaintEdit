@@ -123,7 +123,9 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 	pDoc->ePoint = point;
 	pDoc->drawing = FALSE;
 
-	if (pDoc->yType == line){
+	switch (pDoc->yType){
+	case line:
+	{
 		//초기화
 		YLine* line = new YLine(point, point);
 		line->setLineColor(RGB(0, 0, 255));
@@ -132,11 +134,10 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 		pDoc->drawing = TRUE;
 		pDoc->isSelected = FALSE;
 		pDoc->currentObj = line;
-
+		break;
 	}
-
-	////////////////////////// Text ///////////////////////////
-	else if (pDoc->yType == text){
+	case text:
+	{
 		if (pDoc->textEditing == FALSE){
 			YText* text = new YText(point);
 			pDoc->ptext = text;
@@ -147,13 +148,14 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 			pDoc->tmp.Empty();
 			pDoc->textEditing = FALSE;
 		}
+		break;
+
 	}
-	///////////////////////////////////////////////////////////
-	else if (pDoc->yType == default){
+	case choice:
+	{
 		if (pDoc->isSelected){
 			dx_sPoint = point;
 		}
-
 		POSITION pos = pDoc->obj_List.GetTailPosition();
 		while (pos) {
 			YObject* tmp = (YObject*)pDoc->obj_List.GetPrev(pos);
@@ -173,13 +175,13 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 				tmp->setSelect(TRUE);
 				pDoc->isSelected = TRUE;
 				pDoc->currentObj = tmp;
-				pDoc->currentObj->drawRgn(tmp->getSPoint(), tmp->getEPoint());
 				//pDoc->currentObj->draw(&dc);
 				break;
 			}
 			pDoc->isExist = FALSE;
 		}
-
+		break;
+	}
 	}
 	//SetCapture();
 	CView::OnLButtonDown(nFlags, point);
@@ -198,44 +200,31 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 		YObject* tmp = (YObject*)pDoc->currentObj;
 
 		if (pDoc->yType == line){
-
-
 			pDoc->currentObj->setEPoint(point);
 			// 이전에 그린 직선을 지운다.
 			dc.SetROP2(R2_NOT);
 			dc.MoveTo(pDoc->sPoint);
 			dc.LineTo(pDoc->ePoint);
-
 			// 새로운 직선을 그린다.
 			dc.SetROP2(R2_NOT);
 			dc.MoveTo(pDoc->sPoint);
 			dc.LineTo(point);
 			pDoc->ePoint = point;
-
-			//리젼
-			pDoc->currentObj->drawRgn(pDoc->sPoint, pDoc->ePoint);
-
-
 		}
-		else if (pDoc->yType == default){
+		else if (pDoc->yType == choice){
 			CPoint t_point = point - pDoc->ePoint;
 			pDoc->ePoint = point;
 			if (pDoc->isSelected){
 				//선택 됨
 				pDoc->currentObj->moveAll(t_point.x, t_point.y);
-				pDoc->currentObj->drawRgn(pDoc->currentObj->getSPoint(), pDoc->currentObj->getEPoint());
 			}
 			else {
 				//선택안됨
 			}
 		}
-
 		dc.SelectObject(&oldPen);
-
-
 		Invalidate();  // 적용 & 적용x 보여지는 방식다름 (첫 시작점)
 	}
-
 	CView::OnMouseMove(nFlags, point);
 }
 
@@ -246,8 +235,9 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 	CClientDC dc(this);
 	pDoc->ePoint = point;
 
-	if (pDoc->yType == line) {
-
+	switch (pDoc->yType){
+	case line:
+	{
 		YLine* line = new YLine(pDoc->sPoint, pDoc->ePoint);
 		pDoc->currentObj = line;
 
@@ -256,10 +246,15 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 		pDoc->obj_List.AddTail(pDoc->currentObj);
 		pDoc->currentObj = NULL;
 		pDoc->drawing = FALSE;
-		pDoc->yType = default;
-
+		pDoc->yType = choice;
+		break;
 	}
-	else if (pDoc->yType == default){
+	case text:
+	{
+		break;
+	}
+	case choice:
+	{
 		//type = line;
 		/*
 		POSITION pos = pDoc->obj_List.GetHeadPosition();
@@ -282,8 +277,10 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 		}
 
 		//	pDoc->yType = line;
+		break;
 	}
-	//	ReleaseCapture();
+	}
+
 	Invalidate(FALSE);
 	CView::OnLButtonUp(nFlags, point);
 }
@@ -323,7 +320,6 @@ void CYPaintEditView::OnPaint()
 		p.x = pDoc->ptext->getSPoint().x + pDoc->ptext->getText().GetLength() * 100;
 		p.y = pDoc->ptext->getSPoint().y + pDoc->ptext->getFontSize()/7;
 		pDoc->ptext->setEPoint(p);
-		pDoc->ptext->drawRgn(pDoc->ptext->getSPoint(), pDoc->ptext->getEPoint());
 		dc.DrawText(pDoc->ptext->getText(), pDoc->ptext->getRect(), NULL);
 	}
 	////////////////////////////////////////////////////////////////////
@@ -361,7 +357,7 @@ void CYPaintEditView::MenuLineButton()
 	CYPaintEditDoc* pDoc = GetDocument();
 
 	pDoc->yType = line;
-	
+
 }
 
 
@@ -370,7 +366,7 @@ void CYPaintEditView::MenuDefaultButton()
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	CYPaintEditDoc* pDoc = GetDocument();
 
-	pDoc->yType = default;
+	pDoc->yType = choice;
 }
 
 

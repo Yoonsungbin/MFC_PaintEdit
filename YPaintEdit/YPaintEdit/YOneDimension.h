@@ -22,7 +22,6 @@ public:
 	virtual void setEPoint(CPoint point) = 0;
 	virtual CPoint getEPoint() = 0;
 
-	virtual void drawRgn(CPoint point, CPoint point2) = 0;
 protected:
 	COLORREF lineColor;
 	int lineThick;

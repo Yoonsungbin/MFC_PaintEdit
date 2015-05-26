@@ -105,8 +105,3 @@ BOOL YRectangle::checkRgn(CPoint point)
 	return FALSE;
 }
 
-void YRectangle::drawRgn(CPoint point, CPoint point2){
-
-	rect.SetRect(point.x, point.y, point2.x, point2.y);  //사각형설정
-}
-

@@ -3,7 +3,7 @@
 #include <gdiplus.h>	//gdi++
 using namespace Gdiplus;	//gdi++
 
-typedef enum Object_Type{ default, rectangle, ellipse, line, polyline, text } YObject_Type;
+typedef enum Object_Type{ choice, rectangle, ellipse, line, polyline, text } YObject_Type;
 
 class YObject :
 	public CObject
@@ -31,10 +31,6 @@ public:
 	BOOL virtual checkRgn(CPoint point) { return FALSE; }  //리젼에 있는지 확인하는 함수
 
 	/*
-	리젼을 그리기 위한 함수로 시작점과 끝점 2개의 점을 받아서 리젼(점선테두리)를 계속 그린다.
-	*/
-	virtual void drawRgn(CPoint point, CPoint point2) = 0;  //리젼테두리 그리기위한함수
-	/*
 	리젼을 그릴때 이미 선택되어 있는 리젼은 제거해야하고 선택 안된 리젼은 리젼을 그려줘야함 그래서 리젼이 선택되어있는지(점선이 보이는지) 아닌지를 알기위한
 	메소드가 필요
 	*/
@@ -58,6 +54,5 @@ protected:
 	CRgn rgn; //리젼
 	BOOL isExist; // 리젼안에 있는지 판별
 	BOOL isSelected;  //선택된지 안된지 보기위해서
-	//CRect rect;
 };
 

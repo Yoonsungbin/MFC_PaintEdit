@@ -27,7 +27,6 @@ public:
 	}
 	virtual CPoint getEPoint(){ return ePoint; }
 
-	virtual void drawRgn(CPoint point, CPoint point2);
 
 
 	virtual void ChangeinColor();

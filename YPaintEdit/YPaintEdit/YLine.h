@@ -26,9 +26,7 @@ public:
 	}
 	virtual CPoint getEPoint(){ return ePoint; }
 
-	virtual void drawRgn(CPoint point, CPoint point2);
 private:
-	CRect rect;
 	CPoint sPoint;
 	CPoint ePoint;
 };
