@@ -7,7 +7,7 @@ public:
 	YLine();
 	YLine(CPoint start, CPoint end);
 	~YLine();
-	virtual void moveAll();
+	virtual void moveAll(int s, int e);
 	virtual void deleteAll();
 	virtual void draw(CDC* cPC);
 
@@ -27,7 +27,6 @@ public:
 	virtual CPoint getEPoint(){ return ePoint; }
 
 	virtual void drawRgn(CPoint point, CPoint point2);
-
 private:
 	CRect rect;
 	CPoint sPoint;

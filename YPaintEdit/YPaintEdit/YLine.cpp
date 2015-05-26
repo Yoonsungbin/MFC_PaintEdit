@@ -17,8 +17,33 @@ YLine::YLine(CPoint start, CPoint end)
 	ePoint = end;
 }
 
-void YLine::moveAll(){
-
+void YLine::moveAll(int s, int e){
+	
+	/*
+	if (s.x < e.x && s.y < e.y){  //1 -> 4 
+		dx = e - s;
+	}
+	else if (s.x < e.x && s.y > e.y){  // 3 -> 2
+		dx.x = s.x - e.x;
+		dx.y = e.y - s.y;
+	}
+	else if (s.x > e.x && s.y < e.y) { // 2 -> 3
+		left = e.x;
+		top = s.y;
+		right = s.x;
+		bottom = e.y;
+	}
+	else {  	// 4 -> 1
+		left = e.x;
+		top = e.y;
+		right = s.x;
+		bottom = s.y;
+	}
+	*/
+	sPoint.x += s;
+	sPoint.y += e;
+	ePoint.x += s;
+	ePoint.y += e;
 }
 void YLine::deleteAll(){
 
@@ -38,37 +63,24 @@ void YLine::draw(CDC* pDC){
 	graphics.DrawLine(&pen1, sPoint.x, sPoint.y, nPoint.x, nPoint.y);
 	*/
 
-	pDC->SelectObject(&pen);
 	pDC->MoveTo(sPoint);
 	pDC->LineTo(ePoint);
 	pDC->SelectObject(&oldPen);
 
 	if (isSelected){
-		/*
-		CRect rect;
-		rect.SetRect(sPoint, ePoint);
-		
-		rect.left = sPoint.x;
-		rect.top = sPoint.y;
-		rect.right = ePoint.x;
-		rect.bottom = ePoint.y;
 		CPen pen1(PS_DOT, 1, BLACK_PEN);
 		CPen* oldPen = pDC->SelectObject(&pen1);
 		pDC->SelectStockObject(NULL_BRUSH);
-		pDC->Rectangle(rect.left, rect.top, rect.right, rect.bottom);
+		pDC->Rectangle(rect);  //rect 그리기
 		pDC->SelectObject(&oldPen);
-		*/
-		CPen pen1(PS_DOT, 1, BLACK_PEN);
-		CPen* oldPen = pDC->SelectObject(&pen1);
-		pDC->SelectStockObject(NULL_BRUSH);
-		pDC->Rectangle(rect);
 	}
 	else {
-		
-		CPen pen1(PS_DOT, 1, WHITE_PEN);
+		CPen pen1(PS_SOLID, 1, BLACK_PEN);
 		CPen* oldPen = pDC->SelectObject(&pen1);
+		pDC->SetROP2(R2_XORPEN);
 		pDC->SelectStockObject(NULL_BRUSH);
 		pDC->Rectangle(rect);
+		pDC->SelectObject(&oldPen);
 		
 	}
 	
@@ -122,6 +134,6 @@ BOOL YLine::checkRgn(CPoint point)
 	return FALSE;
 }
 void YLine::drawRgn(CPoint point, CPoint point2){
-	
+
 	rect.SetRect(point.x, point.y, point2.x, point2.y);  //사각형설정
 }

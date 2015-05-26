@@ -18,7 +18,7 @@ YText::~YText()
 
 
 // Virtual
-void YText::moveAll(){
+void YText::moveAll(int s, int e){
 
 }
 void YText::deleteAll(){

@@ -18,7 +18,7 @@ public:
 	YObject(const YObject &s){ *this = s; }
 	YObject& operator=(const YObject &s) { return *this; }
 
-	virtual void moveAll() = 0;
+	virtual void moveAll(int s, int e) = 0;
 	virtual void deleteAll() = 0;
 	virtual void draw(CDC*) = 0;
 	
@@ -29,6 +29,7 @@ public:
 	virtual void setRgn() = 0; //리젼 시작점 끝점으로 생성
 	CRgn* getRgn(){ return &rgn; }  //리젼가져오는 함수
 	BOOL virtual checkRgn(CPoint point) { return FALSE; }  //리젼에 있는지 확인하는 함수
+
 	/*
 	리젼을 그리기 위한 함수로 시작점과 끝점 2개의 점을 받아서 리젼(점선테두리)를 계속 그린다.
 	*/
@@ -57,6 +58,6 @@ protected:
 	CRgn rgn; //리젼
 	BOOL isExist; // 리젼안에 있는지 판별
 	BOOL isSelected;  //선택된지 안된지 보기위해서
-	
+	//CRect rect;
 };
 
