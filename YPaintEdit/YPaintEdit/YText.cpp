@@ -9,12 +9,13 @@ YText::YText(CPoint point){
 	sPoint = point;
 	fontSize = 1000;
 	font = _T("±¼¸²");
-	fontColor = RGB(1, 0, 0);
+	fontColor = RGB(255, 0, 0);
 	bkColor = RGB(255, 255, 0);
 }
 YText::~YText()
 {
 }
+
 
 
 // Virtual

@@ -151,9 +151,9 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 					 pDoc->obj_List.AddTail(pDoc->ptext);
 					 pDoc->tmp.Empty();
 					 pDoc->textEditing = FALSE;
+					 HideCaret();
 				 }
 				 break;
-
 	}
 
 	case ellipse:
@@ -360,7 +360,6 @@ void CYPaintEditView::OnPaint()
 		CPen *oldPen = dc.SelectObject(&pen);
 		tmp->draw(&dc);
 		dc.SelectObject(&oldPen);
-
 	}
 
 	if (pDoc->drawing){			// 마우스 움직이는 도중 계속 실행되는 함수
@@ -386,25 +385,49 @@ void CYPaintEditView::OnPaint()
 
 	////////////////////////////// Text ////////////////////////////////
 	if (pDoc->textEditing){
+		
+
 		CFont f;
 		f.CreatePointFont(pDoc->ptext->getFontSize(), pDoc->ptext->getFont());
 		dc.SelectObject(f);
 		dc.SetBkColor(pDoc->ptext->getBkColor());
 		dc.SetTextColor(pDoc->ptext->getFontColor());
+		CSize s = dc.GetTextExtent(pDoc->ptext->getText(), pDoc->ptext->getText().GetLength());
 		CPoint p;
-		p.x = pDoc->ptext->getSPoint().x + pDoc->ptext->getText().GetLength() * 100;
-		p.y = pDoc->ptext->getSPoint().y + pDoc->ptext->getFontSize() / 7;
+		p.x = pDoc->ptext->getSPoint().x + s.cx;
+		p.y = pDoc->ptext->getSPoint().y + pDoc->ptext->getFontSize() / 5;
 		pDoc->ptext->setEPoint(p);
 		pDoc->ptext->drawRgn(pDoc->ptext->getSPoint(), pDoc->ptext->getEPoint());
+		
+		CPen pen(PS_DOT, 1, RGB(0, 0, 255));
+		dc.SelectObject(pen);
+		CBrush brush(pDoc->ptext->getBkColor());
+		dc.SelectObject(brush);
+		CRect r;
+		r.SetRect(pDoc->ptext->getSPoint().x-1, pDoc->ptext->getSPoint().y-1, pDoc->ptext->getEPoint().x+1, pDoc->ptext->getEPoint().y+1);
+
+		dc.Rectangle(r);
 		dc.DrawText(pDoc->ptext->getText(), pDoc->ptext->getRect(), NULL);
+
+		if (pDoc->ptext->getText().GetLength() == 0){
+			CreateSolidCaret(5, pDoc->ptext->getEPoint().y - pDoc->ptext->getSPoint().y);
+			SetCaretPos(CPoint(pDoc->ptext->getSPoint().x, pDoc->ptext->getSPoint().y));
+			ShowCaret();
+		}
+		else{
+			HideCaret();
+			SetCaretPos(CPoint(pDoc->ptext->getSPoint().x + s.cx, pDoc->ptext->getSPoint().y));
+			ShowCaret();
+		}
 	}
-	////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////// 
 }
 
 void CYPaintEditView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) // Text
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
 	CYPaintEditDoc* pDoc = GetDocument();
+
 	if (pDoc->textEditing == TRUE){
 		if (nChar == _T('\b')){
 			if (pDoc->ptext->getText().GetLength() > 0){
@@ -416,6 +439,7 @@ void CYPaintEditView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) // Text
 			pDoc->textEditing = FALSE;
 			pDoc->obj_List.AddTail(pDoc->ptext);
 			pDoc->tmp.Empty();
+			HideCaret();
 		}
 		else{
 			pDoc->tmp.AppendChar(nChar);
