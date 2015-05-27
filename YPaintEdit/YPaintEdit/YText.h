@@ -40,7 +40,17 @@ public:
 	COLORREF getBkColor() { return bkColor; }
 	int getFontSize() { return fontSize; }
 
-	
+	//////////////////////////
+	virtual void setLineColor(COLORREF c){
+		fontColor = c;
+	}
+	virtual void SetLineThick(int c) {
+		fontSize = c;
+	}
+	virtual void SetLinePattern(int c) {
+		fontSize = c;
+	}
+	///////////////////////////
 	// Variables
 private:
 	CPoint sPoint;

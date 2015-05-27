@@ -190,6 +190,8 @@ BEGIN
         MENUITEM "잘라내기(&T)\tCtrl+X",            ID_EDIT_CUT
         MENUITEM "복사(&C)\tCtrl+C",              ID_EDIT_COPY
         MENUITEM "붙여넣기(&P)\tCtrl+V",            ID_EDIT_PASTE
+        MENUITEM "색(&O)\tCtrl+O",               ID_32793
+        MENUITEM "도형 서식(&U)\tCtrl+U",           ID_32794
     END
 END
 
@@ -260,6 +262,20 @@ BEGIN
     DEFPUSHBUTTON   "확인",IDOK,113,41,50,14,WS_GROUP
 END
 
+IDD_DIALOG1 DIALOGEX 0, 0, 309, 176
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_EDIT1,74,28,40,14,ES_AUTOHSCROLL
+    CONTROL         "",IDC_SPIN1,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,117,27,10,14
+    DEFPUSHBUTTON   "확인",IDOK,198,155,50,14
+    PUSHBUTTON      "취소",IDCANCEL,252,155,50,14
+    LTEXT           "두께",IDC_STATIC,23,30,16,8
+    COMBOBOX        IDC_COMBO1,73,61,120,71,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "선패턴",IDC_STATIC,23,65,23,8
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -315,6 +331,14 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 55
     END
+
+    IDD_DIALOG1, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 302
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 169
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -325,6 +349,21 @@ END
 //
 
 IDR_RIBBON              RT_RIBBON_XML           "res\\ribbon.mfcribbon-ms"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_DIALOG1 DLGINIT
+BEGIN
+    IDC_COMBO1, 0x403, 9, 0
+0x5350, 0x535f, 0x4c4f, 0x4449, "\000" 
+    IDC_COMBO1, 0x403, 7, 0
+0x5350, 0x445f, 0x544f, "\000" 
+    0
+END
 
 
 /////////////////////////////////////////////////////////////////////////////

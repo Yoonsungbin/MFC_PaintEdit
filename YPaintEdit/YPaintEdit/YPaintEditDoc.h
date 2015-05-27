@@ -33,7 +33,9 @@ public:
 	BOOL drawing = FALSE; //그리기 상태 확인변수
 	BOOL isExist = FALSE; //영역안에 존재하는지
 	BOOL isSelected =FALSE;
-
+	COLORREF lineColor;  //선색
+	int lineThick;
+	int linePattern;
 	BOOL textEditing; // Text
 	YText *ptext; // Text
 	CString tmp; // Text

@@ -48,6 +48,11 @@ public:
 	virtual void setEPoint(CPoint point) = 0;		//끝점설정
 	virtual CPoint getEPoint() = 0;
 
+	virtual void setLineColor(COLORREF c) = 0;
+	virtual void SetLineThick(int c) = 0;
+	virtual void SetLinePattern(int c) = 0;
+	
+	//COLORREF getLineColor() const{}
 	
 protected:
 	YObject_Type yType;  //타입

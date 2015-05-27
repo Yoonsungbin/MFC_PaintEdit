@@ -9,10 +9,14 @@ public:
 	void setLineColor(COLORREF c){ lineColor = c; }
 	COLORREF getLineColor() const{ return lineColor; }
 
-	void SetThick(int th){ lineThick = th; }
-	int GetThick() const{ return lineThick; }
+	void SetLineThick(int th){ lineThick = th; }
+	int GetLineThick() const{ return lineThick; }
+
+	void SetLinePattern(int pa){ linePattern = pa; }
+	int GetLinePattern() const{ return linePattern; }
 
 	virtual void moveAll(int s, int e) = 0;
+	virtual void move() =0;
 	virtual void deleteAll() = 0;
 	virtual void draw(CDC*) = 0;
 

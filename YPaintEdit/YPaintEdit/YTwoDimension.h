@@ -9,10 +9,11 @@ public:
 	void setLineColor(COLORREF c){ lineColor = c; }//선색
 	COLORREF getLineColor() const{ return lineColor; }//선색
 
+	void SetLineThick(int th){ lineThick = th; }//두께
+	int GetLineThick() const{ return lineThick; }
 
-
-	void SetThick(int th){ lineThick = th; }//두께
-	int GetThick() const{ return lineThick; }
+	void SetLinePattern(int pa){ linePattern = pa; }
+	int GetLinePattern() const{ return linePattern; }
 
 	//virtual void moveAll() = 0;//이동 myobject 상속
 	//virtual void deleteAll() = 0;//삭제 myobject 상속

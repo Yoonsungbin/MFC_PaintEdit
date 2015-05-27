@@ -21,6 +21,7 @@ public:
 		sPoint = point;
 	}
 	virtual CPoint getSPoint(){ return sPoint; }
+
 	virtual void setEPoint(CPoint point){
 		ePoint = point;
 	}

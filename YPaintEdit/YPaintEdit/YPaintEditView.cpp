@@ -42,6 +42,9 @@ BEGIN_MESSAGE_MAP(CYPaintEditView, CView)
 	ON_COMMAND(ID_BUTTON3, &CYPaintEditView::MenuLineButton)
 	ON_COMMAND(ID_BUTTON2, &CYPaintEditView::MenuDefaultButton)
 	ON_COMMAND(ID_BUTTON7, &CYPaintEditView::MenuTextButton)
+	ON_COMMAND(ID_BUTTON6, &CYPaintEditView::MenuEllipseButton)
+	ON_COMMAND(ID_32793, &CYPaintEditView::RMenuColorButton)
+	ON_COMMAND(ID_32794, &CYPaintEditView::FigureSettingButton)
 END_MESSAGE_MAP()
 
 // CYPaintEditView 생성/소멸
@@ -128,8 +131,9 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 	{
 				 //초기화
 				 YLine* line = new YLine(point, point);
-				 line->setLineColor(RGB(0, 0, 255));
-				 line->SetThick(1);
+				 line->setLineColor(pDoc->lineColor);
+				 line->SetLineThick(pDoc->lineThick);
+				 line->SetLinePattern(pDoc->linePattern);
 				 line->setSelect(TRUE);
 				 pDoc->drawing = TRUE;
 				 pDoc->isSelected = FALSE;
@@ -203,7 +207,7 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 
 	if (nFlags & MK_LBUTTON){
 
-		CPen pen(PS_SOLID, 1, RGB(0, 0, 255));
+		CPen pen(PS_SOLID,1, RGB(0, 0, 255));
 		CPen *oldPen = dc.SelectObject(&pen);
 		YObject* tmp = (YObject*)pDoc->currentObj;
 
@@ -286,15 +290,20 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 	{
 				 YLine* line = new YLine(pDoc->sPoint, pDoc->ePoint);
 				 pDoc->currentObj = line;
+				 pDoc->currentObj->setLineColor(pDoc->lineColor);
+				 pDoc->currentObj->SetLineThick(pDoc->lineThick);
+				 line->SetLinePattern(pDoc->linePattern);
 				 pDoc->currentObj->setRgn();
 				 pDoc->currentObj->setSelect(FALSE);
 				 pDoc->obj_List.AddTail(pDoc->currentObj);
 				 pDoc->currentObj = NULL;
 				 pDoc->drawing = FALSE;
+				 pDoc->yType = choice;
 				 break;
 	}
 	case text:
 	{
+		pDoc->yType = choice;
 				 break;
 	}
 
@@ -302,7 +311,8 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 	{
 		dc.Ellipse(pDoc->sPoint.x, pDoc->sPoint.y, point.x, point.y);
 		ReleaseCapture();
-
+		pDoc->yType = choice;
+		break;
 	
 	}
 	case choice:
@@ -410,7 +420,9 @@ void CYPaintEditView::MenuLineButton()
 	CYPaintEditDoc* pDoc = GetDocument();
 
 	pDoc->yType = line;
-
+	pDoc->lineColor = RGB(0, 0, 0);
+	pDoc->lineThick = 1;
+	pDoc->linePattern = 0;
 }
 
 
@@ -429,4 +441,52 @@ void CYPaintEditView::MenuTextButton()
 	CYPaintEditDoc* pDoc = GetDocument();
 
 	pDoc->yType = text;
+}
+
+
+void CYPaintEditView::MenuEllipseButton()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+
+	pDoc->yType = ellipse;
+}
+
+//마우스 오른쪽버튼 클릭후 -> 선 클릭시
+void CYPaintEditView::RMenuColorButton()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+
+	CColorDialog dlg(RGB(255,0,0),CC_FULLOPEN);
+	int result = dlg.DoModal();
+	if (result == IDOK){
+		pDoc->lineColor = dlg.GetColor();
+		
+		pDoc->currentObj->setLineColor(pDoc->lineColor);
+		Invalidate();
+	}
+}
+
+//마우스 오른쪽 버튼 클릭후 -> 도형 서식 바꾸기
+void CYPaintEditView::FigureSettingButton()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+	YFigureDialog dlg;
+	dlg.lineThick = pDoc->lineThick;
+	dlg.linePattern = pDoc->linePattern;
+	int result = dlg.DoModal();
+	if (result == IDOK){
+		pDoc->lineThick = dlg.lineThick;
+		pDoc->linePattern = dlg.linePattern;
+		//int index = dlg.patternIndex.GetCurSel();
+		//CString str;
+		//str.Format(_T("%d"), index);
+		//MessageBox(str);
+		pDoc->currentObj->SetLineThick(pDoc->lineThick);
+		pDoc->currentObj->SetLinePattern(pDoc->linePattern);
+		Invalidate();
+	}
+
 }

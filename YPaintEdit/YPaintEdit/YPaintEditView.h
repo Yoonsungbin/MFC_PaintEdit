@@ -21,7 +21,7 @@
 #include "YRectangle.h"
 #include "YEllipse.h"
 #include "YText.h"
-
+#include "YFigureDialog.h"
 
 class CYPaintEditView : public CView
 {
@@ -67,6 +67,9 @@ public:
 	afx_msg void MenuLineButton();
 	afx_msg void MenuDefaultButton();
 	afx_msg void MenuTextButton();
+	afx_msg void MenuEllipseButton();
+	afx_msg void RMenuColorButton();
+	afx_msg void FigureSettingButton();
 };
 
 #ifndef _DEBUG  // YPaintEditView.cpp의 디버그 버전

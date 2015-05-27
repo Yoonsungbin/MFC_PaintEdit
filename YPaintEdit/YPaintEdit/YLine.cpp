@@ -29,7 +29,7 @@ void YLine::deleteAll(){
 }
 void YLine::draw(CDC* pDC){
 
-	CPen pen(PS_SOLID,1 ,lineColor );
+	CPen pen(linePattern,lineThick ,lineColor );
 	CPen* oldPen = pDC->SelectObject(&pen);
 
 	Graphics graphics(*pDC);
