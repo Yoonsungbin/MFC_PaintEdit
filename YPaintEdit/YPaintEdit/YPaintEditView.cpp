@@ -151,6 +151,7 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 					 pDoc->obj_List.AddTail(pDoc->ptext);
 					 pDoc->tmp.Empty();
 					 pDoc->textEditing = FALSE;
+					 HideCaret();
 				 }
 				 break;
 	}
@@ -383,27 +384,40 @@ void CYPaintEditView::OnPaint()
 
 	////////////////////////////// Text ////////////////////////////////
 	if (pDoc->textEditing){
+		
+
 		CFont f;
 		f.CreatePointFont(pDoc->ptext->getFontSize(), pDoc->ptext->getFont());
 		dc.SelectObject(f);
 		dc.SetBkColor(pDoc->ptext->getBkColor());
 		dc.SetTextColor(pDoc->ptext->getFontColor());
+		CSize s = dc.GetTextExtent(pDoc->ptext->getText(), pDoc->ptext->getText().GetLength());
 		CPoint p;
-		p.x = pDoc->ptext->getSPoint().x + pDoc->ptext->getFontSize();
+		p.x = pDoc->ptext->getSPoint().x + s.cx;
 		p.y = pDoc->ptext->getSPoint().y + pDoc->ptext->getFontSize() / 5;
 		pDoc->ptext->setEPoint(p);
 		pDoc->ptext->drawRgn(pDoc->ptext->getSPoint(), pDoc->ptext->getEPoint());
 		
-
-		//CPaintDC dc2(this);
 		CPen pen(PS_DOT, 1, RGB(0, 0, 255));
-		dc.SelectObject(&pen);
-		//dc2.SetBkColor(pDoc->ptext->getBkColor());
+		dc.SelectObject(pen);
+		CBrush brush(pDoc->ptext->getBkColor());
+		dc.SelectObject(brush);
 		CRect r;
 		r.SetRect(pDoc->ptext->getSPoint().x-1, pDoc->ptext->getSPoint().y-1, pDoc->ptext->getEPoint().x+1, pDoc->ptext->getEPoint().y+1);
-		dc.Rectangle(r);
 
+		dc.Rectangle(r);
 		dc.DrawText(pDoc->ptext->getText(), pDoc->ptext->getRect(), NULL);
+
+		if (pDoc->ptext->getText().GetLength() == 0){
+			CreateSolidCaret(5, pDoc->ptext->getEPoint().y - pDoc->ptext->getSPoint().y);
+			SetCaretPos(CPoint(pDoc->ptext->getSPoint().x, pDoc->ptext->getSPoint().y));
+			ShowCaret();
+		}
+		else{
+			HideCaret();
+			SetCaretPos(CPoint(pDoc->ptext->getSPoint().x + s.cx, pDoc->ptext->getSPoint().y));
+			ShowCaret();
+		}
 	}
 	//////////////////////////////////////////////////////////////////// 
 }
@@ -424,6 +438,7 @@ void CYPaintEditView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) // Text
 			pDoc->textEditing = FALSE;
 			pDoc->obj_List.AddTail(pDoc->ptext);
 			pDoc->tmp.Empty();
+			HideCaret();
 		}
 		else{
 			pDoc->tmp.AppendChar(nChar);
