@@ -15,8 +15,11 @@
 
 #pragma once
 #include "YObject.h"
+#include "YLine.h"
 #include "YText.h"
-
+#include "YEllipse.h"
+#include "YRectangle.h"
+#include "YPolyLine.h"
 class CYPaintEditDoc : public CDocument
 {
 protected: // serialization에서만 만들어집니다.
@@ -37,8 +40,13 @@ public:
 	int lineThick;
 	int linePattern;
 	BOOL textEditing; // Text
-	YText *ptext; // Text
 	CString tmp; // Text
+
+	YLine* pLine;
+	YPolyLine* pPolyLine;
+	YEllipse* pEllipse;
+	YRectangle* pRectangle;
+	YText *ptext; // Text
 // 작업입니다.
 public:
 

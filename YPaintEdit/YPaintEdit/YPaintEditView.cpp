@@ -129,7 +129,7 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 	switch (pDoc->yType){
 	case line:
 	{
-				 //초기화
+			 //초기화
 				 YLine* line = new YLine(point, point);
 				 line->setLineColor(pDoc->lineColor);
 				 line->SetLineThick(pDoc->lineThick);
@@ -159,9 +159,11 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 	case ellipse:
 	{
 					YEllipse* ellipse = new YEllipse(point, point);
-
+					pDoc->drawing = TRUE;
+					pDoc->isSelected = FALSE;
 					SetCapture();//마우스 캡쳐 시작
-					dc.Ellipse(pDoc->sPoint.x, pDoc->sPoint.y, pDoc->sPoint.x, pDoc->sPoint.y);
+					pDoc->currentObj = ellipse;
+					//dc.Ellipse(pDoc->sPoint.x, pDoc->sPoint.y, pDoc->sPoint.x, pDoc->sPoint.y);
 	}
 	case choice:
 	{
@@ -187,7 +189,6 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 						   tmp->setSelect(TRUE);
 						   pDoc->isSelected = TRUE;
 						   pDoc->currentObj = tmp;
-						   //pDoc->currentObj->draw(&dc);
 						   break;
 					   }
 					   pDoc->isExist = FALSE;
@@ -195,7 +196,6 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 				   break;
 	}
 	}
-	//SetCapture();
 	CView::OnLButtonDown(nFlags, point);
 }
 
@@ -214,6 +214,7 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 
 		if (pDoc->yType == line){
 			pDoc->currentObj->setEPoint(point);
+			/*
 			// 이전에 그린 직선을 지운다.
 			dc.SetROP2(R2_NOT);
 			dc.MoveTo(pDoc->sPoint);
@@ -222,36 +223,25 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 			dc.SetROP2(R2_NOT);
 			dc.MoveTo(pDoc->sPoint);
 			dc.LineTo(point);
-			pDoc->ePoint = point;
+			*/
+			pDoc->ePoint = point;  //마우스 이동할때 끝점 지속적으로 바꾸어줘야 그릴수있다.
+			Invalidate();
 		}
-
 		else if (pDoc->yType == ellipse){
-
-
 			//	pDoc->currentObj->(point);
-
+			/*
 			dc.SetROP2(R2_XORPEN);;//선을 반전
 			dc.SelectStockObject(NULL_BRUSH);
 			CPen m_penDot(PS_DOT, 1, RGB(1, 1, 1));
 			dc.SelectObject(&m_penDot);
 			dc.SetROP2(R2_XORPEN);
-
-
-			dc.Ellipse(pDoc->sPoint.x, pDoc->sPoint.y, pDoc->ePoint.x, pDoc->ePoint.y);
+			*/
+			//dc.Ellipse(pDoc->sPoint.x, pDoc->sPoint.y, pDoc->ePoint.x, pDoc->ePoint.y);
 			pDoc->ePoint = point;
-			dc.Ellipse(pDoc->sPoint.x, pDoc->sPoint.y, point.x, point.y);
-
-
-
-			//pDoc->currentObj->drawRgn(pDoc->sPoint, pDoc->ePoint);
-
-
-
+			//dc.Ellipse(pDoc->sPoint.x, pDoc->sPoint.y, point.x, point.y);
+			Invalidate();
 		}
-
 		else if (pDoc->yType == choice){
-
-
 			CPoint t_point = point - pDoc->ePoint;
 			pDoc->ePoint = point;
 			POSITION pos = pDoc->obj_List.GetTailPosition();
@@ -288,8 +278,21 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 	switch (pDoc->yType){
 	case line:
 	{
+		
 				 YLine* line = new YLine(pDoc->sPoint, pDoc->ePoint);
 				 pDoc->currentObj = line;
+				 pDoc->pLine = (YLine*)pDoc->currentObj;
+				 pDoc->pLine->setLineColor(pDoc->lineColor);
+				 pDoc->pLine->SetLineThick(pDoc->lineThick);
+				 line->SetLinePattern(pDoc->linePattern);
+				 pDoc->pLine->setRgn();
+				 pDoc->pLine->setSelect(FALSE);
+				 pDoc->obj_List.AddTail(pDoc->currentObj);
+				 pDoc->currentObj = NULL;
+				 pDoc->drawing = FALSE;
+				 pDoc->yType = choice;
+				 break;
+				 /*
 				 pDoc->currentObj->setLineColor(pDoc->lineColor);
 				 pDoc->currentObj->SetLineThick(pDoc->lineThick);
 				 line->SetLinePattern(pDoc->linePattern);
@@ -300,6 +303,7 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 				 pDoc->drawing = FALSE;
 				 pDoc->yType = choice;
 				 break;
+				 */
 	}
 	case text:
 	{
@@ -365,10 +369,12 @@ void CYPaintEditView::OnPaint()
 		dc.SelectObject(&oldPen);
 
 	}
+
 	if (pDoc->drawing){			// 마우스 움직이는 도중 계속 실행되는 함수
 		pDoc->currentObj->setSPoint(pDoc->sPoint);
 		pDoc->currentObj->setEPoint(pDoc->ePoint);
 		pDoc->currentObj->draw(&dc);
+		
 	}
 
 	////////////////////////////// Text ////////////////////////////////
@@ -462,8 +468,9 @@ void CYPaintEditView::RMenuColorButton()
 	int result = dlg.DoModal();
 	if (result == IDOK){
 		pDoc->lineColor = dlg.GetColor();
-		
-		pDoc->currentObj->setLineColor(pDoc->lineColor);
+		pDoc->pLine = (YLine*)pDoc->currentObj;
+	//	pDoc->currentObj->setLineColor(pDoc->lineColor);
+		pDoc->pLine->setLineColor(pDoc->lineColor);
 		Invalidate();
 	}
 }
@@ -484,8 +491,11 @@ void CYPaintEditView::FigureSettingButton()
 		//CString str;
 		//str.Format(_T("%d"), index);
 		//MessageBox(str);
-		pDoc->currentObj->SetLineThick(pDoc->lineThick);
-		pDoc->currentObj->SetLinePattern(pDoc->linePattern);
+		
+		//pDoc->currentObj->SetLineThick(pDoc->lineThick);
+		//pDoc->currentObj->SetLinePattern(pDoc->linePattern);
+		pDoc->pLine->SetLineThick(pDoc->lineThick);
+		pDoc->pLine->SetLinePattern(pDoc->linePattern);
 		Invalidate();
 	}
 

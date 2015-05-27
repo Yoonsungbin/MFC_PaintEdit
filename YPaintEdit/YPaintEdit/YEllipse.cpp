@@ -31,7 +31,7 @@ void YEllipse::deleteAll(){
 
 void YEllipse::draw(CDC* pDc)
 {
-
+	//±×¸®±â
 
 }
 
