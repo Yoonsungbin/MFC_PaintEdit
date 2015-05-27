@@ -35,7 +35,8 @@ public:
 	메소드가 필요
 	*/
 	virtual void setSelect(BOOL select) { isSelected = select; }  //객체가 선택됫는지보기위해서
-	BOOL getSelect(){ return isSelected; }		//선택된지아는 BOOL변수 가져오는함수
+	BOOL getSelect()const { return isSelected; }		//선택된지아는 BOOL변수 가져오는함수
+
 
 	/*
 	시작점 끝점 설정

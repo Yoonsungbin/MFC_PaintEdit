@@ -17,18 +17,21 @@ public:
 	virtual void setRgn();
 	BOOL virtual checkRgn(CPoint point);
 
-	virtual void setSPoint(CPoint point){
+	 void setSPoint(CPoint point){
 		sPoint = point;
 	}
-	virtual CPoint getSPoint(){ return sPoint; }
+	 CPoint getSPoint(){ return sPoint; }
 
-	virtual void setEPoint(CPoint point){
+	 void setEPoint(CPoint point){
 		ePoint = point;
 	}
-	virtual CPoint getEPoint(){ return ePoint; }
+	 CPoint getEPoint(){ return ePoint; }
+	 
+	 CRect* getmRect(){ return mRect; }
 
 private:
 	CPoint sPoint;
 	CPoint ePoint;
+	CRect mRect[2];
 };
 

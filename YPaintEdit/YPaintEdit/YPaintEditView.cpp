@@ -167,33 +167,33 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 	}
 	case choice:
 	{
-				   if (pDoc->isSelected){
-					   dx_sPoint = point;
-				   }
+				  
 				   POSITION pos = pDoc->obj_List.GetTailPosition();
 				   while (pos) {
 					   YObject* tmp = (YObject*)pDoc->obj_List.GetPrev(pos);
-					   if (tmp->checkRgn(point)){
+					   pDoc->currentObj = tmp;
+					   if (pDoc->currentObj->checkRgn(point)){
 						   pDoc->isExist = TRUE;
-						   /*
-						   //리젼반전을 위해서
-						   if (tmp->getSelect()){
-						   tmp->setSelect(FALSE);
-						   pDoc->isSelected = FALSE;
-						   }
-						   else{
-						   tmp->setSelect(TRUE);
 						   pDoc->isSelected = TRUE;
-						   }
-						   */
-						   tmp->setSelect(TRUE);
-						   pDoc->isSelected = TRUE;
-						   pDoc->currentObj = tmp;
+						   pDoc->drawing = TRUE;
+						   pDoc->currentObj->setSelect(TRUE);
+						   
+						   
+							 
+							   
+						   
+						   Invalidate();   //클릭했을떄 리젼을 보여주기위해서
 						   break;
 					   }
-					   pDoc->isExist = FALSE;
+					   else {  //리젼안에 없다면
+						   pDoc->isExist = FALSE;
+						   pDoc->drawing = FALSE;
+						   pDoc->currentObj->setSelect(FALSE);
+						   pDoc->isSelected = FALSE;
+					   }
 				   }
 				   break;
+
 	}
 	}
 	CView::OnLButtonDown(nFlags, point);
@@ -210,10 +210,10 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 		CPen pen(PS_SOLID,1, RGB(0, 0, 255));
 		CPen *oldPen = dc.SelectObject(&pen);
 		YObject* tmp = (YObject*)pDoc->currentObj;
-
-
-		if (pDoc->yType == line){
-			pDoc->currentObj->setEPoint(point);
+		switch (pDoc->yType){
+		case line:
+		{
+			//pDoc->currentObj->setEPoint(point);
 			/*
 			// 이전에 그린 직선을 지운다.
 			dc.SetROP2(R2_NOT);
@@ -225,9 +225,13 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 			dc.LineTo(point);
 			*/
 			pDoc->ePoint = point;  //마우스 이동할때 끝점 지속적으로 바꾸어줘야 그릴수있다.
+
+			
 			Invalidate();
+			break;
 		}
-		else if (pDoc->yType == ellipse){
+		case ellipse:
+		{
 			//	pDoc->currentObj->(point);
 			/*
 			dc.SetROP2(R2_XORPEN);;//선을 반전
@@ -240,31 +244,53 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 			pDoc->ePoint = point;
 			//dc.Ellipse(pDoc->sPoint.x, pDoc->sPoint.y, point.x, point.y);
 			Invalidate();
+			break;
 		}
-		else if (pDoc->yType == choice){
+		case text:
+		{
+			break;
+		}
+		case choice:
+		{
+
 			CPoint t_point = point - pDoc->ePoint;
 			pDoc->ePoint = point;
-			POSITION pos = pDoc->obj_List.GetTailPosition();
-			while (pos) {
-				YObject* tmp = (YObject*)pDoc->obj_List.GetPrev(pos);
-				if (tmp->checkRgn(point)){
-					pDoc->currentObj = tmp;
-					pDoc->isSelected = TRUE;
+
+			pDoc->pLine = (YLine*)pDoc->currentObj;
+			for (int i = 0; i < 2; i++){
+				if (pDoc->pLine->getmRect()[i].PtInRect(point)){
+					//pDoc->pLine->getmRect()[i].SetRect(point.x - 10, point.y - 10, point.x + 10, point.y + 10);
+					if (i == 0) {
+						pDoc->sPoint = point;
+						pDoc->pLine->setSPoint(pDoc->sPoint);
+					}
+					else {
+						pDoc->ePoint = point;
+						pDoc->pLine->setEPoint(pDoc->ePoint);
+					}
+
 					pDoc->currentObj->setRgn();
-					break; //하나라고 가정
+					Invalidate();
+					break;
 				}
+				else {
+			
+					if (pDoc->isSelected){
+						//선택 됨
+						pDoc->currentObj->moveAll(t_point.x, t_point.y);
+					}
+					else {
+						//선택안됨
+					}
+				}
+
 			}
-			if (pDoc->isSelected){
-				//선택 됨
-				pDoc->currentObj->moveAll(t_point.x, t_point.y);
-			}
-			else {
-				//선택안됨
-			}
+
+			break;
 		}
-		//dc.SelectObject(&oldPen);
-		Invalidate();  // 적용 & 적용x 보여지는 방식다름 (첫 시작점)
 	}
+}
+	Invalidate();  //도형 이동시 이전 도형지워짐
 	CView::OnMouseMove(nFlags, point);
 }
 
@@ -321,32 +347,9 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 	}
 	case choice:
 	{
-				   //type = line;
-				   /*
-				   POSITION pos = pDoc->obj_List.GetHeadPosition();
-				   while (pos){
-				   YObject* tmp = (YObject*)pDoc->obj_List.GetNext(pos);
-				   //pDoc->currentObj->drawRgn(pDoc->sPoint, pDoc->ePoint);
-				   tmp->draw(&dc);
-
-				   }
-				   */
-				   //pDoc->currentObj->reRgn();
-				   //pDoc->currentObj->setRgn();
-				   POSITION pos = pDoc->obj_List.GetTailPosition();
-
-				   while (pos) {
-					   YObject* tmp = (YObject*)pDoc->obj_List.GetPrev(pos);
-					   tmp->setSelect(FALSE);
-					   pDoc->isSelected = FALSE;
-					   pDoc->isExist = FALSE;
-				   }
-
-				   //	pDoc->yType = line;
 				   break;
 	}
 	}
-
 	Invalidate(FALSE);
 	CView::OnLButtonUp(nFlags, point);
 }
@@ -371,8 +374,20 @@ void CYPaintEditView::OnPaint()
 	}
 
 	if (pDoc->drawing){			// 마우스 움직이는 도중 계속 실행되는 함수
-		pDoc->currentObj->setSPoint(pDoc->sPoint);
-		pDoc->currentObj->setEPoint(pDoc->ePoint);
+		switch (pDoc->yType)
+		{
+		case line:
+		{
+			pDoc->pLine = (YLine*)pDoc->currentObj;
+			pDoc->pLine->setSPoint(pDoc->sPoint);
+			pDoc->pLine->setEPoint(pDoc->ePoint);
+			break;
+		}
+		default:
+			break;
+		}
+	//	pDoc->currentObj->setSPoint(pDoc->sPoint);
+	//	pDoc->currentObj->setEPoint(pDoc->ePoint);
 		pDoc->currentObj->draw(&dc);
 		
 	}
