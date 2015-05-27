@@ -7,6 +7,7 @@ public:
 	YLine();
 	YLine(CPoint start, CPoint end);
 	~YLine();
+
 	virtual void moveAll(int s, int e);
 	virtual void deleteAll();
 	virtual void draw(CDC* cPC);

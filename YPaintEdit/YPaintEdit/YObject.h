@@ -37,18 +37,18 @@ public:
 	virtual void setSelect(BOOL select) { isSelected = select; }  //객체가 선택됫는지보기위해서
 	BOOL getSelect()const { return isSelected; }		//선택된지아는 BOOL변수 가져오는함수
 
-
+	
 	/*
 	시작점 끝점 설정
 	*/
-	virtual void setSPoint(CPoint point) = 0;	//시작점 설정
-	virtual CPoint getSPoint() = 0;
+	//virtual void setSPoint(CPoint point) = 0;	//시작점 설정
+	//virtual CPoint getSPoint() = 0;
 
 	/*
 	끝점은 도형을 변할때마다 리젼을 새로그려야하는데 그때마다 도형의 끝점을 알기위해 선언
 	*/
-	virtual void setEPoint(CPoint point) = 0;		//끝점설정
-	virtual CPoint getEPoint() = 0;
+	//virtual void setEPoint(CPoint point) = 0;		//끝점설정
+	//virtual CPoint getEPoint() = 0;
 	
 protected:
 	YObject_Type yType;  //타입

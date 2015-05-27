@@ -6,7 +6,6 @@ YLine::YLine()
 {
 }
 
-
 YLine::~YLine()
 {
 }
@@ -24,9 +23,11 @@ void YLine::moveAll(int s, int e){
 	ePoint.x += s;
 	ePoint.y += e;
 }
+
 void YLine::deleteAll(){
 
 }
+
 void YLine::draw(CDC* pDC){
 
 	CPen pen(linePattern,lineThick ,lineColor );
@@ -74,6 +75,7 @@ void YLine::draw(CDC* pDC){
 	*/
 	
 }
+
 void YLine::move(int s,int e){
 	if (getMPoint() == -1){  //시작점이동
 		sPoint.x += s;
@@ -88,6 +90,7 @@ void YLine::move(int s,int e){
 void YLine::changeLineColor(){
 
 }
+
 void YLine::setRgn(){
 	int left, top, right, bottom;
 	//4 side rect divided

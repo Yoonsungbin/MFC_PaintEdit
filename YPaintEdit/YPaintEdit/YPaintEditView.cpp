@@ -140,6 +140,11 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 				 pDoc->currentObj = line;
 				 break;
 	}
+	case polyline:
+	{
+		YPolyLine* polyline = new YPolyLine();
+		break;
+	}
 	case text:
 	{
 				 if (pDoc->textEditing == FALSE){
