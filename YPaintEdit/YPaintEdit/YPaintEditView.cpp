@@ -140,7 +140,7 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 				 pDoc->currentObj = line;
 				 break;
 	}
-	case text:
+	case text: // Text
 	{
 				 if (pDoc->textEditing == FALSE){
 					 YText* text = new YText(point);
@@ -383,43 +383,50 @@ void CYPaintEditView::OnPaint()
 		
 	}
 
-	////////////////////////////// Text ////////////////////////////////
+	//////////////////////////////////////// Text //////////////////////////////////////////
 	if (pDoc->textEditing){
-		
+		// 폰트 생성 및 적용
 		CFont f;
 		f.CreatePointFont(pDoc->ptext->getFontSize(), pDoc->ptext->getFont());
 		dc.SelectObject(f);
 		dc.SetBkColor(pDoc->ptext->getBkColor());
 		dc.SetTextColor(pDoc->ptext->getFontColor());
+
+		// 폰트를 반영한 문자열(텍스트)의 길이 생성 및 저장
 		CSize s = dc.GetTextExtent(pDoc->ptext->getText(), pDoc->ptext->getText().GetLength());
-		CPoint p;
-		p.x = pDoc->ptext->getSPoint().x + s.cx;
-		p.y = pDoc->ptext->getSPoint().y + pDoc->ptext->getFontSize() / 5;
-		pDoc->ptext->setEPoint(p);
-		pDoc->ptext->drawRgn(pDoc->ptext->getSPoint(), pDoc->ptext->getEPoint());
+
+		// 초기 텍스트 박스 모형을 위한 코드
+		CString cInitial = _T("t");
+		CSize sInitial = dc.GetTextExtent(cInitial, cInitial.GetLength());
+
+		// ePoint 및 rect 설정
+		if (pDoc->ptext->getText().GetLength() == 0)
+			pDoc->ptext->setEPoint(CPoint(pDoc->ptext->getSPoint().x + sInitial.cx, pDoc->ptext->getSPoint().y + sInitial.cy));
+		else
+			pDoc->ptext->setEPoint(CPoint(pDoc->ptext->getSPoint().x + s.cx, pDoc->ptext->getSPoint().y + s.cy));
+		pDoc->ptext->setRect(pDoc->ptext->getSPoint(), pDoc->ptext->getEPoint());
 		
-		CPen pen(PS_DOT, 1, RGB(0, 0, 255));
+		// 출력용 리젼 생성
+		CRect r(pDoc->ptext->getSPoint().x - 1, pDoc->ptext->getSPoint().y - 1, pDoc->ptext->getEPoint().x + 1, pDoc->ptext->getEPoint().y + 1);
+		// 출력용 리젼을 위한 펜 및 브러시 생성 및 적용
+		CPen pen(PS_DOT, 1, RGB(0, 0, 0));
 		dc.SelectObject(pen);
 		CBrush brush(pDoc->ptext->getBkColor());
 		dc.SelectObject(brush);
-		CRect r;
-		r.SetRect(pDoc->ptext->getSPoint().x-1, pDoc->ptext->getSPoint().y-1, pDoc->ptext->getEPoint().x+1, pDoc->ptext->getEPoint().y+1);
 
+		// 리젼 및 텍스트 출력
 		dc.Rectangle(r);
 		dc.DrawText(pDoc->ptext->getText(), pDoc->ptext->getRect(), NULL);
 
-		if (pDoc->ptext->getText().GetLength() == 0){
-			CreateSolidCaret(5, pDoc->ptext->getEPoint().y - pDoc->ptext->getSPoint().y);
-			SetCaretPos(CPoint(pDoc->ptext->getSPoint().x, pDoc->ptext->getSPoint().y));
-			ShowCaret();
-		}
-		else{
-			HideCaret();
-			SetCaretPos(CPoint(pDoc->ptext->getSPoint().x + s.cx, pDoc->ptext->getSPoint().y));
-			ShowCaret();
-		}
+		// 캐럿 생성 및 출력
+		if (pDoc->ptext->getText().GetLength() == 0)
+			CreateSolidCaret(5, sInitial.cy);
+		else
+			CreateSolidCaret(5, s.cy);
+		SetCaretPos(CPoint(pDoc->ptext->getSPoint().x + s.cx, pDoc->ptext->getSPoint().y));
+		ShowCaret();
 	}
-	//////////////////////////////////////////////////////////////////// 
+	////////////////////////////////////////////////////////////////////////////////////////
 }
 
 void CYPaintEditView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) // Text
@@ -428,19 +435,19 @@ void CYPaintEditView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) // Text
 	CYPaintEditDoc* pDoc = GetDocument();
 
 	if (pDoc->textEditing == TRUE){
-		if (nChar == _T('\b')){
+		if (nChar == _T('\b')){ // 지우기 (delete 키)
 			if (pDoc->ptext->getText().GetLength() > 0){
 				pDoc->tmp.GetBufferSetLength(pDoc->tmp.GetLength() - 1);
 				pDoc->ptext->setText(pDoc->tmp);
 			}
 		}
-		else if (nChar == VK_RETURN){
+		else if (nChar == VK_RETURN){ // 입력 종료 (enter 키)
 			pDoc->textEditing = FALSE;
 			pDoc->obj_List.AddTail(pDoc->ptext);
 			pDoc->tmp.Empty();
 			HideCaret();
 		}
-		else{
+		else{ // 입력
 			pDoc->tmp.AppendChar(nChar);
 			pDoc->ptext->setText(pDoc->tmp);
 		}

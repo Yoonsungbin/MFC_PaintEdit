@@ -1,6 +1,6 @@
 #pragma once
 #include "afx.h"
-#include <gdiplus.h>	//gdi++
+#include <gdiplus.h>		//gdi++
 
 using namespace Gdiplus;	//gdi++
 

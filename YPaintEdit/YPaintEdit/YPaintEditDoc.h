@@ -48,8 +48,9 @@ public:
 	COLORREF lineColor;  //선색
 	int lineThick;
 	int linePattern;
-	BOOL textEditing; // Text
-	CString tmp; // Text
+
+	BOOL textEditing;	// Text
+	CString tmp;		// Text
 
 // 작업입니다.
 public:
