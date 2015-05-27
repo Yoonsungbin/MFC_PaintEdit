@@ -43,7 +43,9 @@ CYPaintEditDoc::CYPaintEditDoc()
 	lineColor = RGB(0, 0, 0);
 	lineThick = 1;
 	linePattern = 0;
-	textEditing = FALSE; // Text
+
+	textEditing = FALSE;	// Text
+	clickPolyLine = FALSE;
 }
 
 CYPaintEditDoc::~CYPaintEditDoc()

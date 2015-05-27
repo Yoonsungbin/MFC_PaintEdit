@@ -70,6 +70,8 @@ public:
 	afx_msg void MenuEllipseButton();
 	afx_msg void RMenuColorButton();
 	afx_msg void FigureSettingButton();
+	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
+	afx_msg void MenuPolyLineButton();
 };
 
 #ifndef _DEBUG  // YPaintEditView.cpp의 디버그 버전

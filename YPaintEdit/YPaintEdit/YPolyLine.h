@@ -21,13 +21,13 @@ public:
 
 	void drawCircle(CDC *pDC);	//클릭한 점 리젼설정하고 그리는 함수
 	
-	void setMPoint(CPoint point) { mPoint = point; }
-	CPoint getMPoint(){ return mPoint; }
 
+	void setEPoint(CPoint point) { ePoint = point; }
+	CPoint getEPoint(){ return ePoint; }
 	void addPoint(CPoint point);
 private:
 	CList<CPoint, CPoint&> polyList;
 	CRect* mRect;
-	CPoint mPoint;
+	CPoint ePoint;
 };
 

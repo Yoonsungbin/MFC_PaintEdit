@@ -4,6 +4,7 @@
 
 YPolyLine::YPolyLine()
 {
+	polyList.RemoveAll();
 }
 
 
@@ -22,25 +23,19 @@ void YPolyLine::draw(CDC* pDC){
 	CPen pen(linePattern, lineThick, lineColor);
 	CPen* oldPen = pDC->SelectObject(&pen);
 	POSITION pos = polyList.GetHeadPosition();
-	CPoint sPoint = polyList.GetNext(pos); //시작점
-	CPoint tPoint; //임시
-	if (polyList.GetCount == 1){
-		pDC->MoveTo(sPoint);
-		pDC->LineTo(mPoint);
+	CPoint t1Point,t2Point;
+	t1Point = polyList.GetNext(pos);
+	while (pos) {
+		
+			t2Point = polyList.GetNext(pos);
+			pDC->MoveTo(t1Point);
+			pDC->LineTo(t2Point);
+			t1Point = t2Point;
 	}
-	else {
-		while (pos){
-			tPoint = polyList.GetNext(pos);
-			pDC->MoveTo(sPoint);
-			pDC->LineTo(tPoint);
-			sPoint = tPoint;
-		}
-	}
-
-	pDC->MoveTo(sPoint);
-	pDC->LineTo(mPoint);
+	pDC->MoveTo(t1Point);
+	pDC->LineTo(ePoint);
 	pDC->SelectObject(&oldPen);
-
+	
 }
 
 void YPolyLine::move(int s, int e){
@@ -55,6 +50,7 @@ void YPolyLine::setRgn(){
 }
 BOOL YPolyLine::checkRgn(CPoint point){
 
+	return FALSE;
 }
 void YPolyLine::addPoint(CPoint point){
 	polyList.AddTail(point);

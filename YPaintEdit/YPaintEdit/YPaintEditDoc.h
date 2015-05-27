@@ -48,9 +48,11 @@ public:
 	COLORREF lineColor;  //선색
 	int lineThick;
 	int linePattern;
-	BOOL textEditing; // Text
-	CString tmp; // Text
 
+	BOOL textEditing;	// Text
+	CString tmp;		// Text
+
+	BOOL clickPolyLine;  //PolyLine선택 유무  true - > 클릭 false -> 초기생성
 // 작업입니다.
 public:
 
