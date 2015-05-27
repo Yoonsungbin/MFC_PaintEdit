@@ -16,10 +16,12 @@
 #pragma once
 #include "YObject.h"
 #include "YLine.h"
-#include "YText.h"
+#include "YPolyLine.h"
 #include "YEllipse.h"
 #include "YRectangle.h"
-#include "YPolyLine.h"
+#include "YText.h"
+
+
 class CYPaintEditDoc : public CDocument
 {
 protected: // serialization에서만 만들어집니다.
@@ -31,6 +33,12 @@ public:
 	YObject_Type yType;
 	CPtrList obj_List;
 	YObject* currentObj;
+	YLine* pLine;
+	YPolyLine* pPolyLine;
+	YEllipse* pEllipse;
+	YRectangle* pRectangle;
+	YText *ptext;
+
 	CPoint sPoint;
 	CPoint ePoint;
 	BOOL drawing = FALSE; //그리기 상태 확인변수
@@ -42,11 +50,6 @@ public:
 	BOOL textEditing; // Text
 	CString tmp; // Text
 
-	YLine* pLine;
-	YPolyLine* pPolyLine;
-	YEllipse* pEllipse;
-	YRectangle* pRectangle;
-	YText *ptext; // Text
 // 작업입니다.
 public:
 
