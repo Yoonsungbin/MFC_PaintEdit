@@ -27,7 +27,7 @@ public:
 	// Accessor
 	void setRect(CPoint sPoint, CPoint ePoint)					// 텍스트 박스를 설정하는 함수
 		{ rect.SetRect(sPoint.x, sPoint.y, ePoint.x, ePoint.y); }
-	void setText(CString nText) { text = nText;  }				// 텍스트를 설정하는 함수
+	void setText(CString nText) { texts = nText;  }				// 텍스트를 설정하는 함수
 	void setFont(CString nFont) { font = nFont; }				// 글자체를 설정하는 함수
 	void setFontColor(COLORREF nColor) { fontColor = nColor; }	// 글자색을 설정하는 함수
 	void setBkColor(COLORREF nColor) { bkColor = nColor; }		// 배경색을 설정하는 함수
@@ -36,7 +36,7 @@ public:
 	
 	// Mutator
 	CRect getRect() { return rect; }							// 텍스트 박스를 얻는 함수
-	CString getText() { return text; }							// 텍스트를 얻는 함수
+	CString getText() { return texts; }							// 텍스트를 얻는 함수
 	CString getFont() { return font; }							// 글자체를 얻는 함수
 	COLORREF getFontColor() { return fontColor; }				// 글자색을 얻는 함수 
 	COLORREF getBkColor() { return bkColor; }					// 배경색을 얻는 함수
@@ -48,7 +48,7 @@ private:
 	CPoint sPoint;			// 텍스트 박스의 왼쪽,위의 점
 	CPoint ePoint;			// 텍스트 박스의 오른족,아래의 점
 	CRect rect;				// 텍스트 박스
-	CString text;			// 텍스트
+	CString texts;			// 텍스트
 	CString font;			// 글자체
 	COLORREF fontColor;		// 글자색
 	COLORREF bkColor;		// 배경색
