@@ -37,7 +37,7 @@ public:
 	YPolyLine* pPolyLine;
 	YEllipse* pEllipse;
 	YRectangle* pRectangle;
-	YText *ptext;
+	YText* ptext;
 
 	CPoint sPoint;
 	CPoint ePoint;
