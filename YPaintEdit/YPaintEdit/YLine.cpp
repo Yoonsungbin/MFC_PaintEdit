@@ -47,16 +47,11 @@ void YLine::draw(CDC* pDC){
 	pDC->SelectObject(&oldPen);
 
 	if (getSelect()){ 
-		//시작점 끝점 원그리기
-		mRect[0].SetRect(sPoint.x - 10, sPoint.y - 10, sPoint.x + 10, sPoint.y + 10);
-		mRect[1].SetRect(ePoint.x - 10, ePoint.y - 10, ePoint.x + 10, ePoint.y + 10);
-		CPen pen(PS_SOLID, 2, RGB(0, 0, 0));
-		CPen* oldPen = pDC->SelectObject(&pen);
-		pDC->Ellipse(mRect[0]);
-		pDC->Ellipse(mRect[1]);
+		
 
 		//테두리 리젼 그리기
 		CRect rect;
+		CPen* oldPen;
 		rect.SetRect(sPoint, ePoint);
 		pDC->SelectObject(&oldPen);
 		CPen pen1(PS_DOT, 1, BLACK_PEN);
@@ -97,10 +92,10 @@ void YLine::setRgn(){
 	int left, top, right, bottom;
 	//4 side rect divided
 	if (sPoint.x < ePoint.x && sPoint.y < ePoint.y){  //1 -> 4 
-		left = sPoint.x;
-		top = sPoint.y;
-		right = ePoint.x;
-		bottom = ePoint.y;
+		left = sPoint.x+10;
+		top = sPoint.y+10;
+		right = ePoint.x-10;
+		bottom = ePoint.y-10;
 	}
 	else if (sPoint.x < ePoint.x && sPoint.y > ePoint.y){  // 3 -> 2
 		left = sPoint.x;
@@ -134,4 +129,15 @@ BOOL YLine::checkRgn(CPoint point)
 	}
 
 	return FALSE;
+}
+
+void YLine::drawCircle(CDC *pDC){
+	//시작점 끝점 원그리기
+	mRect[0].SetRect(sPoint.x - 15, sPoint.y - 15, sPoint.x + 15, sPoint.y + 15);
+	mRect[1].SetRect(ePoint.x - 15, ePoint.y - 15, ePoint.x + 15, ePoint.y + 15);
+	CPen pen(PS_SOLID, 2, RGB(0, 0, 0));
+	CPen* oldPen = pDC->SelectObject(&pen);
+	pDC->SelectStockObject(WHITE_BRUSH);
+	pDC->Ellipse(mRect[0]);
+	pDC->Ellipse(mRect[1]);
 }

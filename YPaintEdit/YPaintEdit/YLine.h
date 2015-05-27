@@ -31,6 +31,8 @@ public:
 
 	 void setMPoint(int val){ mPoint = val; }
 	 int getMPoint(){ return mPoint; }
+
+	 void drawCircle(CDC *pDC);
 private:
 	CPoint sPoint;
 	CPoint ePoint;

@@ -167,12 +167,12 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 	}
 	case choice:
 	{
-				  
 				   POSITION pos = pDoc->obj_List.GetTailPosition();
 				   while (pos) {
 					   YObject* tmp = (YObject*)pDoc->obj_List.GetPrev(pos);
 					   pDoc->currentObj = tmp;
-					   if (pDoc->currentObj->checkRgn(point)){
+					   pDoc->pLine = (YLine*)pDoc->currentObj;
+					   if (pDoc->currentObj->checkRgn(point) || pDoc->pLine->getMRect()[0].PtInRect(point) ||pDoc->pLine->getMRect()[1].PtInRect(point) ){
 						   pDoc->isExist = TRUE;
 						   pDoc->isSelected = TRUE;
 						   pDoc->drawing = TRUE;
@@ -190,8 +190,25 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 						   pDoc->isSelected = FALSE;
 					   }
 				   }
+				   // 어떤 이동인 지 먼지 선택함
+				   for (int i = 0; i < 2; i++){
+					   if (pDoc->pLine->getMRect()[i].PtInRect(point)){
+						   if (i == 0) {
+							   pDoc->sPoint = point;
+							   pDoc->pLine->setSPoint(pDoc->sPoint);
+							   pDoc->pLine->setMPoint(-1);  //시작점이동
+						   }
+						   else {
+							   pDoc->ePoint = point;
+							   pDoc->pLine->setEPoint(pDoc->ePoint);
+							   pDoc->pLine->setMPoint(1);  //끝점이동
+						   }
+					   }
+				   }
+				   if (pDoc->currentObj->checkRgn(point)) {
+					   pDoc->pLine->setMPoint(0); //전체이동
+				   }
 				   break;
-
 	}
 	}
 	CView::OnLButtonDown(nFlags, point);
@@ -245,34 +262,16 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 			//pDoc->ePoint = point;
 
 			pDoc->pLine = (YLine*)pDoc->currentObj;
-
-			for (int i = 0; i < 2; i++){
-				if (pDoc->pLine->getMRect()[i].PtInRect(point)){
-					if (i == 0) {
-						pDoc->sPoint = point;
-						pDoc->pLine->setSPoint(pDoc->sPoint);
-						pDoc->pLine->setMPoint(-1);  //시작점이동
-					}
-					else {
-						pDoc->ePoint = point;
-						pDoc->pLine->setEPoint(pDoc->ePoint);
-						pDoc->pLine->setMPoint(1);  //끝점이동
-					}
-					pDoc->currentObj->setRgn();
-					Invalidate();
-					break;
-				}
-				else pDoc->pLine->setMPoint(0); //전체이동
-			}
-
+			//선택되었을때 이동 변수에따라 다른 move실행
 			if (pDoc->isSelected){
 				if (pDoc->pLine->getMPoint() == 0){  //전체이동
 					pDoc->currentObj->moveAll(t_point.x, t_point.y);
+					pDoc->currentObj->setRgn();
 				}
 				else {
 					pDoc->pLine->move(t_point.x, t_point.y);
+					pDoc->currentObj->setRgn();
 				}
-
 			}
 			else {
 				//선택안됨
@@ -372,9 +371,11 @@ void CYPaintEditView::OnPaint()
 			pDoc->pLine = (YLine*)pDoc->currentObj;
 			pDoc->pLine->setSPoint(pDoc->sPoint);
 			pDoc->pLine->setEPoint(pDoc->ePoint);
+			pDoc->pLine->drawCircle(&dc);
 			break;
 		}
 		default:
+			pDoc->pLine->drawCircle(&dc);
 			break;
 		}
 	//	pDoc->currentObj->setSPoint(pDoc->sPoint);
