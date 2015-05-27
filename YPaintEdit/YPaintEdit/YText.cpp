@@ -1,11 +1,13 @@
 #include "stdafx.h"
 #include "YText.h"
+#include "YObject.h"
 
 // Constructors, Destructor
 YText::YText()
 {
 }
 YText::YText(CPoint point){
+	yType = text;					// YObject의 타입을 Text로 초기화
 	sPoint = point;					// 텍스트 박스의 왼쪽,위의 점을 초기화
 	fontSize = 500;					// 글자크기 초기화
 	font = _T("바탕");				// 글자체 초기화
@@ -30,7 +32,7 @@ void YText::draw(CDC* dc){
 	dc->SelectObject(f);
 	dc->SetBkColor(bkColor);
 	dc->SetTextColor(fontColor);
-	dc->DrawText(text, rect, NULL);
+	dc->DrawText(texts, rect, NULL);
 }
 void YText::setRgn(){
 	int left, top, right, bottom;
