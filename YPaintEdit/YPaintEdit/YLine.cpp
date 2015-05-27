@@ -79,8 +79,15 @@ void YLine::draw(CDC* pDC){
 	*/
 	
 }
-void YLine::move(){
-
+void YLine::move(int s,int e){
+	if (getMPoint() == -1){  //시작점이동
+		sPoint.x += s;
+		sPoint.y += e;
+	}
+	else{
+		ePoint.x += s;
+		ePoint.y += e;
+	}
 }
 
 void YLine::changeLineColor(){

@@ -177,9 +177,7 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 						   pDoc->drawing = TRUE;
 						   pDoc->currentObj->setSelect(TRUE);
 						   
-						   
-							 
-							   
+						   pDoc->Original_Point = point;
 						   
 						   Invalidate();   //클릭했을떄 리젼을 보여주기위해서
 						   break;
@@ -206,26 +204,14 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 
 	if (nFlags & MK_LBUTTON){
 
-		CPen pen(PS_SOLID,1, RGB(0, 0, 255));
+		CPen pen(PS_SOLID, 1, RGB(0, 0, 255));
 		CPen *oldPen = dc.SelectObject(&pen);
 		YObject* tmp = (YObject*)pDoc->currentObj;
 		switch (pDoc->yType){
 		case line:
 		{
-			//pDoc->currentObj->setEPoint(point);
-			/*
-			// 이전에 그린 직선을 지운다.
-			dc.SetROP2(R2_NOT);
-			dc.MoveTo(pDoc->sPoint);
-			dc.LineTo(pDoc->ePoint);
-			// 새로운 직선을 그린다.
-			dc.SetROP2(R2_NOT);
-			dc.MoveTo(pDoc->sPoint);
-			dc.LineTo(point);
-			*/
-			pDoc->ePoint = point;  //마우스 이동할때 끝점 지속적으로 바꾸어줘야 그릴수있다.
 
-			
+			pDoc->ePoint = point;  //마우스 이동할때 끝점 지속적으로 바꾸어줘야 그릴수있다.
 			Invalidate();
 			break;
 		}
@@ -252,44 +238,49 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 		case choice:
 		{
 
-			CPoint t_point = point - pDoc->ePoint;
-			pDoc->ePoint = point;
+			//CPoint t_point = point - pDoc->ePoint; //좌표 움직임
+			CPoint t_point = point - pDoc->Original_Point; //좌표 움직임
+			pDoc->Original_Point = point;
+			//pDoc->ePoint = point;
 
 			pDoc->pLine = (YLine*)pDoc->currentObj;
+
 			for (int i = 0; i < 2; i++){
-				if (pDoc->pLine->getmRect()[i].PtInRect(point)){
-					//pDoc->pLine->getmRect()[i].SetRect(point.x - 10, point.y - 10, point.x + 10, point.y + 10);
+				if (pDoc->pLine->getMRect()[i].PtInRect(point)){
 					if (i == 0) {
 						pDoc->sPoint = point;
 						pDoc->pLine->setSPoint(pDoc->sPoint);
+						pDoc->pLine->setMPoint(-1);  //시작점이동
 					}
 					else {
 						pDoc->ePoint = point;
 						pDoc->pLine->setEPoint(pDoc->ePoint);
+						pDoc->pLine->setMPoint(1);  //끝점이동
 					}
-
 					pDoc->currentObj->setRgn();
 					Invalidate();
 					break;
 				}
+				else pDoc->pLine->setMPoint(0); //전체이동
+			}
+
+			if (pDoc->isSelected){
+				if (pDoc->pLine->getMPoint() == 0){  //전체이동
+					pDoc->currentObj->moveAll(t_point.x, t_point.y);
+				}
 				else {
-			
-					if (pDoc->isSelected){
-						//선택 됨
-						pDoc->currentObj->moveAll(t_point.x, t_point.y);
-					}
-					else {
-						//선택안됨
-					}
+					pDoc->pLine->move(t_point.x, t_point.y);
 				}
 
 			}
-
+			else {
+				//선택안됨
+			}
+			Invalidate();
 			break;
 		}
+		}
 	}
-}
-	Invalidate();  //도형 이동시 이전 도형지워짐
 	CView::OnMouseMove(nFlags, point);
 }
 

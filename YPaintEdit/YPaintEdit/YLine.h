@@ -11,7 +11,7 @@ public:
 	virtual void deleteAll();
 	virtual void draw(CDC* cPC);
 
-	virtual void move();
+	virtual void move(int s,int e);
 	virtual void changeLineColor();
 
 	virtual void setRgn();
@@ -27,11 +27,14 @@ public:
 	}
 	 CPoint getEPoint(){ return ePoint; }
 	 
-	 CRect* getmRect(){ return mRect; }
+	 CRect* getMRect(){ return mRect; }
 
+	 void setMPoint(int val){ mPoint = val; }
+	 int getMPoint(){ return mPoint; }
 private:
 	CPoint sPoint;
 	CPoint ePoint;
-	CRect mRect[2];
+	CRect mRect[2]; //끝점 동그라미 그리기위한 
+	int mPoint; // 시작점,끝점 어떤걸 이동시킬지 변수 true -> sPoint ,false -> ePoint
 };
 
