@@ -46,13 +46,24 @@ void YLine::draw(CDC* pDC){
 	pDC->LineTo(ePoint);
 	pDC->SelectObject(&oldPen);
 
-	if (isSelected){
+	if (getSelect()){ 
+		//시작점 끝점 원그리기
+		mRect[0].SetRect(sPoint.x - 10, sPoint.y - 10, sPoint.x + 10, sPoint.y + 10);
+		mRect[1].SetRect(ePoint.x - 10, ePoint.y - 10, ePoint.x + 10, ePoint.y + 10);
+		CPen pen(PS_SOLID, 2, RGB(0, 0, 0));
+		CPen* oldPen = pDC->SelectObject(&pen);
+		pDC->Ellipse(mRect[0]);
+		pDC->Ellipse(mRect[1]);
+
+		//테두리 리젼 그리기
 		CRect rect;
 		rect.SetRect(sPoint, ePoint);
+		pDC->SelectObject(&oldPen);
 		CPen pen1(PS_DOT, 1, BLACK_PEN);
-		CPen* oldPen = pDC->SelectObject(&pen1);
+		oldPen = pDC->SelectObject(&pen1);
 		pDC->SelectStockObject(NULL_BRUSH);
 		pDC->Rectangle(rect);  //rect 그리기
+		
 		pDC->SelectObject(&oldPen);
 	}
 	/*
