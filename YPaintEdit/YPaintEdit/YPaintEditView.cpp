@@ -386,7 +386,6 @@ void CYPaintEditView::OnPaint()
 	////////////////////////////// Text ////////////////////////////////
 	if (pDoc->textEditing){
 		
-
 		CFont f;
 		f.CreatePointFont(pDoc->ptext->getFontSize(), pDoc->ptext->getFont());
 		dc.SelectObject(f);

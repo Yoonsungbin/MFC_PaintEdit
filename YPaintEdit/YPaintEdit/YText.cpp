@@ -6,11 +6,11 @@ YText::YText()
 {
 }
 YText::YText(CPoint point){
-	sPoint = point;
-	fontSize = 1000;
-	font = _T("굴림");
-	fontColor = RGB(255, 0, 0);
-	bkColor = RGB(255, 255, 0);
+	sPoint = point;				// 텍스트 박스의 왼쪽,위의 점을 초기화
+	fontSize = 1000;			// 글자크기 초기화
+	font = _T("굴림");			// 글자체 초기화
+	fontColor = RGB(255, 0, 0);	// 글자색 초기화
+	bkColor = RGB(255, 255, 0);	// 배경색 초기화
 }
 YText::~YText()
 {
@@ -35,7 +35,8 @@ void YText::draw(CDC* dc){
 }
 void YText::setRgn(){
 	int left, top, right, bottom;
-
+	
+	// 경우에 수에 따라 리젼생성함수에 입력할 좌표 설정
 	if (sPoint.x < ePoint.x && sPoint.y < ePoint.y){
 		left = sPoint.x;
 		top = sPoint.y;
@@ -61,10 +62,12 @@ void YText::setRgn(){
 		bottom = sPoint.y;
 	}
 
+	// 리젼 생성
 	rgn.CreateRectRgn(left, top, right, bottom);
 }
 BOOL YText::checkRgn(CPoint point)
 {
+	// 좌표가 리젼에 있는지 확인
 	if (rgn.PtInRegion(point))
 		return TRUE;
 
