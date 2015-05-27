@@ -1,19 +1,19 @@
 #pragma once
 #include "afx.h"
 #include <gdiplus.h>	//gdi++
+
 using namespace Gdiplus;	//gdi++
 
 typedef enum Object_Type{ choice, rectangle, ellipse, line, polyline, text } YObject_Type;
 
-class YObject :
-	public CObject
+class YObject : public CObject
 {
 public:
 	YObject();
 	~YObject();
 	
 	virtual void setType(YObject_Type t){ yType = t; }  //타입설정하는함수
-	YObject_Type* getType(){ return &yType; }  //타입가져오는함수
+	YObject_Type* getType(){ return &yType; }			//타입가져오는함수
 
 	YObject(const YObject &s){ *this = s; }
 	YObject& operator=(const YObject &s) { return *this; }
@@ -28,7 +28,7 @@ public:
 	*/
 	virtual void setRgn() = 0; //리젼 시작점 끝점으로 생성
 	CRgn* getRgn(){ return &rgn; }  //리젼가져오는 함수
-	BOOL virtual checkRgn(CPoint point) { return FALSE; }  //리젼에 있는지 확인하는 함수
+	virtual BOOL checkRgn(CPoint point) { return FALSE; }  //리젼에 있는지 확인하는 함수
 
 	/*
 	리젼을 그릴때 이미 선택되어 있는 리젼은 제거해야하고 선택 안된 리젼은 리젼을 그려줘야함 그래서 리젼이 선택되어있는지(점선이 보이는지) 아닌지를 알기위한
@@ -42,6 +42,7 @@ public:
 	*/
 	virtual void setSPoint(CPoint point) = 0;	//시작점 설정
 	virtual CPoint getSPoint() = 0;
+
 	/*
 	끝점은 도형을 변할때마다 리젼을 새로그려야하는데 그때마다 도형의 끝점을 알기위해 선언
 	*/
