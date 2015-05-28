@@ -13,7 +13,7 @@ public:
 	~YObject();
 	
 	virtual void setType(YObject_Type t){ yType = t; }  //타입설정하는함수
-	YObject_Type* getType(){ return &yType; }			//타입가져오는함수
+	YObject_Type& getType(){ return yType; }			//타입가져오는함수
 
 	YObject(const YObject &s){ *this = s; }
 	YObject& operator=(const YObject &s) { return *this; }

@@ -28,7 +28,7 @@ void YLine::deleteAll(){
 
 }
 
-void YLine::draw(CDC* pDC){
+void YLine::draw(CDC* pDC){ 
 
 	CPen pen(linePattern,lineThick ,lineColor );
 	CPen* oldPen = pDC->SelectObject(&pen);

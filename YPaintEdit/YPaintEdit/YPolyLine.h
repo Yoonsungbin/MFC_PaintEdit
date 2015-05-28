@@ -25,6 +25,9 @@ public:
 	void setEPoint(CPoint point) { ePoint = point; }
 	CPoint getEPoint(){ return ePoint; }
 	void addPoint(CPoint point);
+
+	CList<CPoint, CPoint&>* getPolyList(){ return &polyList; }
+
 private:
 	CList<CPoint, CPoint&> polyList;
 	CRect* mRect;
