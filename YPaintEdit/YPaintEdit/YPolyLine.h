@@ -32,5 +32,6 @@ private:
 	CList<CPoint, CPoint&> polyList;
 	CRect* mRect;
 	CPoint ePoint;
+	CRect rect;  //영역 그릴 사격형 매개변수
 };
 

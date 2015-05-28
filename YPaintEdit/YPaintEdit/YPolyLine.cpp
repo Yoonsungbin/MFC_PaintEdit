@@ -38,7 +38,21 @@ void YPolyLine::draw(CDC* pDC){
 	pDC->LineTo(ePoint);
 	pDC->SelectObject(&oldPen);
 
-	
+	if (getSelect()){
+
+
+		//테두리 리젼 그리기
+		
+		CPen* oldPen;
+		rect.SetRect(rect.left,rect.top,rect.right,rect.bottom);
+		pDC->SelectObject(&oldPen);
+		CPen pen1(PS_DOT, 1, BLACK_PEN);
+		oldPen = pDC->SelectObject(&pen1);
+		pDC->SelectStockObject(NULL_BRUSH);
+		pDC->Rectangle(rect);  //rect 그리기
+
+		pDC->SelectObject(&oldPen);
+	}
 	
 }
 
@@ -51,7 +65,7 @@ void YPolyLine::changeLineColor(){
 
 void YPolyLine::setRgn(){
 	POSITION pos = polyList.GetHeadPosition();
-	CRect rect;
+	
 	rect.left = 10000;
 	rect.top = 10000;
 	rect.right = -10000;
@@ -68,7 +82,10 @@ void YPolyLine::setRgn(){
 	rgn.CreateRectRgn(rect.left, rect.top, rect.right, rect.bottom);
 }
 BOOL YPolyLine::checkRgn(CPoint point){
-
+	if (rgn.PtInRegion(point))
+	{
+		return TRUE;
+	}
 	return FALSE;
 }
 void YPolyLine::addPoint(CPoint point){

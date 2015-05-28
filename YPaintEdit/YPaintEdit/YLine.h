@@ -38,6 +38,6 @@ private:
 	CPoint sPoint;
 	CPoint ePoint;
 	CRect mRect[2]; //끝점 동그라미 그리기위한 
-	int mPoint; // 시작점,끝점 어떤걸 이동시킬지 변수 true -> sPoint ,false -> ePoint
+	int mPoint; // 시작점,끝점 어떤걸 이동시킬지 변수 -1 -> sPoint ,1 -> ePoint  0 ->전체이동
 };
 

@@ -133,6 +133,7 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 	{
 				 //초기화
 				 YLine* line = new YLine(point, point);
+				 pDoc->pLine = line;
 				 line->setLineColor(pDoc->lineColor);
 				 line->SetLineThick(pDoc->lineThick);
 				 line->SetLinePattern(pDoc->linePattern);
@@ -204,54 +205,128 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 	}
 	case choice:
 	{
+		//List에서 선택된 객체 하나가 나오면 TRUE로바꾸고 끝냄 (그룹화하게되면 배열또는 리스트 로설정해야할꺼같음)
+		if (pDoc->currentObj != NULL)	{
+			pDoc->currentObj->setSelect(FALSE);
+			pDoc->isSelected = FALSE;
+			pDoc->currentObj = NULL;
+		//	Invalidate();
+		}
 
-		// 밑의 while문 어떤객체의 영역에 존재하는지 알기 위한 반복문
-				   POSITION pos = pDoc->obj_List.GetTailPosition();
-				   while (pos) {
-					   pDoc->currentObj =(YObject*)pDoc->obj_List.GetPrev(pos);
-					   
-						   //리젼안에 있는지 없는지 판별
-						   pDoc->pLine = (YLine*)pDoc->currentObj;
-						   if (pDoc->currentObj->checkRgn(point) || pDoc->pLine->getMRect()[0].PtInRect(point) || pDoc->pLine->getMRect()[1].PtInRect(point)){
-							   pDoc->isExist = TRUE;
-							   pDoc->isSelected = TRUE;
-							   pDoc->drawing = TRUE;
-							   pDoc->currentObj->setSelect(TRUE);
-							   pDoc->Original_Point = point;  //선 이동시 기준점이 되는 좌표
-							   Invalidate();   //클릭했을떄 리젼을 보여주기위해서
-							   break;
-						   }
-						   else {  //리젼안에 없다면
-							   pDoc->isExist = FALSE;
-							   pDoc->drawing = FALSE;
-							   pDoc->currentObj->setSelect(FALSE);
-							   pDoc->isSelected = FALSE;
-						   }
-					   
-				   }  //while 끝
-	//밑의 반복문은 이동의 종류가 3가지가 될수 있는데 그종류를 선택하는 반복문
-		
-					   // 어떤 이동인 지 먼지 선택함
+		//현재 선택한 객체 찾기
+			POSITION pos = pDoc->obj_List.GetTailPosition();
+			while (pos) {
+				pDoc->currentObj = (YObject*)pDoc->obj_List.GetPrev(pos);
+				if (pDoc->currentObj->checkRgn(point) == TRUE){
+					pDoc->currentObj->setSelect(TRUE);
+					break;
+				}
+				//라인의 끝점은 라인 영역 밖에 있으므로 한번더 검색해줘야한다.
+				if (pDoc->currentObj == pDoc->pLine){
+					if (pDoc->pLine->getMRect()[0].PtInRect(point) || pDoc->pLine->getMRect()[1].PtInRect(point)) {
+						pDoc->currentObj->setSelect(TRUE);
+						break;
+					}
+				}
+			}
+	
+			if (pDoc->currentObj->getSelect() == TRUE){
+				switch (pDoc->currentObj->getType()){
+				case line:
+				{
+					pDoc->pLine = (YLine*)pDoc->currentObj;
+					pDoc->isExist = TRUE;
+					pDoc->isSelected = TRUE;
+					pDoc->drawing = TRUE;
+					pDoc->Original_Point = point;  //선 이동시 기준점이 되는 좌표
+						if (pDoc->pLine->getMRect()[0].PtInRect(point)){
+							
+								pDoc->sPoint = point;
+								pDoc->pLine->setSPoint(pDoc->sPoint);
+								pDoc->pLine->setMPoint(-1);  //시작점이동
+								break;
+							}
+						else if(pDoc->pLine->getMRect()[1].PtInRect(point)){
+								pDoc->ePoint = point;
+								pDoc->pLine->setEPoint(pDoc->ePoint);
+								pDoc->pLine->setMPoint(1);  //끝점이동
+								break;
+							}
+						else if(pDoc->pLine->checkRgn(point)) {
+						pDoc->pLine->setMPoint(0); //전체이동
+						}
+					Invalidate();
+					break;
+				}
+				case polyline:
+				{
+					MessageBox(_T("polyline"));
+					break;
+				}
+				case ellipse:
+				{
+					break;
+				}
+				case text:
+				{
+					break;
+				}
+				case choice:
+				{
+					break;
+				}
+				}
 
-				   for (int i = 0; i < 2; i++){
-					   if (pDoc->pLine->getMRect()[i].PtInRect(point)){
-						   if (i == 0) {
-							   pDoc->sPoint = point;
-							   pDoc->pLine->setSPoint(pDoc->sPoint);
-							   pDoc->pLine->setMPoint(-1);  //시작점이동
-						   }
-						   else {
-							   pDoc->ePoint = point;
-							   pDoc->pLine->setEPoint(pDoc->ePoint);
-							   pDoc->pLine->setMPoint(1);  //끝점이동
-						   }
-					   }
-				   }
-					   if (pDoc->currentObj->checkRgn(point)) {
-						   pDoc->pLine->setMPoint(0); //전체이동
-					   }
-				   
-				   break;
+			}
+
+
+
+			/*
+				//리젼안에 있는지 없는지 판별
+				pDoc->pLine = (YLine*)pDoc->currentObj;
+				if (pDoc->currentObj->checkRgn(point) || pDoc->pLine->getMRect()[0].PtInRect(point) || pDoc->pLine->getMRect()[1].PtInRect(point)){
+				pDoc->isExist = TRUE;
+				pDoc->isSelected = TRUE;
+				pDoc->drawing = TRUE;
+				pDoc->currentObj->setSelect(TRUE);
+				pDoc->Original_Point = point;  //선 이동시 기준점이 되는 좌표
+				Invalidate();   //클릭했을떄 리젼을 보여주기위해서
+				break;
+				}
+				else {  //리젼안에 없다면
+				pDoc->isExist = FALSE;
+				pDoc->drawing = FALSE;
+				pDoc->currentObj->setSelect(FALSE);
+				pDoc->isSelected = FALSE;
+				}
+				*/
+
+		//}  //while 끝
+		//밑의 반복문은 이동의 종류가 3가지가 될수 있는데 그종류를 선택하는 반복문
+
+		// 어떤 이동인 지 먼지 선택함
+		/*
+		for (int i = 0; i < 2; i++){
+		if (pDoc->pLine->getMRect()[i].PtInRect(point)){
+		if (i == 0) {
+		pDoc->sPoint = point;
+		pDoc->pLine->setSPoint(pDoc->sPoint);
+		pDoc->pLine->setMPoint(-1);  //시작점이동
+		}
+		else {
+		pDoc->ePoint = point;
+		pDoc->pLine->setEPoint(pDoc->ePoint);
+		pDoc->pLine->setMPoint(1);  //끝점이동
+		}
+		}
+		}
+		if (pDoc->currentObj->checkRgn(point)) {
+		pDoc->pLine->setMPoint(0); //전체이동
+		}
+
+		break;
+		}
+		*/
 	}
 	}
 	CView::OnLButtonDown(nFlags, point);
@@ -267,11 +342,13 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 
 		CPen pen(PS_SOLID, 1, RGB(0, 0, 255));
 		CPen *oldPen = dc.SelectObject(&pen);
-		YObject* tmp = (YObject*)pDoc->currentObj;
 		switch (pDoc->yType){
 		case line:
 		{
+			pDoc->pLine = (YLine*)pDoc->currentObj;
 					 pDoc->ePoint = point;  //마우스 이동할때 끝점 지속적으로 바꾸어줘야 그릴수있다.
+					 pDoc->pLine->setEPoint(point);
+					 //pDoc->pLine->setRgn();
 					 Invalidate();
 					 break;
 		}
@@ -306,12 +383,12 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 			//선택되었을때 이동 변수에따라 다른 move실행
 			if (pDoc->isSelected){
 				if (pDoc->pLine->getMPoint() == 0){  //전체이동
-					pDoc->currentObj->moveAll(t_point.x, t_point.y);
-					pDoc->currentObj->setRgn();
+					pDoc->pLine->moveAll(t_point.x, t_point.y);
+					pDoc->pLine->setRgn();
 				}
 				else {
 					pDoc->pLine->move(t_point.x, t_point.y);
-					pDoc->currentObj->setRgn();
+					pDoc->pLine->setRgn();
 				}
 			}
 			else {
@@ -342,14 +419,14 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 				 pDoc->pLine = (YLine*)pDoc->currentObj;
 				 pDoc->pLine->setLineColor(pDoc->lineColor);
 				 pDoc->pLine->SetLineThick(pDoc->lineThick);
-				 pline->SetLinePattern(pDoc->linePattern);
+				 pDoc->pLine->SetLinePattern(pDoc->linePattern);
 				 pDoc->pLine->setRgn();
 				 pDoc->pLine->setSelect(FALSE);
 				 pDoc->pLine->setType(line);
-				 pDoc->obj_List.AddTail(pDoc->currentObj);
+				 pDoc->obj_List.AddTail(pDoc->pLine);
 				 pDoc->currentObj = NULL;
 				 pDoc->drawing = FALSE;
-				 pDoc->yType = choice;
+				 //pDoc->yType = choice;
 				 break;
 
 	}
@@ -360,7 +437,7 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 	}
 	case text:
 	{
-		pDoc->yType = choice;
+		//pDoc->yType = choice;
 		pDoc->currentObj->setType(text);
 				 break;
 	}
@@ -383,7 +460,7 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 					pDoc->obj_List.AddTail(pDoc->currentObj);
 					pDoc->currentObj = NULL;
 					pDoc->drawing = FALSE;
-					pDoc->yType = choice;
+				//	pDoc->yType = choice;
 				//	dc.Ellipse(pDoc->sPoint.x, pDoc->sPoint.y, point.x, point.y);
 					ReleaseCapture();
 					break;
@@ -392,11 +469,11 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 	}
 	case choice:
 	{
-		pDoc->currentObj->setType(choice);
+	//	pDoc->currentObj->setType(choice);
 				   break;
 	}
 	}
-	Invalidate(FALSE);
+	Invalidate();
 	CView::OnLButtonUp(nFlags, point);
 }
 
@@ -424,8 +501,8 @@ void CYPaintEditView::OnPaint()
 		case line:
 		{
 					 pDoc->pLine = (YLine*)pDoc->currentObj;
-					 pDoc->pLine->setSPoint(pDoc->sPoint);
-					 pDoc->pLine->setEPoint(pDoc->ePoint);
+					 pDoc->pLine->setSPoint(pDoc->pLine->getSPoint());
+					 pDoc->pLine->setEPoint(pDoc->pLine->getEPoint());
 					 pDoc->pLine->drawCircle(&dc);
 					 break;
 		}
@@ -446,9 +523,15 @@ void CYPaintEditView::OnPaint()
 						break;
 
 		}
-		default:
+		case choice:
+		{
+			pDoc->pLine = (YLine*)pDoc->currentObj;
 			pDoc->pLine->drawCircle(&dc);
 			break;
+		}
+		//default:
+		//	pDoc->pLine->drawCircle(&dc);
+		//	break;
 		}
 		//	pDoc->currentObj->setSPoint(pDoc->sPoint);
 		//	pDoc->currentObj->setEPoint(pDoc->ePoint);
@@ -546,8 +629,15 @@ void CYPaintEditView::MenuDefaultButton()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	CYPaintEditDoc* pDoc = GetDocument();
-
 	pDoc->yType = choice;
+	
+	//선택을 누름으로써 모든 객체 선택여부를 FALSE로
+	POSITION pos = pDoc->obj_List.GetHeadPosition();
+	while (pos){
+		pDoc->currentObj = (YObject*)pDoc->obj_List.GetNext(pos);
+		pDoc->currentObj->setSelect(FALSE);
+	}
+	pDoc->currentObj = NULL;
 }
 
 
@@ -616,11 +706,12 @@ void CYPaintEditView::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
 	CYPaintEditDoc* pDoc = GetDocument();
-	pDoc->clickPolyLine = FALSE;
-	pDoc->drawing = FALSE;
-	pDoc->yType = choice;
-	pDoc->obj_List.AddTail(pDoc->pPolyLine);
-	pDoc->pPolyLine->setRgn(); // 리젼설정
+	if (pDoc->yType == polyline){
+		pDoc->clickPolyLine = FALSE;
+		pDoc->drawing = FALSE;
+		pDoc->obj_List.AddTail(pDoc->pPolyLine);
+		pDoc->pPolyLine->setRgn(); // 리젼설정
+	}
 	CView::OnLButtonDblClk(nFlags, point);
 }
 
