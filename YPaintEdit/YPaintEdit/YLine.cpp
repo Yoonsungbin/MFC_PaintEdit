@@ -48,8 +48,6 @@ void YLine::draw(CDC* pDC){
 	pDC->SelectObject(&oldPen);
 
 	if (getSelect()){ 
-		
-
 		//테두리 리젼 그리기
 		CRect rect;
 		CPen* oldPen;
@@ -59,7 +57,6 @@ void YLine::draw(CDC* pDC){
 		oldPen = pDC->SelectObject(&pen1);
 		pDC->SelectStockObject(NULL_BRUSH);
 		pDC->Rectangle(rect);  //rect 그리기
-		
 		pDC->SelectObject(&oldPen);
 	}
 	/*

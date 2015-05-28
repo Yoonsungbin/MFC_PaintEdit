@@ -46,6 +46,8 @@ CYPaintEditDoc::CYPaintEditDoc()
 
 	textEditing = FALSE;	// Text
 	clickPolyLine = FALSE;
+	drawing = FALSE;
+	isSelected = FALSE;
 }
 
 CYPaintEditDoc::~CYPaintEditDoc()

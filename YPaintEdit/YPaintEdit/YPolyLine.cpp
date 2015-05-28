@@ -12,6 +12,22 @@ YPolyLine::~YPolyLine()
 {
 }
 void YPolyLine::moveAll(int s, int e){
+	CList<CPoint, CPoint&> temp;
+	POSITION pos1 = polyList.GetHeadPosition();
+	
+	while (pos1){
+		CPoint tPoint = polyList.GetNext(pos1);
+		tPoint.x += s;
+		tPoint.y += e;
+		temp.AddTail(tPoint);
+	}
+
+	polyList.RemoveAll();
+	POSITION pos2 = temp.GetHeadPosition();
+	while (pos2){
+		CPoint tPoint = temp.GetNext(pos2);
+		polyList.AddTail(tPoint);
+	}
 
 }
 
@@ -25,24 +41,22 @@ void YPolyLine::draw(CDC* pDC){
 	POSITION pos = polyList.GetHeadPosition();
 	CPoint t1Point,t2Point;
 	t1Point = polyList.GetNext(pos);
+
 	while (pos) {
-		
 			t2Point = polyList.GetNext(pos);
-			
 			pDC->MoveTo(t1Point);
 			pDC->LineTo(t2Point);
 			t1Point = t2Point;
-	
 	}
-	pDC->MoveTo(t1Point);
-	pDC->LineTo(ePoint);
+	if (drawingPolyLine == TRUE){
+		pDC->MoveTo(t1Point);
+		pDC->LineTo(ePoint);
+	}
 	pDC->SelectObject(&oldPen);
 
+	
 	if (getSelect()){
-
-
 		//테두리 리젼 그리기
-		
 		CPen* oldPen;
 		rect.SetRect(rect.left,rect.top,rect.right,rect.bottom);
 		pDC->SelectObject(&oldPen);
@@ -50,14 +64,33 @@ void YPolyLine::draw(CDC* pDC){
 		oldPen = pDC->SelectObject(&pen1);
 		pDC->SelectStockObject(NULL_BRUSH);
 		pDC->Rectangle(rect);  //rect 그리기
-
 		pDC->SelectObject(&oldPen);
 	}
 	
 }
 
 void YPolyLine::move(int s, int e){
+	
+	CList<CPoint, CPoint&> temp;
+	POSITION pos1 = polyList.GetHeadPosition();
 
+	int i = 0;
+	while (pos1){
+		CPoint tPoint = polyList.GetNext(pos1);
+		if (i == getIndex()) {
+			tPoint.x += s;
+			tPoint.y += e;
+		}
+		temp.AddTail(tPoint);
+		i++;
+	}
+
+	polyList.RemoveAll();
+	POSITION pos2 = temp.GetHeadPosition();
+	while (pos2){
+		CPoint tPoint = temp.GetNext(pos2);
+		polyList.AddTail(tPoint);
+	}
 }
 void YPolyLine::changeLineColor(){
 
@@ -79,6 +112,7 @@ void YPolyLine::setRgn(){
 		if (rect.right < dPoint.x)rect.right = dPoint.x;
 		if (rect.bottom < dPoint.y) rect.bottom = dPoint.y;
 	}
+	rgn.DeleteObject();  //이전영역 지우고 다시만들기
 	rgn.CreateRectRgn(rect.left, rect.top, rect.right, rect.bottom);
 }
 BOOL YPolyLine::checkRgn(CPoint point){
@@ -92,15 +126,16 @@ void YPolyLine::addPoint(CPoint point){
 	polyList.AddTail(point);
 }
 
-
 void YPolyLine::drawCircle(CDC *pDC){
-	/*
-	mRect[0].SetRect(sPoint.x - 15, sPoint.y - 15, sPoint.x + 15, sPoint.y + 15);
-	mRect[1].SetRect(ePoint.x - 15, ePoint.y - 15, ePoint.x + 15, ePoint.y + 15);
-	CPen pen(PS_SOLID, 2, RGB(0, 0, 0));
-	CPen* oldPen = pDC->SelectObject(&pen);
-	pDC->SelectStockObject(WHITE_BRUSH);
-	pDC->Ellipse(mRect[0]);
-	pDC->Ellipse(mRect[1]);
-	*/
+	int i=0;
+	POSITION pos = polyList.GetHeadPosition();
+	while (pos){
+		CPoint temp = polyList.GetNext(pos);
+		mRect[i].SetRect(temp.x - 15, temp.y - 15, temp.x + 15, temp.y + 15);
+		CPen pen(PS_SOLID, 2, RGB(0, 0, 0));
+		CPen* oldPen = pDC->SelectObject(&pen);
+		pDC->SelectStockObject(WHITE_BRUSH);
+		pDC->Ellipse(mRect[i]);
+		i++;
+	}
 }

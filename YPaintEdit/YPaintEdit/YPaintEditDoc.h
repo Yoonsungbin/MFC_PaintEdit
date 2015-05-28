@@ -42,9 +42,8 @@ public:
 	CPoint sPoint;
 	CPoint ePoint;
 	CPoint Original_Point; // move를위한 시작지점
-	BOOL drawing = FALSE; //그리기 상태 확인변수
-	BOOL isExist = FALSE; //영역안에 존재하는지
-	BOOL isSelected =FALSE;
+	BOOL drawing ; //그리기 상태 확인변수
+	BOOL isSelected ;
 	COLORREF lineColor;  //선색
 	int lineThick;
 	int linePattern;
