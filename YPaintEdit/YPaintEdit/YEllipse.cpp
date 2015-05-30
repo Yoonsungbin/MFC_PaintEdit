@@ -54,7 +54,6 @@ void YEllipse::draw(CDC* pDC)
 	
 		if (getSelect()){
 
-
 			//테두리 리젼 그리기
 			CRect rect;
 			CPen* oldPen;
@@ -64,7 +63,6 @@ void YEllipse::draw(CDC* pDC)
 			oldPen = pDC->SelectObject(&pen1);
 			pDC->SelectStockObject(NULL_BRUSH);
 			pDC->Rectangle(rect);  //rect 그리기
-
 			pDC->SelectObject(&oldPen);
 		}
 
@@ -73,8 +71,15 @@ void YEllipse::draw(CDC* pDC)
 }
 
 
-void YEllipse::move(){
-	
+void YEllipse::move(int s, int e){
+	if (getMPoint() == -1){  //시작점이동
+		sPoint.x += s;
+		sPoint.y += e;
+	}
+	else{
+		ePoint.x += s;
+		ePoint.y += e;
+	}
 }
 
 void YEllipse::changeLineColor(){
@@ -125,8 +130,8 @@ void YEllipse::setRgn(){
 		bottom = sPoint.y;
 	}
 
+	rgn.DeleteObject();
 	rgn.CreateRectRgn(left, top, right, bottom);
-	
 }
 
 
@@ -134,14 +139,27 @@ void YEllipse::setRgn(){
 //리젼안에 있는지 검사하는함수
 BOOL YEllipse::checkRgn(CPoint point)
 {
-	/*
+	
 	if (rgn.PtInRegion(point))
 	{
 		return TRUE;
 	}
-	*/
+	
 	return FALSE;
 	
 }
 
 
+void YEllipse::drawCircle(CDC *pDC){
+	//시작점 끝점 원그리기
+	mRect[0].SetRect(sPoint.x - 15, sPoint.y - 15, sPoint.x + 15, sPoint.y + 15);//시작점
+	mRect[1].SetRect(ePoint.x - 15, ePoint.y - 15, ePoint.x + 15, ePoint.y + 15);
+	//mRect[2].SetRect(ePoint.x - 15, ePoint.y - 15, ePoint.x + 15, ePoint.y + 15);
+	//mRect[3].SetRect(ePoint.x - 15, ePoint.y - 15, ePoint.x + 15, ePoint.y + 15);
+	
+	CPen pen(PS_SOLID, 2, RGB(0, 0, 0));
+	CPen* oldPen = pDC->SelectObject(&pen);
+	pDC->SelectStockObject(WHITE_BRUSH);
+	pDC->Ellipse(mRect[0]);
+	pDC->Ellipse(mRect[1]);
+}
