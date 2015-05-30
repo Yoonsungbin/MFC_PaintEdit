@@ -569,6 +569,7 @@ void CYPaintEditView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) // Text
 }
 
 
+
 void CYPaintEditView::MenuLineButton()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
@@ -579,7 +580,6 @@ void CYPaintEditView::MenuLineButton()
 	pDoc->lineThick = 1;
 	pDoc->linePattern = 0;
 }
-
 
 void CYPaintEditView::MenuDefaultButton()
 {
@@ -596,7 +596,6 @@ void CYPaintEditView::MenuDefaultButton()
 	pDoc->currentObj = NULL;
 }
 
-
 void CYPaintEditView::MenuTextButton()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
@@ -604,7 +603,6 @@ void CYPaintEditView::MenuTextButton()
 
 	pDoc->yType = text;
 }
-
 
 void CYPaintEditView::MenuEllipseButton()
 {
@@ -649,7 +647,6 @@ void CYPaintEditView::FigureSettingButton()
 
 }
 
-
 void CYPaintEditView::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
@@ -667,7 +664,6 @@ void CYPaintEditView::OnLButtonDblClk(UINT nFlags, CPoint point)
 	}
 	CView::OnLButtonDblClk(nFlags, point);
 }
-
 
 void CYPaintEditView::MenuPolyLineButton()
 {
