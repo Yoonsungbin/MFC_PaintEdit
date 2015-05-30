@@ -39,15 +39,7 @@ void YEllipse::draw(CDC* pDC)
 	CPen* oldPen = pDC->SelectObject(&pen);
 
 	Graphics graphics(*pDC);
-	/*
-	//GDI+ 사용법
-	Pen pen1(Color(0, 0, 255),5);  // 불투명 (255), 검정색(0,0,0)
-	pen1.SetDashStyle(DashStyleSolid);
-	pen1.SetStartCap(LineCapRound);
-	pen1.SetEndCap(LineCapAnchorMask);
-	graphics.DrawLine(&pen1, sPoint.x, sPoint.y, nPoint.x, nPoint.y);
-	*/
-
+	
 	pDC->Ellipse(sPoint.x, sPoint.y, ePoint.x,ePoint.y);
 	pDC->SelectObject(&oldPen);
 

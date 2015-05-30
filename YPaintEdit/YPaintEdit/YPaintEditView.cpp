@@ -450,15 +450,15 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 	 ReleaseCapture();
 	 pDoc->yType = choice;
 	 */
-					YEllipse* ellipse = new YEllipse(pDoc->sPoint, pDoc->ePoint);
-					pDoc->currentObj = ellipse;
+					YEllipse* pellipse = new YEllipse(pDoc->sPoint, pDoc->ePoint);
+					pDoc->currentObj = pellipse;
 					pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
 					pDoc->pEllipse->setLineColor(pDoc->lineColor);
 					pDoc->pEllipse->SetLineThick(pDoc->lineThick);
-					ellipse->SetLinePattern(pDoc->linePattern);
+					pellipse->SetLinePattern(pDoc->linePattern);
 					pDoc->pEllipse->setRgn();
 					pDoc->pEllipse->setSelect(FALSE);
-					//pDoc->pEllipse->setType(ellipse);//이거 왜 안되냐???ㅅㅂ
+					pDoc->pEllipse->setType(ellipse);//이거 왜 안되냐???ㅅㅂ
 					pDoc->obj_List.AddTail(pDoc->currentObj);
 					pDoc->currentObj = NULL;
 					pDoc->drawing = FALSE;
@@ -658,6 +658,7 @@ void CYPaintEditView::MenuEllipseButton()
 	pDoc->yType = ellipse;
 }
 
+
 //마우스 오른쪽버튼 클릭후 -> 선 클릭시
 void CYPaintEditView::RMenuColorButton()
 {
@@ -688,6 +689,8 @@ void CYPaintEditView::FigureSettingButton()
 		pDoc->linePattern = dlg.linePattern;
 		pDoc->pLine->SetLineThick(pDoc->lineThick);
 		pDoc->pLine->SetLinePattern(pDoc->linePattern);
+		pDoc->pEllipse->SetLineThick(pDoc->lineThick);
+		pDoc->pEllipse->SetLinePattern(pDoc->linePattern);
 		Invalidate();
 	}
 
