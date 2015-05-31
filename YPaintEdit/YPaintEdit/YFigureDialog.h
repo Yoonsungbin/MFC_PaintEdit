@@ -1,6 +1,7 @@
 
 #pragma once
 #include "afxwin.h"
+#include "afxcmn.h"
 
 
 // YFigureDialog 대화 상자입니다.
@@ -24,4 +25,6 @@ public:
 	int lineThick;
 	int linePattern;
 	CComboBox patternIndex;
+	CSpinButtonCtrl thick;
+	virtual BOOL OnInitDialog();
 };

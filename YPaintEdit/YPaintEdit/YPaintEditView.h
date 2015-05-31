@@ -72,6 +72,7 @@ public:
 	afx_msg void FigureSettingButton();
 	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
 	afx_msg void MenuPolyLineButton();
+	afx_msg void OnDeleteClick();
 };
 
 #ifndef _DEBUG  // YPaintEditView.cpp의 디버그 버전

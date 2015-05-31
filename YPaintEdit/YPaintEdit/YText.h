@@ -15,16 +15,14 @@ public:
 	void deleteAll();											// 텍스트 객체를 삭제하는 함수
 	void draw(CDC* dc);											// 텍스트 객체를 그리는 함수
 
-	void setSPoint(CPoint point) { sPoint = point; }			// 텍스트 박스의 왼쪽,위의 점을 설정하는 함수
-	void setEPoint(CPoint point) { ePoint = point; }			// 텍스트 박스의 오른쪽,아래의 점을 설정하는 함수
-	CPoint getSPoint() { return sPoint; }						// 텍스트 박스의 왼쪽,위의 점을 얻는 함수
-	CPoint getEPoint() { return ePoint; }						// 텍스트 박스의 오른쪽,아래의 점을 얻는 함수
 	virtual void setRgn();										// 리젼을 생성하는 함수
 	BOOL checkRgn(CPoint point);								// 좌표가 리젼안에 존재하는지 확인하는 함수
 	void setSelect(BOOL select) { isSelected = select; }		// 
 	
 
-	// Accessor
+	// Mutator
+	void setSPoint(CPoint point) { sPoint = point; }			// 텍스트 박스의 왼쪽,위의 점을 설정하는 함수
+	void setEPoint(CPoint point) { ePoint = point; }			// 텍스트 박스의 오른쪽,아래의 점을 설정하는 함수
 	void setRect(CPoint sPoint, CPoint ePoint)					// 텍스트 박스를 설정하는 함수
 		{ rect.SetRect(sPoint.x, sPoint.y, ePoint.x, ePoint.y); }
 	void setText(CString nText) { texts = nText;  }				// 텍스트를 설정하는 함수
@@ -34,7 +32,9 @@ public:
 	void setFontSize(int nFontSize) { fontSize = nFontSize; }	// 글자크기를 설정하는 함수
 
 	
-	// Mutator
+	// Accessor
+	CPoint getSPoint() { return sPoint; }						// 텍스트 박스의 왼쪽,위의 점을 얻는 함수
+	CPoint getEPoint() { return ePoint; }						// 텍스트 박스의 오른쪽,아래의 점을 얻는 함수
 	CRect getRect() { return rect; }							// 텍스트 박스를 얻는 함수
 	CString getText() { return texts; }							// 텍스트를 얻는 함수
 	CString getFont() { return font; }							// 글자체를 얻는 함수

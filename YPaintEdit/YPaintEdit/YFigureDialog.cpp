@@ -29,6 +29,7 @@ void YFigureDialog::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT1, lineThick);
 	DDX_CBIndex(pDX, IDC_COMBO1, linePattern);
 	DDX_Control(pDX, IDC_COMBO1, patternIndex);
+	DDX_Control(pDX, IDC_SPIN1, thick);
 }
 
 
@@ -37,3 +38,14 @@ END_MESSAGE_MAP()
 
 
 // YFigureDialog 메시지 처리기입니다.
+
+
+BOOL YFigureDialog::OnInitDialog()
+{
+	CDialog::OnInitDialog();
+
+	// TODO:  여기에 추가 초기화 작업을 추가합니다.
+	thick.SetRange(0, 20);  // 초기값 설정
+	return TRUE;  // return TRUE unless you set the focus to a control
+	// 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
+}

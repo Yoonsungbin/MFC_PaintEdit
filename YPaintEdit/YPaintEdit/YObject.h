@@ -4,7 +4,7 @@
 
 using namespace Gdiplus;	//gdi++
 
-typedef enum Object_Type{ choice, rectangle, ellipse, line, polyline, text } YObject_Type;
+typedef enum Object_Type{ choice, rectangle, ellipse, line, polyline, text, default } YObject_Type;
 
 class YObject : public CObject
 {
