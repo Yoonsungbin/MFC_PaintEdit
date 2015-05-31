@@ -1,15 +1,16 @@
 #include "stdafx.h"
 #include "YObject.h"
-ULONG_PTR gdiplusToken;  //gdi++
+
+ULONG_PTR gdiplusToken; 
 
 YObject::YObject()
 {
-	GdiplusStartupInput gdiplusStartupInput;	//gdi++
-	GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);	//gdi++
+	GdiplusStartupInput gdiplusStartupInput;
+	GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 }
 
 
 YObject::~YObject()
 {
-	GdiplusShutdown(gdiplusToken);	//gdi++
+	GdiplusShutdown(gdiplusToken);
 }

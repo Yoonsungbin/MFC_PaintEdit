@@ -30,15 +30,19 @@ protected: // serialization에서만 만들어집니다.
 
 // 특성입니다.
 public:
-	YObject_Type yType;
-	CPtrList obj_List;
-	YObject* currentObj;
-	YLine* pLine;
-	YPolyLine* pPolyLine;
-	YEllipse* pEllipse;
-	YRectangle* pRectangle;
-	YText* ptext;
+	CPtrList obj_List;					// 작업이 완료된 도형들을 보관하는 리스트
+	YObject_Type yType;					// 현재 작업중인 도형의 타입을 나타내는 변수
+	YObject* currentObj;				// 현재 작업중인 도형의 객체를 가리키는 포인터
+	YLine* pLine;						// 선 작업을 위한 포인터
+	YPolyLine* pPolyLine;				// 다각선 작업을 위한 포인터
+	YEllipse* pEllipse;					// 타원 작업을 위한 포인터
+	YRectangle* pRectangle;				// 사각형 작업을 위한 포인터
+	YText* pText;						// 텍스트 작업을 위한 포인터
 
+
+	//////////////////////////////////////////////////////////////////////////////////
+	//////////////     필요없는 변수 없애고, 꼭 필요한것만 넣자~~!!!     /////////////
+	//////////////////////////////////////////////////////////////////////////////////
 	CPoint sPoint;
 	CPoint ePoint;
 	CPoint Original_Point; // move를위한 시작지점
@@ -52,6 +56,8 @@ public:
 	CString tmp;		// Text
 
 	BOOL clickPolyLine;  //PolyLine선택 유무  true - > 클릭 false -> 초기생성
+	/////////////////////////////////////////////////////////////////////////////////
+
 // 작업입니다.
 public:
 
