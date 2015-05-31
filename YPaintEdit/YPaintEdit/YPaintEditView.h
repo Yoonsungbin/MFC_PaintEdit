@@ -79,4 +79,3 @@ public:
 inline CYPaintEditDoc* CYPaintEditView::GetDocument() const
    { return reinterpret_cast<CYPaintEditDoc*>(m_pDocument); }
 #endif
-

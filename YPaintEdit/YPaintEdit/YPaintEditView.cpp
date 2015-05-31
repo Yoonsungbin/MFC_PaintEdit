@@ -116,9 +116,162 @@ CYPaintEditDoc* CYPaintEditView::GetDocument() const // 디버그되지 않은 버전은 �
 #endif //_DEBUG
 
 
-// CYPaintEditView 메시지 처리기
 
 
+
+
+
+
+
+
+////////////////////////////// CYPaintEditView 메시지 처리기 //////////////////////////////
+
+
+// 도형을 그리는 함수 //
+void CYPaintEditView::OnPaint()
+{
+	CPaintDC dc(this); // device context for painting
+	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
+	// 그리기 메시지에 대해서는 CView::OnPaint()을(를) 호출하지 마십시오.
+
+	CYPaintEditDoc* pDoc = GetDocument();
+	POSITION pos = pDoc->obj_List.GetHeadPosition();
+
+	while (pos) {
+		YObject* tmp = (YObject*)pDoc->obj_List.GetNext(pos);
+		CPen pen(PS_SOLID, 1, RGB(0, 0, 255));
+		CPen *oldPen = dc.SelectObject(&pen);
+		tmp->draw(&dc);
+		dc.SelectObject(&oldPen);
+	}
+
+	if (pDoc->drawing){			// 마우스 움직이는 도중 계속 실행되는 함수
+		switch (pDoc->yType){
+		case line:
+		{
+					 pDoc->pLine->setSPoint(pDoc->pLine->getSPoint());
+					 pDoc->pLine->setEPoint(pDoc->pLine->getEPoint());
+					 pDoc->pLine->drawCircle(&dc);
+					 break;
+		}
+		case polyline:
+		{
+						 pDoc->pPolyLine->setEPoint(pDoc->ePoint);
+						 pDoc->pPolyLine->drawCircle(&dc);
+						 break;
+		}
+		case ellipse:
+		{
+						pDoc->pEllipse->setSPoint(pDoc->sPoint);
+						pDoc->pEllipse->setEPoint(pDoc->ePoint);
+						pDoc->pEllipse->drawCircle(&dc);
+						break;
+
+		}
+		case choice:
+		{
+					   switch (pDoc->currentObj->getType()){
+					   case line:
+					   {
+									pDoc->pLine = (YLine*)pDoc->currentObj;
+									pDoc->pLine->drawCircle(&dc);
+									break;
+					   }
+					   case polyline:
+					   {
+										pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
+										pDoc->pPolyLine->drawCircle(&dc);
+										break;
+					   }
+					   default:
+						   break;
+					   }
+					   break;
+		}
+		default:
+			break;
+		}
+		pDoc->currentObj->draw(&dc);
+
+	}
+
+	//////////////////////////////////////// Text //////////////////////////////////////////
+	if (pDoc->textEditing){
+		// 폰트 생성 및 적용
+		CFont f;
+		f.CreatePointFont(pDoc->pText->getFontSize(), pDoc->pText->getFont());
+		dc.SelectObject(f);
+		dc.SetBkColor(pDoc->pText->getBkColor());
+		dc.SetTextColor(pDoc->pText->getFontColor());
+
+		// 폰트를 반영한 문자열(텍스트)의 길이 생성 및 저장
+		CSize s = dc.GetTextExtent(pDoc->pText->getText(), pDoc->pText->getText().GetLength());
+
+		// 초기 텍스트 박스 모형을 위한 코드
+		CString cInitial = _T("t");
+		CSize sInitial = dc.GetTextExtent(cInitial, cInitial.GetLength());
+
+		// ePoint 및 rect 설정
+		if (pDoc->pText->getText().GetLength() == 0)
+			pDoc->pText->setEPoint(CPoint(pDoc->pText->getSPoint().x + sInitial.cx, pDoc->pText->getSPoint().y + sInitial.cy));
+		else
+			pDoc->pText->setEPoint(CPoint(pDoc->pText->getSPoint().x + s.cx, pDoc->pText->getSPoint().y + s.cy));
+		pDoc->pText->setRect(pDoc->pText->getSPoint(), pDoc->pText->getEPoint());
+
+		// 출력용 리젼 생성
+		CRect r(pDoc->pText->getSPoint().x - 1, pDoc->pText->getSPoint().y - 1, pDoc->pText->getEPoint().x + 1, pDoc->pText->getEPoint().y + 1);
+		// 출력용 리젼을 위한 펜 및 브러시 생성 및 적용
+		CPen pen(PS_DOT, 1, RGB(0, 0, 0));
+		dc.SelectObject(pen);
+		CBrush brush(pDoc->pText->getBkColor());
+		dc.SelectObject(brush);
+
+		// 리젼 및 텍스트 출력
+		dc.Rectangle(r);
+		dc.DrawText(pDoc->pText->getText(), pDoc->pText->getRect(), NULL);
+
+		// 캐럿 생성 및 출력
+		if (pDoc->pText->getText().GetLength() == 0)
+			CreateSolidCaret(5, sInitial.cy);
+		else
+			CreateSolidCaret(5, s.cy);
+		SetCaretPos(CPoint(pDoc->pText->getSPoint().x + s.cx, pDoc->pText->getSPoint().y));
+		ShowCaret();
+	}
+	////////////////////////////////////////////////////////////////////////////////////////
+}
+
+
+// 키보드 입력을 받는 함수 // 
+void CYPaintEditView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) // Text
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+
+	if (pDoc->textEditing == TRUE){
+		if (nChar == _T('\b')){ // 지우기 (delete 키)
+			if (pDoc->pText->getText().GetLength() > 0){
+				pDoc->tmp.GetBufferSetLength(pDoc->tmp.GetLength() - 1);
+				pDoc->pText->setText(pDoc->tmp);
+			}
+		}
+		else if (nChar == VK_RETURN){ // 입력 종료 (enter 키)
+			pDoc->textEditing = FALSE;
+			pDoc->obj_List.AddTail(pDoc->pText);
+			pDoc->tmp.Empty();
+			HideCaret();
+		}
+		else{ // 입력
+			pDoc->tmp.AppendChar(nChar);
+			pDoc->pText->setText(pDoc->tmp);
+		}
+		Invalidate();
+	}
+	CView::OnChar(nChar, nRepCnt, nFlags);
+}
+
+
+// 마우스 클릭, 이벤트 처리 함수들 //
 void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
@@ -172,18 +325,18 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 	}
 	case text:
 	{
-				   if (pDoc->textEditing == FALSE){
-					   YText* text = new YText(point);
-					   pDoc->ptext = text;
-					   pDoc->textEditing = TRUE;
-				   }
-				   else {
-					   pDoc->obj_List.AddTail(pDoc->ptext);
-					   pDoc->tmp.Empty();
-					   pDoc->textEditing = FALSE;
-					   HideCaret();
-				   }
-				   break;
+				 if (pDoc->textEditing == FALSE){
+					 YText* text = new YText(point);
+					 pDoc->pText = text;
+					 pDoc->textEditing = TRUE;
+				 }
+				 else {
+					 pDoc->obj_List.AddTail(pDoc->pText);
+					 pDoc->tmp.Empty();
+					 pDoc->textEditing = FALSE;
+					 HideCaret();
+				 }
+				 break;
 	}
 	case ellipse:
 	{
@@ -296,12 +449,12 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 					   }
 					   case choice:
 					   {
-									break;
+									  break;
 					   }
 					   default:
 						   break;
 					   }
-	
+
 				   }
 	}
 	default:
@@ -344,7 +497,7 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 		}
 		case text:
 		{
-						break;
+					 break;
 		}
 
 			//선택 일떄 이동 시키려구
@@ -482,147 +635,26 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 	Invalidate();
 	CView::OnLButtonUp(nFlags, point);
 }
-void CYPaintEditView::OnPaint()
-{
-	CPaintDC dc(this); // device context for painting
-	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
-	// 그리기 메시지에 대해서는 CView::OnPaint()을(를) 호출하지 마십시오.
-
-	CYPaintEditDoc* pDoc = GetDocument();
-	POSITION pos = pDoc->obj_List.GetHeadPosition();
-
-	while (pos) {
-		YObject* tmp = (YObject*)pDoc->obj_List.GetNext(pos);
-		CPen pen(PS_SOLID, 1, RGB(0, 0, 255));
-		CPen *oldPen = dc.SelectObject(&pen);
-		tmp->draw(&dc);
-		dc.SelectObject(&oldPen);
-	}
-
-	if (pDoc->drawing){			// 마우스 움직이는 도중 계속 실행되는 함수
-		switch (pDoc->yType){
-		case line:
-		{
-					 pDoc->pLine->setSPoint(pDoc->pLine->getSPoint());
-					 pDoc->pLine->setEPoint(pDoc->pLine->getEPoint());
-					 pDoc->pLine->drawCircle(&dc);
-					 break;
-		}
-		case polyline:
-		{
-						 pDoc->pPolyLine->setEPoint(pDoc->ePoint);
-						 pDoc->pPolyLine->drawCircle(&dc);
-						 break;
-		}
-		case ellipse:
-		{
-						pDoc->pEllipse->setSPoint(pDoc->sPoint);
-						pDoc->pEllipse->setEPoint(pDoc->ePoint);
-						pDoc->pEllipse->drawCircle(&dc);
-						break;
-
-		}
-		case choice:
-		{
-					   switch (pDoc->currentObj->getType()){
-					   case line:
-					   {
-									pDoc->pLine = (YLine*)pDoc->currentObj;
-									pDoc->pLine->drawCircle(&dc);
-									break;
-					   }
-					   case polyline:
-					   {
-										pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
-										pDoc->pPolyLine->drawCircle(&dc);
-										break;
-					   }
-					   default:
-						   break;
-					   }
-					   break;
-		}
-		default:
-			break;
-		}
-		pDoc->currentObj->draw(&dc);
-
-	}
-
-	//////////////////////////////////////// Text //////////////////////////////////////////
-	if (pDoc->textEditing){
-		// 폰트 생성 및 적용
-		CFont f;
-		f.CreatePointFont(pDoc->ptext->getFontSize(), pDoc->ptext->getFont());
-		dc.SelectObject(f);
-		dc.SetBkColor(pDoc->ptext->getBkColor());
-		dc.SetTextColor(pDoc->ptext->getFontColor());
-
-		// 폰트를 반영한 문자열(텍스트)의 길이 생성 및 저장
-		CSize s = dc.GetTextExtent(pDoc->ptext->getText(), pDoc->ptext->getText().GetLength());
-
-		// 초기 텍스트 박스 모형을 위한 코드
-		CString cInitial = _T("t");
-		CSize sInitial = dc.GetTextExtent(cInitial, cInitial.GetLength());
-
-		// ePoint 및 rect 설정
-		if (pDoc->ptext->getText().GetLength() == 0)
-			pDoc->ptext->setEPoint(CPoint(pDoc->ptext->getSPoint().x + sInitial.cx, pDoc->ptext->getSPoint().y + sInitial.cy));
-		else
-			pDoc->ptext->setEPoint(CPoint(pDoc->ptext->getSPoint().x + s.cx, pDoc->ptext->getSPoint().y + s.cy));
-		pDoc->ptext->setRect(pDoc->ptext->getSPoint(), pDoc->ptext->getEPoint());
-
-		// 출력용 리젼 생성
-		CRect r(pDoc->ptext->getSPoint().x - 1, pDoc->ptext->getSPoint().y - 1, pDoc->ptext->getEPoint().x + 1, pDoc->ptext->getEPoint().y + 1);
-		// 출력용 리젼을 위한 펜 및 브러시 생성 및 적용
-		CPen pen(PS_DOT, 1, RGB(0, 0, 0));
-		dc.SelectObject(pen);
-		CBrush brush(pDoc->ptext->getBkColor());
-		dc.SelectObject(brush);
-
-		// 리젼 및 텍스트 출력
-		dc.Rectangle(r);
-		dc.DrawText(pDoc->ptext->getText(), pDoc->ptext->getRect(), NULL);
-
-		// 캐럿 생성 및 출력
-		if (pDoc->ptext->getText().GetLength() == 0)
-			CreateSolidCaret(5, sInitial.cy);
-		else
-			CreateSolidCaret(5, s.cy);
-		SetCaretPos(CPoint(pDoc->ptext->getSPoint().x + s.cx, pDoc->ptext->getSPoint().y));
-		ShowCaret();
-	}
-	////////////////////////////////////////////////////////////////////////////////////////
-}
-void CYPaintEditView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) // Text
+void CYPaintEditView::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
 	CYPaintEditDoc* pDoc = GetDocument();
+	if (pDoc->yType == polyline){
+		pDoc->clickPolyLine = FALSE;
+		pDoc->drawing = FALSE;
+		pDoc->pPolyLine->setDrawPolyLine(FALSE);
+		pDoc->pPolyLine->setRgn(); // 리젼설정
+		pDoc->pPolyLine->setSelect(FALSE);
+		pDoc->pPolyLine->setType(polyline);
+		pDoc->obj_List.AddTail(pDoc->pPolyLine);
 
-	if (pDoc->textEditing == TRUE){
-		if (nChar == _T('\b')){ // 지우기 (delete 키)
-			if (pDoc->ptext->getText().GetLength() > 0){
-				pDoc->tmp.GetBufferSetLength(pDoc->tmp.GetLength() - 1);
-				pDoc->ptext->setText(pDoc->tmp);
-			}
-		}
-		else if (nChar == VK_RETURN){ // 입력 종료 (enter 키)
-			pDoc->textEditing = FALSE;
-			pDoc->obj_List.AddTail(pDoc->ptext);
-			pDoc->tmp.Empty();
-			HideCaret();
-		}
-		else{ // 입력
-			pDoc->tmp.AppendChar(nChar);
-			pDoc->ptext->setText(pDoc->tmp);
-		}
 		Invalidate();
 	}
-	CView::OnChar(nChar, nRepCnt, nFlags);
+	CView::OnLButtonDblClk(nFlags, point);
 }
 
 
-
+// 리본 메뉴, 에벤트 처리 함수들 //
 void CYPaintEditView::MenuLineButton()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
@@ -665,8 +697,10 @@ void CYPaintEditView::MenuDefaultButton()
 	}
 	pDoc->currentObj = NULL;
 }
-//마우스 오른쪽버튼 클릭후 -> 선 클릭시
-void CYPaintEditView::RMenuColorButton()
+
+
+// 마우스 우클릭 메뉴, 이벤트 처리 함수들 //
+void CYPaintEditView::RMenuColorButton() //마우스 오른쪽버튼 클릭후 -> 선 클릭시
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	CYPaintEditDoc* pDoc = GetDocument();
@@ -697,8 +731,7 @@ void CYPaintEditView::RMenuColorButton()
 		Invalidate();
 	}
 }
-//마우스 오른쪽 버튼 클릭후 -> 도형 서식 바꾸기
-void CYPaintEditView::FigureSettingButton()
+void CYPaintEditView::FigureSettingButton() //마우스 오른쪽 버튼 클릭후 -> 도형 서식 바꾸기
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	CYPaintEditDoc* pDoc = GetDocument();
@@ -751,23 +784,7 @@ void CYPaintEditView::FigureSettingButton()
 	}
 
 }
-void CYPaintEditView::OnLButtonDblClk(UINT nFlags, CPoint point)
-{
-	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
-	CYPaintEditDoc* pDoc = GetDocument();
-	if (pDoc->yType == polyline){
-		pDoc->clickPolyLine = FALSE;
-		pDoc->drawing = FALSE;
-		pDoc->pPolyLine->setDrawPolyLine(FALSE);
-		pDoc->pPolyLine->setRgn(); // 리젼설정
-		pDoc->pPolyLine->setSelect(FALSE);
-		pDoc->pPolyLine->setType(polyline);
-		pDoc->obj_List.AddTail(pDoc->pPolyLine);
 
-		Invalidate();
-	}
-	CView::OnLButtonDblClk(nFlags, point);
-}
 
 
 void CYPaintEditView::OnDeleteClick()
