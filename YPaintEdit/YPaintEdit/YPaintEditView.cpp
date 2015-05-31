@@ -311,6 +311,7 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 				{
 					//마우스 움직일때
 					pDoc->ePoint = point;
+				//	pDoc->pEllipse->setEPoint(pDoc->ePoint);
 					break;
 				}
 			case text:
@@ -420,7 +421,7 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 		pDoc->drawing = FALSE;
 		//	pDoc->yType = choice;
 		//	dc.Ellipse(pDoc->sPoint.x, pDoc->sPoint.y, point.x, point.y);
-		ReleaseCapture();
+		//ReleaseCapture();
 		break;
 	}
 	case choice:
