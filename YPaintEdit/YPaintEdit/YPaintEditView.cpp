@@ -123,6 +123,7 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
 	CYPaintEditDoc* pDoc = GetDocument();
 	CClientDC dc(this);
+
 	//초기값 설정
 	pDoc->sPoint = point;
 	pDoc->ePoint = point;
@@ -131,41 +132,40 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 	switch (pDoc->yType){
 	case line:
 	{
-				 //초기화
-				 YLine* line = new YLine(point, point);
-				 line->setLineColor(pDoc->lineColor);
-				 line->SetLineThick(pDoc->lineThick);
-				 line->SetLinePattern(pDoc->linePattern);
-				 line->setSelect(TRUE);
-				 pDoc->drawing = TRUE;
-				 pDoc->isSelected = FALSE;
-				 pDoc->currentObj = line;
-				 break;
+				//초기화
+				YLine* line = new YLine(point, point);
+				line->setLineColor(pDoc->lineColor);
+				line->SetLineThick(pDoc->lineThick);
+				line->SetLinePattern(pDoc->linePattern);
+				line->setSelect(TRUE);
+				pDoc->drawing = TRUE;
+				pDoc->isSelected = FALSE;
+				pDoc->currentObj = line;
+				break;
 	}
 	case polyline:
 	{
-					 if (pDoc->clickPolyLine == FALSE){   //시작 생성
-						 YPolyLine* polyline = new YPolyLine();
-						 polyline->setLineColor(pDoc->lineColor);
-						 polyline->SetLineThick(pDoc->lineThick);
-						 polyline->SetLinePattern(pDoc->linePattern);
-						 polyline->setSelect(TRUE);
-						 polyline->addPoint(point);
-						 pDoc->drawing = TRUE;
-						 pDoc->isSelected = FALSE;
-						 pDoc->currentObj = polyline;
-						 pDoc->clickPolyLine = TRUE;
-						 pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
-						 pDoc->pPolyLine->setDrawPolyLine(TRUE);
-					 }
-					 else{   //시작점생성후 클릭할때 마다
-						 pDoc->drawing = TRUE;
-						 pDoc->pPolyLine->addPoint(point);
-					 }
-					 break;
-
+				if (pDoc->clickPolyLine == FALSE){   //시작 생성
+				YPolyLine* polyline = new YPolyLine();
+				polyline->setLineColor(pDoc->lineColor);
+				polyline->SetLineThick(pDoc->lineThick);
+				polyline->SetLinePattern(pDoc->linePattern);
+				polyline->setSelect(TRUE);
+				polyline->addPoint(point);
+				pDoc->drawing = TRUE;
+				pDoc->isSelected = FALSE;
+				pDoc->currentObj = polyline;
+				pDoc->clickPolyLine = TRUE;
+				pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
+				pDoc->pPolyLine->setDrawPolyLine(TRUE);
+				}
+				else{   //시작점생성후 클릭할때 마다
+					pDoc->drawing = TRUE;
+					pDoc->pPolyLine->addPoint(point);
+				}
+				break;
 	}
-	case text: // Text
+	case text:
 	{
 				   if (pDoc->textEditing == FALSE){
 					   YText* text = new YText(point);
@@ -180,10 +180,8 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 				   }
 				   break;
 	}
-
 	case ellipse:
 	{
-
 					YEllipse* ellipse = new YEllipse(point, point);
 
 					ellipse->setLineColor(pDoc->lineColor);
@@ -194,8 +192,6 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 					pDoc->isSelected = FALSE;
 					pDoc->currentObj = ellipse;
 					break;
-				
-	
 	}
 	case choice:
 	{
@@ -294,15 +290,19 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 					   }
 					   case choice:
 					   {
-									  break;
+									break;
 					   }
+					   default:
+						   break;
 					   }
+	
 				   }
 	}
+	default:
+		break;
 	}
 	CView::OnLButtonDown(nFlags, point);
 }
-
 void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
@@ -337,7 +337,7 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 		}
 		case text:
 		{
-					 break;
+						break;
 		}
 
 			//선택 일떄 이동 시키려구
@@ -377,7 +377,6 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 										}
 										break;
 					   }
-
 					   case ellipse:
 					   {
 									   pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
@@ -394,18 +393,17 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 									   }
 									   break;
 					   }
-
-
+					   default:
+						   break;
 					   }
-
-					   break;
 		}
+		default:
+			break;
 		}
 		Invalidate();
 	}
 	CView::OnMouseMove(nFlags, point);
 }
-
 void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
@@ -471,11 +469,12 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 	{
 				   break;
 	}
+	default:
+		break;
 	}
 	Invalidate();
 	CView::OnLButtonUp(nFlags, point);
 }
-
 void CYPaintEditView::OnPaint()
 {
 	CPaintDC dc(this); // device context for painting
@@ -531,9 +530,13 @@ void CYPaintEditView::OnPaint()
 										pDoc->pPolyLine->drawCircle(&dc);
 										break;
 					   }
+					   default:
+						   break;
 					   }
 					   break;
 		}
+		default:
+			break;
 		}
 		pDoc->currentObj->draw(&dc);
 
@@ -584,7 +587,6 @@ void CYPaintEditView::OnPaint()
 	}
 	////////////////////////////////////////////////////////////////////////////////////////
 }
-
 void CYPaintEditView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) // Text
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
@@ -618,13 +620,30 @@ void CYPaintEditView::MenuLineButton()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	CYPaintEditDoc* pDoc = GetDocument();
-
 	pDoc->yType = line;
+
 	pDoc->lineColor = RGB(0, 0, 0);
 	pDoc->lineThick = 1;
 	pDoc->linePattern = 0;
 }
-
+void CYPaintEditView::MenuPolyLineButton()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+	pDoc->yType = polyline;
+}
+void CYPaintEditView::MenuEllipseButton()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+	pDoc->yType = ellipse;
+}
+void CYPaintEditView::MenuTextButton()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+	pDoc->yType = text;
+}
 void CYPaintEditView::MenuDefaultButton()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
@@ -639,24 +658,6 @@ void CYPaintEditView::MenuDefaultButton()
 	}
 	pDoc->currentObj = NULL;
 }
-
-void CYPaintEditView::MenuTextButton()
-{
-	// TODO: 여기에 명령 처리기 코드를 추가합니다.
-	CYPaintEditDoc* pDoc = GetDocument();
-
-	pDoc->yType = text;
-}
-
-void CYPaintEditView::MenuEllipseButton()
-{
-	// TODO: 여기에 명령 처리기 코드를 추가합니다.
-	CYPaintEditDoc* pDoc = GetDocument();
-
-	pDoc->yType = ellipse;
-}
-
-
 //마우스 오른쪽버튼 클릭후 -> 선 클릭시
 void CYPaintEditView::RMenuColorButton()
 {
@@ -672,7 +673,6 @@ void CYPaintEditView::RMenuColorButton()
 		Invalidate();
 	}
 }
-
 //마우스 오른쪽 버튼 클릭후 -> 도형 서식 바꾸기
 void CYPaintEditView::FigureSettingButton()
 {
@@ -693,7 +693,6 @@ void CYPaintEditView::FigureSettingButton()
 	}
 
 }
-
 void CYPaintEditView::OnLButtonDblClk(UINT nFlags, CPoint point)
 {
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
@@ -710,12 +709,4 @@ void CYPaintEditView::OnLButtonDblClk(UINT nFlags, CPoint point)
 		Invalidate();
 	}
 	CView::OnLButtonDblClk(nFlags, point);
-}
-
-void CYPaintEditView::MenuPolyLineButton()
-{
-	// TODO: 여기에 명령 처리기 코드를 추가합니다.
-	CYPaintEditDoc* pDoc = GetDocument();
-
-	pDoc->yType = polyline;
 }
