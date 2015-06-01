@@ -20,9 +20,12 @@ YRectangle::YRectangle(CPoint start, CPoint end)
 }
 
 
-void YRectangle::moveAll()
+void YRectangle::moveAll(int s, int e)
 {
-
+	sPoint.x += s;
+	sPoint.y += e;
+	ePoint.x += s;
+	ePoint.y += e;
 }
 
 
@@ -30,15 +33,44 @@ void YRectangle::deleteAll(){
 }
 
 
-void YRectangle::draw(CDC* pDc)
+void YRectangle::draw(CDC* pDC)
 {
+	//그리기
+	CPen pen(linePattern, lineThick, lineColor);
+	CPen* oldPen = pDC->SelectObject(&pen);
 
+	Graphics graphics(*pDC);
+
+	pDC->Rectangle(sPoint.x, sPoint.y, ePoint.x, ePoint.y);
+	pDC->SelectObject(&oldPen);
+
+
+	if (getSelect()){
+
+		//테두리 리젼 그리기
+		CRect rect;
+		CPen* oldPen;
+		rect.SetRect(sPoint, ePoint);
+		pDC->SelectObject(&oldPen);
+		CPen pen1(PS_DOT, 1, BLACK_PEN);
+		oldPen = pDC->SelectObject(&pen1);
+		pDC->SelectStockObject(NULL_BRUSH);
+		pDC->Rectangle(rect);  //rect 그리기
+		pDC->SelectObject(&oldPen);
+	}
 
 }
 
 
-void YRectangle::move(){
-
+void YRectangle::move(int s, int e){
+	if (getMPoint() == -1){  //시작점이동
+		sPoint.x += s;
+		sPoint.y += e;
+	}
+	else{
+		ePoint.x += s;
+		ePoint.y += e;
+	}
 }
 
 void YRectangle::changeLineColor(){
@@ -89,6 +121,7 @@ void YRectangle::setRgn(){
 		bottom = sPoint.y;
 	}
 
+	rgn.DeleteObject();
 	rgn.CreateRectRgn(left, top, right, bottom);
 }
 
@@ -105,3 +138,17 @@ BOOL YRectangle::checkRgn(CPoint point)
 	return FALSE;
 }
 
+void YRectangle::drawCircle(CDC *pDC)
+{
+	mRect[0].SetRect(sPoint.x - 15, sPoint.y - 15, sPoint.x + 15, sPoint.y + 15);//시작점
+	mRect[1].SetRect(ePoint.x - 15, ePoint.y - 15, ePoint.x + 15, ePoint.y + 15);
+	//mRect[2].SetRect(ePoint.x - 15, ePoint.y - 15, ePoint.x + 15, ePoint.y + 15);
+	//mRect[3].SetRect(ePoint.x - 15, ePoint.y - 15, ePoint.x + 15, ePoint.y + 15);
+
+	CPen pen(PS_SOLID, 2, RGB(0, 0, 0));
+	CPen* oldPen = pDC->SelectObject(&pen);
+	pDC->SelectStockObject(WHITE_BRUSH);
+	pDC->Ellipse(mRect[0]);
+	pDC->Ellipse(mRect[1]);
+
+}

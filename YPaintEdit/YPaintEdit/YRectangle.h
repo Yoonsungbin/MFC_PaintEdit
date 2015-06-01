@@ -9,35 +9,48 @@ public:
 	~YRectangle();
 
 
-	virtual void moveAll();
-	virtual void deleteAll();
-	virtual void draw(CDC*);
+	void moveAll(int s, int e);
+	void deleteAll();
+	void draw(CDC*);
 
-	virtual void move();
-	virtual void changeLineColor();
+	void move(int s, int e);
+	void changeLineColor();
 
-	virtual void setRgn();
-	BOOL virtual checkRgn(CPoint point);
+	void setRgn();
+	BOOL  checkRgn(CPoint point);
 
-	virtual void setSPoint(CPoint point){
+	void setSPoint(CPoint point){
 		sPoint = point;
 	}
-	virtual CPoint getSPoint(){ return sPoint; }
-	virtual void setEPoint(CPoint point){
+	CPoint getSPoint(){ return sPoint; }
+	void setEPoint(CPoint point){
 		ePoint = point;
 	}
-	virtual CPoint getEPoint(){ return ePoint; }
+	CPoint getEPoint(){ return ePoint; }
+
+	CRect* getMRect(){ return mRect; }
+
+
+	void setSelect(BOOL select) { isSelected = select; }
+	void setMPoint(int val){ mPoint = val; }
+	int getMPoint(){ return mPoint; }
 
 
 
-	virtual void ChangeinColor();
-	virtual void ChangeSize(); //크기변경
+
+	void ChangeinColor();
+	void ChangeSize(); //크기변경
+
+
+	void drawCircle(CDC *pDC);// 리전 으로 선택시 원 생기게 할라고!!
 
 
 private:
 	CRect rect;
 	CPoint sPoint;
 	CPoint ePoint;
+	CRect mRect[2]; //끝점 동그라미 그리기위한 
 
+	int mPoint; //시작점 끝점 중 어떤거 이동시키는지 확인하는거
 };
 

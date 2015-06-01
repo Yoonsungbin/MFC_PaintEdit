@@ -48,6 +48,7 @@ BEGIN_MESSAGE_MAP(CYPaintEditView, CView)
 	ON_WM_LBUTTONDBLCLK()
 	ON_COMMAND(ID_BUTTON5, &CYPaintEditView::MenuPolyLineButton)
 	ON_COMMAND(ID_32797, &CYPaintEditView::OnDeleteClick)
+	ON_COMMAND(ID_BUTTON4, &CYPaintEditView::OnRectangleButton)
 END_MESSAGE_MAP()
 
 // CYPaintEditView 생성/소멸
@@ -166,6 +167,15 @@ void CYPaintEditView::OnPaint()
 						pDoc->pEllipse->setEPoint(pDoc->ePoint);
 						pDoc->pEllipse->drawCircle(&dc);
 						break;
+		}
+
+		case rectangle:
+		{
+						  pDoc->pRectangle->setSPoint(pDoc->sPoint);
+						  pDoc->pRectangle->setEPoint(pDoc->ePoint);
+						  pDoc->pRectangle->drawCircle(&dc);
+						  break;
+		
 
 		}
 		case choice:
@@ -183,6 +193,30 @@ void CYPaintEditView::OnPaint()
 										pDoc->pPolyLine->drawCircle(&dc);
 										break;
 					   }
+						   ///////////////////////////////////
+						   /////방금 추가함   ///////////////////////////////////
+						   /////방금 추가함   ///////////////////////////////////
+						   /////방금 추가함   ///////////////////////////////////
+						   /////방금 추가함   ///////////////////////////////////
+						   /////방금 추가함   ///////////////////////////////////
+						   /////방금 추가함   ///////////////////////////////////
+						   /////방금 추가함   ///////////////////////////////////
+						   /////방금 추가함   ///////////////////////////////////
+						   /////방금 추가함
+					   case ellipse:
+					   {
+									   pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
+									   pDoc->pEllipse->drawCircle(&dc);
+									   break;
+					   }
+					   case rectangle:
+					   {
+										 pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
+										 pDoc->pRectangle->drawCircle(&dc);
+										 break;
+					   }
+
+
 					   default:
 						   break;
 					   }
@@ -352,6 +386,22 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 					pDoc->currentObj = ellipse;
 					break;
 	}
+
+	case rectangle:
+	{
+					  YRectangle* rectangle = new YRectangle(point, point);
+					  pDoc->lineThick = 1;
+					  pDoc->linePattern = 0;
+					  rectangle->setLineColor(pDoc->lineColor);
+					  rectangle->SetLineThick(pDoc->lineThick);
+					  rectangle->SetLinePattern(pDoc->linePattern);
+					  rectangle->setSelect(TRUE);
+					  pDoc->drawing = TRUE;
+					  pDoc->isSelected = FALSE;
+					  pDoc->currentObj = rectangle;
+					  break;
+	
+	}
 	case choice:
 	{
 				   //List에서 선택된 객체 하나가 나오면 TRUE로바꾸고 끝냄 (그룹화하게되면 배열또는 리스트 로설정해야할꺼같음)
@@ -443,6 +493,32 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 									   break;
 
 					   }
+
+
+					   case rectangle:
+					   {
+										
+										 pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
+										 if (pDoc->pLine->getMRect()[0].PtInRect(point)){  // 시작점 클릭
+											 pDoc->sPoint = point;
+											 pDoc->pRectangle->setSPoint(pDoc->sPoint);
+											 pDoc->pRectangle->setMPoint(-1);  //시작점이동
+										 }
+										 else if (pDoc->pRectangle->getMRect()[1].PtInRect(point)){	// 끝점 클릭
+											 pDoc->ePoint = point;
+											 pDoc->pRectangle->setEPoint(pDoc->ePoint);
+											 pDoc->pRectangle->setMPoint(1);  //끝점이동
+											 break;
+										 }
+										 else if (pDoc->pRectangle->checkRgn(point)) {		//그 외 영역 클릭
+											 pDoc->pRectangle->setMPoint(0); //전체이동
+										 }
+										 Invalidate();
+										 break;
+
+					   
+					   
+					   }
 					   case text:
 					   {
 									break;
@@ -494,6 +570,17 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 						pDoc->ePoint = point;
 						pDoc->pEllipse->setEPoint(point);
 						break;
+		}
+
+		case rectangle:
+		{
+
+						  //마우스 움직일때
+						  pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
+						  pDoc->ePoint = point;
+						  pDoc->pRectangle->setEPoint(point);
+						  break;
+		
 		}
 		case text:
 		{
@@ -552,6 +639,24 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 										   }
 									   }
 									   break;
+					   }
+
+					   case rectangle:
+					   {
+										 pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
+										 //선택되었을때 이동 변수에따라 다른 move실행
+										 if (pDoc->isSelected){
+											 if (pDoc->pRectangle->getMPoint() == 0){  //전체이동
+												 pDoc->pRectangle->moveAll(t_point.x, t_point.y);
+												 pDoc->pRectangle->setRgn();
+											 }
+											 else {
+												 pDoc->pRectangle->move(t_point.x, t_point.y);
+												 pDoc->pRectangle->setRgn();
+											 }
+										 }
+										 break;
+					   
 					   }
 					   default:
 						   break;
@@ -625,6 +730,28 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 					ReleaseCapture();
 					break;
 	}
+	case rectangle:
+	{
+					  YRectangle* prectangle = new YRectangle(pDoc->sPoint, pDoc->ePoint);
+					  pDoc->currentObj = prectangle;
+					  pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
+					  pDoc->pRectangle->setLineColor(pDoc->lineColor);
+					  pDoc->pRectangle->SetLineThick(pDoc->lineThick);
+					  prectangle->SetLinePattern(pDoc->linePattern);
+					  pDoc->pRectangle->setRgn();
+					  pDoc->pRectangle->setSelect(FALSE);
+					  pDoc->pRectangle->setType(ellipse);//이거 왜 안되냐???ㅅㅂ
+					  pDoc->obj_List.AddTail(pDoc->currentObj);
+					  pDoc->currentObj = NULL;
+					  pDoc->drawing = FALSE;
+					  //	pDoc->yType = choice;
+					  //	dc.Ellipse(pDoc->sPoint.x, pDoc->sPoint.y, point.x, point.y);
+					  ReleaseCapture();
+					  break;
+	
+	
+	}
+
 	case choice:
 	{
 				   break;
@@ -677,6 +804,13 @@ void CYPaintEditView::MenuEllipseButton()
 	CYPaintEditDoc* pDoc = GetDocument();
 	pDoc->yType = ellipse;
 }
+void CYPaintEditView::OnRectangleButton()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+	pDoc->yType = rectangle;
+}
+
 void CYPaintEditView::MenuTextButton()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
@@ -821,3 +955,5 @@ void CYPaintEditView::OnDeleteClick()
 
 	Invalidate();
 }
+
+
