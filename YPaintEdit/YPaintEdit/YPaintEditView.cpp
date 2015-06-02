@@ -180,6 +180,9 @@ void CYPaintEditView::OnPaint()
 		}
 		case choice:
 		{
+
+			if (pDoc->currentObj == NULL) break;
+
 			switch (pDoc->currentObj->getType()){
 			case line:
 			{
@@ -389,25 +392,26 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 				pDoc->currentObj = NULL;
 			}
 			//라인의 끝점은 라인 영역 밖에 있으므로 한번더 검색해줘야한다.
-
-			if (pDoc->currentObj == pDoc->pLine){
-				if (pDoc->pLine->getMRect()[0].PtInRect(point) || pDoc->pLine->getMRect()[1].PtInRect(point)) {
-					pDoc->currentObj->setSelect(TRUE);
-					break;
+			if (pDoc->currentObj != NULL){
+				if (pDoc->currentObj->getType() == line){
+					if (pDoc->pLine->getMRect()[0].PtInRect(point) || pDoc->pLine->getMRect()[1].PtInRect(point)) {
+						pDoc->currentObj->setSelect(TRUE);
+						break;
+					}
 				}
-			}
 
-			else if (pDoc->currentObj == pDoc->pEllipse){
-				if (pDoc->pEllipse->getMRect()[0].PtInRect(point) || pDoc->pEllipse->getMRect()[1].PtInRect(point)) {
-					pDoc->currentObj->setSelect(TRUE);
-					break;
+				else if (pDoc->currentObj == pDoc->pEllipse){
+					if (pDoc->pEllipse->getMRect()[0].PtInRect(point) || pDoc->pEllipse->getMRect()[1].PtInRect(point)) {
+						pDoc->currentObj->setSelect(TRUE);
+						break;
+					}
 				}
-			}
 
-			else if (pDoc->currentObj == pDoc->pRectangle){
-				if (pDoc->pRectangle->getMRect()[0].PtInRect(point) || pDoc->pRectangle->getMRect()[1].PtInRect(point)) {
-					pDoc->currentObj->setSelect(TRUE);
-					break;
+				else if (pDoc->currentObj == pDoc->pRectangle){
+					if (pDoc->pRectangle->getMRect()[0].PtInRect(point) || pDoc->pRectangle->getMRect()[1].PtInRect(point)) {
+						pDoc->currentObj->setSelect(TRUE);
+						break;
+					}
 				}
 			}
 
@@ -935,16 +939,21 @@ void CYPaintEditView::OnDeleteClick()
 
 	POSITION pos = pDoc->obj_List.GetHeadPosition();
 	POSITION tpos;
-	while (pos) {
-		YObject* tmp = (YObject*)pDoc->obj_List.GetNext(pos);
-		if (tmp->getSelect() == TRUE){
-			pDoc->obj_List.GetPrev(pos);
-			tpos = pos;
-			pDoc->obj_List.GetNext(pos);
-		}
+	if (pDoc->obj_List.GetSize() == 1){									//객체가 하나만 남아있을때
+ 		pDoc->obj_List.RemoveAll();
+		
 	}
-	pDoc->obj_List.RemoveAt(tpos);
+	else {
+		while (pos) {
+			tpos = pos;													//위치를 저장한 후 에 다음 노드로 넘어간다.
+			YObject* tmp = (YObject*)pDoc->obj_List.GetNext(pos);
+			if (tmp->getSelect() == TRUE) break;						//선택된 객체가 있으면 반복을 종료하고 빠져나옴
+		}
+		pDoc->obj_List.RemoveAt(tpos);
+	}
+	pDoc->currentObj = NULL;
 	Invalidate();
+
 }
 
 
