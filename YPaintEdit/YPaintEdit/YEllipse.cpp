@@ -13,10 +13,13 @@ YEllipse::~YEllipse()
 
 
 
-YEllipse::YEllipse(CPoint start, CPoint end)
+YEllipse::YEllipse(CPoint start, CPoint end, int color, int thick, int pattern)
 {
 	sPoint = start;
 	ePoint = end;
+	setLineColor(color);
+	setLineThick(thick);
+	setLinePattern(pattern);
 }
 
 void YEllipse::moveAll(int s, int e)
@@ -35,10 +38,10 @@ void YEllipse::deleteAll(){
 void YEllipse::draw(CDC* pDC)
 {
 	//±×¸®±â
-	CPen pen(linePattern, lineThick, lineColor);
+	CPen pen(getLinePattern(), getLineThick(), getLineColor());
 	CPen* oldPen = pDC->SelectObject(&pen);
 
-	Graphics graphics(*pDC);
+	//Graphics graphics(*pDC);
 	
 	pDC->Ellipse(sPoint.x, sPoint.y, ePoint.x,ePoint.y);
 	pDC->SelectObject(&oldPen);

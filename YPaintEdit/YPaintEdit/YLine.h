@@ -5,7 +5,7 @@ class YLine :
 {
 public:
 	YLine();
-	YLine(CPoint start, CPoint end);
+	YLine(CPoint start, CPoint end,int color,int thick, int pattern);
 	~YLine();
 
 	virtual void moveAll(int s, int e);

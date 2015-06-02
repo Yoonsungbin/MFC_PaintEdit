@@ -4,7 +4,7 @@ class YEllipse :public YTwoDimension
 {
 public:
 	YEllipse();
-	YEllipse(CPoint start, CPoint end);
+	YEllipse(CPoint start, CPoint end, int color, int thick, int pattern);
 	~YEllipse();
 
 
@@ -35,12 +35,8 @@ public:
 	void setMPoint(int val){ mPoint = val; }
 	int getMPoint(){ return mPoint; }
 
-
-
-
 	void ChangeinColor();
 	void ChangeSize(); //크기변경
-
 
 	void drawCircle(CDC *pDC);// 리전 으로 선택시 원 생기게 할라고!!
 

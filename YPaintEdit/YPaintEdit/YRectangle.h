@@ -5,7 +5,7 @@ class YRectangle :
 {
 public:
 	YRectangle();
-	YRectangle(CPoint start, CPoint end);
+	YRectangle(CPoint start, CPoint end,int color, int thick, int pattern);
 	~YRectangle();
 
 
@@ -17,7 +17,7 @@ public:
 	void changeLineColor();
 
 	void setRgn();
-	BOOL  checkRgn(CPoint point);
+	BOOL checkRgn(CPoint point);
 
 	void setSPoint(CPoint point){
 		sPoint = point;

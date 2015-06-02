@@ -9,12 +9,12 @@ public:
 	void setLineColor(COLORREF c){ lineColor = c; }
 	COLORREF getLineColor() const{ return lineColor; }
 
-	void SetLineThick(int th){ lineThick = th; }
-	int GetLineThick() const{ return lineThick; }
+	void setLineThick(int th){ lineThick = th; }
+	int getLineThick() const{ return lineThick; }
 
-	void SetLinePattern(int pa){ linePattern = pa; }
-	int GetLinePattern() const{ return linePattern; }
-protected:
+	void setLinePattern(int pa){ linePattern = pa; }
+	int getLinePattern() const{ return linePattern; }
+private:
 	COLORREF lineColor;
 	int lineThick;
 	int linePattern;

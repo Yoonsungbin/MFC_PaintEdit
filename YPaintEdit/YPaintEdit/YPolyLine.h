@@ -5,6 +5,7 @@ class YPolyLine :
 {
 public:
 	YPolyLine();
+	YPolyLine(int color, int thick, int pattern);
 	~YPolyLine();
 
 	virtual void moveAll(int s, int e);

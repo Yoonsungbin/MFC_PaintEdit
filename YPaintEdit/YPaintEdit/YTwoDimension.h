@@ -9,29 +9,17 @@ public:
 	void setLineColor(COLORREF c){ lineColor = c; }//선색
 	COLORREF getLineColor() const{ return lineColor; }//선색
 
-	void SetLineThick(int th){ lineThick = th; }//두께
-	int GetLineThick() const{ return lineThick; }
+	void setLineThick(int th){ lineThick = th; }//두께
+	int getLineThick() const{ return lineThick; }
 
-	void SetLinePattern(int pa){ linePattern = pa; }
-	int GetLinePattern() const{ return linePattern; }
-
-	//virtual void moveAll() = 0;//이동 myobject 상속
-	//virtual void deleteAll() = 0;//삭제 myobject 상속
-	//virtual void draw(CDC*) = 0;//그리기 myobject 상속
+	void setLinePattern(int pa){ linePattern = pa; }
+	int getLinePattern() const{ return linePattern; }
 
 	virtual void ChangeinColor()=0;//내부색 변경
 	virtual void ChangeSize() = 0; //크기변경
 
-	//virtual void setSPoint(CPoint point) = 0;//시작점
-	//virtual CPoint getSPoint() = 0;//시작점
-
-	//virtual void setEPoint(CPoint point) = 0;
-	//virtual CPoint getEPoint() = 0;//끝점
-
-	//virtual void drawRgn(CPoint point, CPoint point2) = 0;
-
 	
-protected:
+private:
 	COLORREF lineColor;//선 색깔
 	int lineThick;//선 두께
 	int linePattern;//선 패턴

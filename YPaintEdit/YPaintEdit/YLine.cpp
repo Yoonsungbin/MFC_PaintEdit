@@ -10,10 +10,13 @@ YLine::~YLine()
 {
 }
 
-YLine::YLine(CPoint start, CPoint end)
+YLine::YLine(CPoint start, CPoint end, int color, int thick,int pattern)
 {
 	sPoint = start;
 	ePoint = end;
+	setLineColor(color);
+	setLineThick(thick);
+	setLinePattern(pattern);
 }
 
 void YLine::moveAll(int s, int e){
@@ -30,7 +33,7 @@ void YLine::deleteAll(){
 
 void YLine::draw(CDC* pDC){ 
 
-	CPen pen(linePattern,lineThick ,lineColor );
+	CPen pen(getLinePattern(),getLineThick() ,getLineColor() );
 	CPen* oldPen = pDC->SelectObject(&pen);
 
 	Graphics graphics(*pDC);
@@ -59,17 +62,6 @@ void YLine::draw(CDC* pDC){
 		pDC->Rectangle(rect);  //rect ±×¸®±â
 		pDC->SelectObject(&oldPen);
 	}
-	/*
-	else {
-		CPen pen1(PS_SOLID, 1, BLACK_PEN);
-		CPen* oldPen = pDC->SelectObject(&pen1);
-		//pDC->SetROP2(R2_XORPEN);
-		pDC->SelectStockObject(NULL_BRUSH);
-		pDC->Rectangle(rect);
-		pDC->SelectObject(&oldPen);
-		
-	}
-	*/
 	
 }
 

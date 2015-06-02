@@ -7,6 +7,13 @@ YPolyLine::YPolyLine()
 	polyList.RemoveAll();
 }
 
+YPolyLine::YPolyLine(int color, int thick, int pattern)
+{
+	setLineColor(color);
+	setLineThick(thick);
+	setLinePattern(pattern);
+	polyList.RemoveAll();
+}
 
 YPolyLine::~YPolyLine()
 {
@@ -36,12 +43,12 @@ void YPolyLine::deleteAll(){
 }
 void YPolyLine::draw(CDC* pDC){
 	
-	CPen pen(linePattern, lineThick, lineColor);
+	CPen pen(getLinePattern(), getLineThick(), getLineColor());
 	CPen* oldPen = pDC->SelectObject(&pen);
 	POSITION pos = polyList.GetHeadPosition();
 	CPoint t1Point,t2Point;
 	t1Point = polyList.GetNext(pos);
-
+	if (pos == NULL) t2Point = t1Point;
 	while (pos) {
 			t2Point = polyList.GetNext(pos);
 			pDC->MoveTo(t1Point);
