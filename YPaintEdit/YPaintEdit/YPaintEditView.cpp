@@ -826,6 +826,19 @@ void CYPaintEditView::RMenuColorButton() //마우스 오른쪽버튼 클릭후 -> 색 클릭시
 			pDoc->pPolyLine->setLineColor(color);
 			break;
 		}
+
+		case ellipse:
+		{
+			pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
+			pDoc->pEllipse->setLineColor(color);
+			break;
+		}
+		case rectangle:
+		{
+			 pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
+			 pDoc->pRectangle->setLineColor(color);
+			 break;
+		}
 		default:
 			break;
 		}
@@ -854,6 +867,22 @@ void CYPaintEditView::FigureSettingButton() //마우스 오른쪽 버튼 클릭후 -> 도형 
 		dlg.linePattern = pDoc->pPolyLine->getLinePattern();
 		break;
 	}
+	case ellipse:
+	{
+		pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
+		dlg.lineThick = pDoc->pEllipse->getLineThick();
+		dlg.linePattern = pDoc->pEllipse->getLinePattern();
+		break;
+	}
+	case rectangle:
+	{
+		  pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
+		  dlg.lineThick = pDoc->pRectangle->getLineThick();
+		  dlg.linePattern = pDoc->pRectangle->getLinePattern();
+	     break;
+	}
+
+
 	default:
 		break;
 	}
@@ -876,6 +905,22 @@ void CYPaintEditView::FigureSettingButton() //마우스 오른쪽 버튼 클릭후 -> 도형 
 			pDoc->pPolyLine->setLinePattern(dlg.linePattern);
 			break;
 		}
+		case ellipse:
+		{
+					 pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
+					 pDoc->pEllipse->setLineThick(dlg.lineThick);
+					 pDoc->pEllipse->setLinePattern(dlg.linePattern);
+					 break;
+		}
+		case rectangle:
+		{
+					 pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
+					 pDoc->pRectangle->setLineThick(dlg.lineThick);
+					 pDoc->pRectangle->setLinePattern(dlg.linePattern);
+					 break;
+		}
+
+
 		default:
 			break;
 		}
