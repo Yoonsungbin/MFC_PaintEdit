@@ -30,14 +30,13 @@ public:
 	 
 	 CRect* getMRect(){ return mRect; }
 
-	 void setMPoint(int val){ mPoint = val; }
-	 int getMPoint(){ return mPoint; }
+	 void setMoveMode(int val){ moveMode = val; }
+	 int getMoveMode(){ return moveMode; }
 
-	 void drawCircle(CDC *pDC);
 private:
 	CPoint sPoint;
 	CPoint ePoint;
 	CRect mRect[2]; //끝점 동그라미 그리기위한 
-	int mPoint; // 시작점,끝점 어떤걸 이동시킬지 변수 -1 -> sPoint ,1 -> ePoint  0 ->전체이동
+	int moveMode; // 시작점,끝점 어떤걸 이동시킬지 변수 -1 -> sPoint ,1 -> ePoint  0 ->전체이동
 };
 

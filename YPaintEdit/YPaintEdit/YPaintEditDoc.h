@@ -40,16 +40,11 @@ public:
 	YText* pText;						// 텍스트 작업을 위한 포인터
 
 
-	//////////////////////////////////////////////////////////////////////////////////
-	//////////////     필요없는 변수 없애고, 꼭 필요한것만 넣자~~!!!     /////////////
-	//////////////////////////////////////////////////////////////////////////////////
-	CPoint Original_Point; // move를위한 시작지점
-	BOOL drawing ; //그리기 상태 확인변수
-	//BOOL isSelected ;
-	BOOL textEditing;	// Text
-	CString tmp;		// Text
-	BOOL clickPolyLine;  //PolyLine선택 유무  true - > 클릭 false -> 초기생성
-	/////////////////////////////////////////////////////////////////////////////////
+	CPoint Original_Point;				// move를위한 시작지점
+	BOOL drawing ;						//그리기 상태 확인변수
+	BOOL textEditing;					// Text
+	CString tmp;						// Text
+	BOOL clickPolyLine;					//PolyLine선택 유무  true - > 클릭 false -> 초기생성
 
 // 작업입니다.
 public:

@@ -32,8 +32,8 @@ public:
 
 
 	void setSelect(BOOL select) { isSelected = select; }
-	void setMPoint(int val){ mPoint = val; }
-	int getMPoint(){ return mPoint; }
+	void setMoveMode(int val){ moveMode = val; }
+	int getMoveMode(){ return moveMode; }
 
 
 
@@ -51,6 +51,6 @@ private:
 	CPoint ePoint;
 	CRect mRect[2]; //끝점 동그라미 그리기위한 
 
-	int mPoint; //시작점 끝점 중 어떤거 이동시키는지 확인하는거
+	int moveMode; //시작점 끝점 중 어떤거 이동시키는지 확인하는거
 };
 

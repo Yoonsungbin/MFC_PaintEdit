@@ -66,7 +66,7 @@ void YRectangle::draw(CDC* pDC)
 
 
 void YRectangle::move(int s, int e){
-	if (getMPoint() == -1){  //시작점이동
+	if (getMoveMode() == -1){  //시작점이동
 		sPoint.x += s;
 		sPoint.y += e;
 	}

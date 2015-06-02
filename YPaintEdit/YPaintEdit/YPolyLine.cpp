@@ -47,14 +47,17 @@ void YPolyLine::draw(CDC* pDC){
 	CPen* oldPen = pDC->SelectObject(&pen);
 	POSITION pos = polyList.GetHeadPosition();
 	CPoint t1Point,t2Point;
+
 	t1Point = polyList.GetNext(pos);
-	if (pos == NULL) t2Point = t1Point;
+
+
 	while (pos) {
 			t2Point = polyList.GetNext(pos);
 			pDC->MoveTo(t1Point);
 			pDC->LineTo(t2Point);
 			t1Point = t2Point;
 	}
+
 	if (drawingPolyLine == TRUE){
 		pDC->MoveTo(t1Point);
 		pDC->LineTo(ePoint);
@@ -72,6 +75,19 @@ void YPolyLine::draw(CDC* pDC){
 		pDC->SelectStockObject(NULL_BRUSH);
 		pDC->Rectangle(rect);  //rect 그리기
 		pDC->SelectObject(&oldPen);
+
+		//draw circle
+		int i = 0;
+		POSITION pos = polyList.GetHeadPosition();
+		while (pos){
+			CPoint temp = polyList.GetNext(pos);
+			mRect[i].SetRect(temp.x - 15, temp.y - 15, temp.x + 15, temp.y + 15);
+			CPen pen(PS_SOLID, 2, RGB(0, 0, 0));
+			 oldPen = pDC->SelectObject(&pen);
+			pDC->SelectStockObject(WHITE_BRUSH);
+			pDC->Ellipse(mRect[i]);
+			i++;
+		}
 	}
 	
 }
@@ -98,6 +114,7 @@ void YPolyLine::move(int s, int e){
 		CPoint tPoint = temp.GetNext(pos2);
 		polyList.AddTail(tPoint);
 	}
+
 }
 void YPolyLine::changeLineColor(){
 
@@ -122,6 +139,7 @@ void YPolyLine::setRgn(){
 	rgn.DeleteObject();  //이전영역 지우고 다시만들기
 	rgn.CreateRectRgn(rect.left, rect.top, rect.right, rect.bottom);
 }
+
 BOOL YPolyLine::checkRgn(CPoint point){
 	if (rgn.PtInRegion(point))
 	{
@@ -133,16 +151,3 @@ void YPolyLine::addPoint(CPoint point){
 	polyList.AddTail(point);
 }
 
-void YPolyLine::drawCircle(CDC *pDC){
-	int i=0;
-	POSITION pos = polyList.GetHeadPosition();
-	while (pos){
-		CPoint temp = polyList.GetNext(pos);
-		mRect[i].SetRect(temp.x - 15, temp.y - 15, temp.x + 15, temp.y + 15);
-		CPen pen(PS_SOLID, 2, RGB(0, 0, 0));
-		CPen* oldPen = pDC->SelectObject(&pen);
-		pDC->SelectStockObject(WHITE_BRUSH);
-		pDC->Ellipse(mRect[i]);
-		i++;
-	}
-}

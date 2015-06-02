@@ -61,12 +61,21 @@ void YLine::draw(CDC* pDC){
 		pDC->SelectStockObject(NULL_BRUSH);
 		pDC->Rectangle(rect);  //rect 그리기
 		pDC->SelectObject(&oldPen);
+
+		//draw circle
+		mRect[0].SetRect(sPoint.x - 15, sPoint.y - 15, sPoint.x + 15, sPoint.y + 15);
+		mRect[1].SetRect(ePoint.x - 15, ePoint.y - 15, ePoint.x + 15, ePoint.y + 15);
+		CPen pen(PS_SOLID, 2, RGB(0, 0, 0));
+		oldPen = pDC->SelectObject(&pen);
+		pDC->SelectStockObject(WHITE_BRUSH);
+		pDC->Ellipse(mRect[0]);
+		pDC->Ellipse(mRect[1]);
 	}
 	
 }
 
 void YLine::move(int s,int e){
-	if (getMPoint() == -1){  //시작점이동
+	if (getMoveMode() == -1){  //시작점이동
 		sPoint.x += s;
 		sPoint.y += e;
 	}
@@ -121,15 +130,4 @@ BOOL YLine::checkRgn(CPoint point)
 	}
 
 	return FALSE;
-}
-
-void YLine::drawCircle(CDC *pDC){
-	//시작점 끝점 원그리기
-	mRect[0].SetRect(sPoint.x - 15, sPoint.y - 15, sPoint.x + 15, sPoint.y + 15);
-	mRect[1].SetRect(ePoint.x - 15, ePoint.y - 15, ePoint.x + 15, ePoint.y + 15);
-	CPen pen(PS_SOLID, 2, RGB(0, 0, 0));
-	CPen* oldPen = pDC->SelectObject(&pen);
-	pDC->SelectStockObject(WHITE_BRUSH);
-	pDC->Ellipse(mRect[0]);
-	pDC->Ellipse(mRect[1]);
 }
