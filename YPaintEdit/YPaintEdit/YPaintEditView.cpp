@@ -417,12 +417,28 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 				break;
 			}
 			//라인의 끝점은 라인 영역 밖에 있으므로 한번더 검색해줘야한다.
+			
 			if (pDoc->currentObj == pDoc->pLine){
 				if (pDoc->pLine->getMRect()[0].PtInRect(point) || pDoc->pLine->getMRect()[1].PtInRect(point)) {
 					pDoc->currentObj->setSelect(TRUE);
 					break;
 				}
 			}
+
+			else if (pDoc->currentObj == pDoc->pEllipse){
+				if (pDoc->pEllipse->getMRect()[0].PtInRect(point) || pDoc->pEllipse->getMRect()[1].PtInRect(point)) {
+					pDoc->currentObj->setSelect(TRUE);
+					break;
+				}
+			}
+
+			else if (pDoc->currentObj == pDoc->pRectangle){
+				if (pDoc->pRectangle->getMRect()[0].PtInRect(point) || pDoc->pRectangle->getMRect()[1].PtInRect(point)) {
+					pDoc->currentObj->setSelect(TRUE);
+					break;
+				}
+			}
+
 		}
 
 		if (pDoc->currentObj == NULL) break;   //현재 선택된 객체를 찾았는데도 객체가 없으면 아무것도 실행안되고 끝나야함 (예외처리)
