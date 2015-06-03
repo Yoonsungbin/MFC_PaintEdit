@@ -49,6 +49,17 @@ BEGIN_MESSAGE_MAP(CYPaintEditView, CView)
 	ON_COMMAND(ID_BUTTON5, &CYPaintEditView::MenuPolyLineButton)
 	ON_COMMAND(ID_32797, &CYPaintEditView::OnDeleteClick)
 	ON_COMMAND(ID_BUTTON4, &CYPaintEditView::OnRectangleButton)
+	ON_UPDATE_COMMAND_UI(ID_BUTTON2, &CYPaintEditView::UpdateMenuDefaultButton)
+	ON_UPDATE_COMMAND_UI(ID_BUTTON3, &CYPaintEditView::UpdateMenuLineButton)
+	ON_UPDATE_COMMAND_UI(ID_BUTTON5, &CYPaintEditView::UpdateMenuPolyLineButton)
+	ON_UPDATE_COMMAND_UI(ID_BUTTON4, &CYPaintEditView::UpdateOnRectangleButton)
+	ON_UPDATE_COMMAND_UI(ID_BUTTON6, &CYPaintEditView::UpdateMenuEllipseButton)
+	ON_UPDATE_COMMAND_UI(ID_BUTTON7, &CYPaintEditView::UpdateMenuTextButton)
+	ON_UPDATE_COMMAND_UI(ID_32797, &CYPaintEditView::UpdateOnDeleteClick)
+	ON_UPDATE_COMMAND_UI(ID_32794, &CYPaintEditView::UpdateFigureSettingButton)
+	ON_UPDATE_COMMAND_UI(ID_32793, &CYPaintEditView::UpdateRMenuColorButton)
+	ON_COMMAND(ID_32798, &CYPaintEditView::DeletePointButton)
+	ON_UPDATE_COMMAND_UI(ID_32798, &CYPaintEditView::UpdateDeletePointButton)
 END_MESSAGE_MAP()
 
 // CYPaintEditView 생성/소멸
@@ -56,6 +67,13 @@ END_MESSAGE_MAP()
 CYPaintEditView::CYPaintEditView()
 {
 	// TODO: 여기에 생성 코드를 추가합니다.
+	//메뉴 비활성화
+	menu_Select = FALSE;
+	menu_Line = FALSE;
+	menu_PolyLine = FALSE;
+	menu_Ellipse = FALSE;
+	menu_Rectangle = FALSE;
+	menu_Text = FALSE;
 }
 
 CYPaintEditView::~CYPaintEditView()
@@ -85,6 +103,14 @@ void CYPaintEditView::OnDraw(CDC* /*pDC*/)
 void CYPaintEditView::OnRButtonUp(UINT /* nFlags */, CPoint point)
 {
 	CYPaintEditDoc* pDoc = GetDocument();
+
+	for (int i = 0; i < pDoc->pPolyLine->getPolyList()->GetSize(); i++){
+		if (pDoc->pPolyLine->getMRect()[i].PtInRect(point)){
+			pDoc->deletePosition = i;							//삭제할 위치 저장
+			break;
+		}
+	}
+
 	// 클릭한 지점에 객체가 없다면 팝업메뉴를 안띄움
 	POSITION pos = pDoc->obj_List.GetHeadPosition();
 	while (pos) {
@@ -378,8 +404,127 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 			pDoc->currentObj = NULL;
 		}
 
+		/*
 
+		POSITION pos = pDoc->obj_List.GetTailPosition();
+		while (pos) {
+			pDoc->currentObj = (YObject*)pDoc->obj_List.GetPrev(pos);
 
+			switch (pDoc->currentObj->getType()){
+				
+			case line:
+			{
+				pDoc->pLine = (YLine*)pDoc->currentObj;
+				if (pDoc->pLine->getMRect()[0].PtInRect(point) || pDoc->pLine->getMRect()[1].PtInRect(point) || pDoc->currentObj->checkRgn(point) == TRUE) {
+					pDoc->currentObj->setSelect(TRUE);
+					pDoc->Original_Point = point;
+					pDoc->drawing = TRUE;
+
+					if (pDoc->pLine->getMRect()[0].PtInRect(point)){  // 시작점 클릭
+						pDoc->pLine->setSPoint(point);
+						pDoc->pLine->setMoveMode(-1);  //시작점이동
+					}
+					else if (pDoc->pLine->getMRect()[1].PtInRect(point)){	// 끝점 클릭
+						pDoc->pLine->setEPoint(point);
+						pDoc->pLine->setMoveMode(1);  //끝점이동
+						break;
+					}
+					else if (pDoc->pLine->checkRgn(point)) {		//그 외 영역 클릭
+						pDoc->pLine->setMoveMode(0); //전체이동
+					}
+					Invalidate();
+
+				}
+				break;
+			}
+			case polyline:
+			{
+				pDoc->Original_Point = point;
+				pDoc->drawing = TRUE;
+				pDoc->currentObj->setSelect(TRUE);
+				pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
+
+				for (int i = 0; i < pDoc->pPolyLine->getPolyList()->GetSize(); i++){
+					if (pDoc->pPolyLine->getMRect()[i].PtInRect(point)){
+						pDoc->pPolyLine->setIndex(i);
+						pDoc->pPolyLine->setMoveMode(1);  //한점이동
+						break;
+					}
+					else pDoc->pPolyLine->setMoveMode(0);  //전체이동
+				}
+				Invalidate();
+				break;
+			}
+			case ellipse:
+			{
+				if (pDoc->pEllipse->getMRect()[0].PtInRect(point) || pDoc->pEllipse->getMRect()[1].PtInRect(point) || pDoc->currentObj->checkRgn(point) == TRUE) {
+					pDoc->currentObj->setSelect(TRUE);
+					pDoc->Original_Point = point;
+					pDoc->drawing = TRUE;
+
+					pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
+					if (pDoc->pLine->getMRect()[0].PtInRect(point)){  // 시작점 클릭
+						pDoc->pEllipse->setSPoint(point);
+						pDoc->pEllipse->setMoveMode(-1);  //시작점이동
+					}
+					else if (pDoc->pEllipse->getMRect()[1].PtInRect(point)){	// 끝점 클릭
+						pDoc->pEllipse->setEPoint(point);
+						pDoc->pEllipse->setMoveMode(1);  //끝점이동
+						break;
+					}
+					else if (pDoc->pEllipse->checkRgn(point)) {		//그 외 영역 클릭
+						pDoc->pEllipse->setMoveMode(0); //전체이동
+					}
+					Invalidate();
+					break;
+				}
+				break;
+			}
+			case rectangle:
+			{
+				if (pDoc->pRectangle->getMRect()[0].PtInRect(point) || pDoc->pRectangle->getMRect()[1].PtInRect(point) || pDoc->currentObj->checkRgn(point) == TRUE) {
+					pDoc->currentObj->setSelect(TRUE);
+					pDoc->Original_Point = point;
+					pDoc->drawing = TRUE;
+
+					pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
+					if (pDoc->pLine->getMRect()[0].PtInRect(point)){  // 시작점 클릭
+						pDoc->pRectangle->setSPoint(point);
+						pDoc->pRectangle->setMoveMode(-1);  //시작점이동
+					}
+					else if (pDoc->pRectangle->getMRect()[1].PtInRect(point)){	// 끝점 클릭
+						pDoc->pRectangle->setEPoint(point);
+						pDoc->pRectangle->setMoveMode(1);  //끝점이동
+						break;
+					}
+					else if (pDoc->pRectangle->checkRgn(point)) {		//그 외 영역 클릭
+						pDoc->pRectangle->setMoveMode(0); //전체이동
+					}
+					Invalidate();
+					break;
+				}
+
+				break;
+			}
+			case text:
+			{
+				pDoc->Original_Point = point;
+				pDoc->drawing = TRUE;
+				break;
+			}
+			case choice:
+			{
+				pDoc->Original_Point = point;
+				pDoc->drawing = TRUE;
+				break;
+			}
+			default:
+				break;
+			}
+			
+		}
+		*/
+		
 		//현재 선택한 객체 찾기
 		POSITION pos = pDoc->obj_List.GetTailPosition();
 		while (pos) {
@@ -388,12 +533,10 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 				pDoc->currentObj->setSelect(TRUE);
 				break;
 			}
-			else {
-				pDoc->currentObj = NULL;
-			}
+			
 			//라인의 끝점은 라인 영역 밖에 있으므로 한번더 검색해줘야한다.
 			if (pDoc->currentObj != NULL){
-				if (pDoc->currentObj->getType() == line){
+				if (pDoc->currentObj == pDoc->pLine){
 					if (pDoc->pLine->getMRect()[0].PtInRect(point) || pDoc->pLine->getMRect()[1].PtInRect(point)) {
 						pDoc->currentObj->setSelect(TRUE);
 						break;
@@ -414,6 +557,7 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 					}
 				}
 			}
+			
 
 		}
 
@@ -719,6 +863,12 @@ void CYPaintEditView::OnLButtonDblClk(UINT nFlags, CPoint point)
 // 리본 메뉴, 에벤트 처리 함수들 //
 void CYPaintEditView::MenuLineButton()
 {
+	menu_Select = FALSE;
+	menu_Line = TRUE;
+	menu_PolyLine = FALSE;
+	menu_Ellipse = FALSE;
+	menu_Rectangle = FALSE;
+	menu_Text = FALSE;
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	CYPaintEditDoc* pDoc = GetDocument();
 	pDoc->yType = line;
@@ -730,8 +880,15 @@ void CYPaintEditView::MenuLineButton()
 
 	}
 }
+
 void CYPaintEditView::MenuPolyLineButton()
 {
+	menu_Select = FALSE;
+	menu_Line = FALSE;
+	menu_PolyLine = TRUE;
+	menu_Ellipse = FALSE;
+	menu_Rectangle = FALSE;
+	menu_Text = FALSE;
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	CYPaintEditDoc* pDoc = GetDocument();
 	pDoc->yType = polyline;
@@ -744,8 +901,16 @@ void CYPaintEditView::MenuPolyLineButton()
 	}
 	//Invalidate();
 }
+
 void CYPaintEditView::MenuEllipseButton()
 {
+	menu_Select = FALSE;
+	menu_Line = FALSE;
+	menu_PolyLine = FALSE;
+	menu_Ellipse = TRUE;
+	menu_Rectangle = FALSE;
+	menu_Text = FALSE;
+
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	CYPaintEditDoc* pDoc = GetDocument();
 	pDoc->yType = ellipse;
@@ -756,8 +921,15 @@ void CYPaintEditView::MenuEllipseButton()
 
 	}
 }
+
 void CYPaintEditView::OnRectangleButton()
 {
+	menu_Select = FALSE;
+	menu_Line = FALSE;
+	menu_PolyLine = FALSE;
+	menu_Ellipse = FALSE;
+	menu_Rectangle = TRUE;
+	menu_Text = FALSE;
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	CYPaintEditDoc* pDoc = GetDocument();
 	pDoc->yType = rectangle;
@@ -771,6 +943,12 @@ void CYPaintEditView::OnRectangleButton()
 
 void CYPaintEditView::MenuTextButton()
 {
+	menu_Select = FALSE;
+	menu_Line = FALSE;
+	menu_PolyLine = FALSE;
+	menu_Ellipse = FALSE;
+	menu_Rectangle = FALSE;
+	menu_Text = TRUE;
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	CYPaintEditDoc* pDoc = GetDocument();
 	pDoc->yType = text;
@@ -781,9 +959,18 @@ void CYPaintEditView::MenuTextButton()
 
 	}
 }
+
 void CYPaintEditView::MenuDefaultButton()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+
+	menu_Select = TRUE;
+	menu_Line = FALSE;
+	menu_PolyLine = FALSE;
+	menu_Ellipse = FALSE;
+	menu_Rectangle = FALSE;
+	menu_Text = FALSE;
+
 	CYPaintEditDoc* pDoc = GetDocument();
 	pDoc->yType = choice;
 
@@ -795,8 +982,47 @@ void CYPaintEditView::MenuDefaultButton()
 	}
 	pDoc->currentObj = NULL;
 }
+void CYPaintEditView::UpdateMenuDefaultButton(CCmdUI *pCmdUI)
+
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+	pCmdUI->SetCheck(menu_Select);
+}
 
 
+void CYPaintEditView::UpdateMenuLineButton(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+	pCmdUI->SetCheck(menu_Line);
+}
+
+
+void CYPaintEditView::UpdateMenuPolyLineButton(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+	pCmdUI->SetCheck(menu_PolyLine);
+}
+
+
+void CYPaintEditView::UpdateOnRectangleButton(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+	pCmdUI->SetCheck(menu_Rectangle);
+}
+
+
+void CYPaintEditView::UpdateMenuEllipseButton(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+	pCmdUI->SetCheck(menu_Ellipse);
+}
+
+
+void CYPaintEditView::UpdateMenuTextButton(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+	pCmdUI->SetCheck(menu_Text);
+}
 // 마우스 우클릭 메뉴, 이벤트 처리 함수들 //
 void CYPaintEditView::RMenuColorButton() //마우스 오른쪽버튼 클릭후 -> 색 클릭시
 {
@@ -842,8 +1068,11 @@ void CYPaintEditView::RMenuColorButton() //마우스 오른쪽버튼 클릭후 -> 색 클릭시
 		Invalidate();
 	}
 }
+
 void CYPaintEditView::FigureSettingButton() //마우스 오른쪽 버튼 클릭후 -> 도형 서식 바꾸기
 {
+	menu_Figiure = FALSE;
+
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	CYPaintEditDoc* pDoc = GetDocument();
 	YFigureDialog dlg;
@@ -926,11 +1155,6 @@ void CYPaintEditView::FigureSettingButton() //마우스 오른쪽 버튼 클릭후 -> 도형 
 
 }
 
-/*
-기능 : 삭제함수
-오른쪽 버튼클릭시 팝업 -> 삭제 클릭시 실행되는 메소드
-*/
-
 void CYPaintEditView::OnDeleteClick()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
@@ -957,3 +1181,46 @@ void CYPaintEditView::OnDeleteClick()
 }
 
 
+
+
+
+
+void CYPaintEditView::UpdateOnDeleteClick(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+	
+}
+
+
+void CYPaintEditView::UpdateFigureSettingButton(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+	pCmdUI->Enable(FALSE);  //팝업 비활성 하는 방법
+}
+
+
+void CYPaintEditView::UpdateRMenuColorButton(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+}
+
+
+void CYPaintEditView::DeletePointButton()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+	CClientDC dc(this);
+	if (pDoc->deletePosition != -1) {
+		pDoc->pPolyLine->getPolyList()->RemoveAt(pDoc->pPolyLine->getPolyList()->FindIndex(pDoc->deletePosition));
+		pDoc->deletePosition = -1;
+		pDoc->pPolyLine->setRgn();
+		Invalidate();
+	}
+
+}
+
+
+void CYPaintEditView::UpdateDeletePointButton(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+}

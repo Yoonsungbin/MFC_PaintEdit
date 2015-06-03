@@ -35,7 +35,20 @@ public:
 
 // 작업입니다.
 public:
-	CPoint	dx_sPoint;
+	//CPoint	dx_sPoint;
+	//리본메뉴 비활성화를 위하여
+	BOOL menu_Select;
+	BOOL menu_Line;
+	BOOL menu_PolyLine;
+	BOOL menu_Ellipse;
+	BOOL menu_Rectangle;
+	BOOL menu_Text;
+
+	//팝업메뉴를 비활성화 하기 위해서
+	BOOL menu_Color;
+	BOOL menu_Figiure;
+	BOOL menu_Delete;
+
 // 재정의입니다.
 public:
 	virtual void OnDraw(CDC* pDC);  // 이 뷰를 그리기 위해 재정의되었습니다.
@@ -74,6 +87,17 @@ public:
 	afx_msg void MenuPolyLineButton();
 	afx_msg void OnDeleteClick();
 	afx_msg void OnRectangleButton();
+	afx_msg void UpdateMenuDefaultButton(CCmdUI *pCmdUI);
+	afx_msg void UpdateMenuLineButton(CCmdUI *pCmdUI);
+	afx_msg void UpdateMenuPolyLineButton(CCmdUI *pCmdUI);
+	afx_msg void UpdateOnRectangleButton(CCmdUI *pCmdUI);
+	afx_msg void UpdateMenuEllipseButton(CCmdUI *pCmdUI);
+	afx_msg void UpdateMenuTextButton(CCmdUI *pCmdUI);
+	afx_msg void UpdateOnDeleteClick(CCmdUI *pCmdUI);
+	afx_msg void UpdateFigureSettingButton(CCmdUI *pCmdUI);
+	afx_msg void UpdateRMenuColorButton(CCmdUI *pCmdUI);
+	afx_msg void DeletePointButton();
+	afx_msg void UpdateDeletePointButton(CCmdUI *pCmdUI);
 };
 
 #ifndef _DEBUG  // YPaintEditView.cpp의 디버그 버전

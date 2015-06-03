@@ -63,8 +63,8 @@ void YLine::draw(CDC* pDC){
 		pDC->SelectObject(&oldPen);
 
 		//draw circle
-		mRect[0].SetRect(sPoint.x - 15, sPoint.y - 15, sPoint.x + 15, sPoint.y + 15);
-		mRect[1].SetRect(ePoint.x - 15, ePoint.y - 15, ePoint.x + 15, ePoint.y + 15);
+		mRect[0].SetRect(sPoint.x - 10, sPoint.y - 10, sPoint.x + 10, sPoint.y + 10);
+		mRect[1].SetRect(ePoint.x - 10, ePoint.y - 10, ePoint.x + 10, ePoint.y + 10);
 		CPen pen(PS_SOLID, 2, RGB(0, 0, 0));
 		oldPen = pDC->SelectObject(&pen);
 		pDC->SelectStockObject(WHITE_BRUSH);

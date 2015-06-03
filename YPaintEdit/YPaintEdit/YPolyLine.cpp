@@ -81,7 +81,7 @@ void YPolyLine::draw(CDC* pDC){
 		POSITION pos = polyList.GetHeadPosition();
 		while (pos){
 			CPoint temp = polyList.GetNext(pos);
-			mRect[i].SetRect(temp.x - 15, temp.y - 15, temp.x + 15, temp.y + 15);
+			mRect[i].SetRect(temp.x - 10, temp.y - 10, temp.x + 10, temp.y + 10);
 			CPen pen(PS_SOLID, 2, RGB(0, 0, 0));
 			 oldPen = pDC->SelectObject(&pen);
 			pDC->SelectStockObject(WHITE_BRUSH);

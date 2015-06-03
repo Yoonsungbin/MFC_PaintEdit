@@ -44,6 +44,9 @@ CYPaintEditDoc::CYPaintEditDoc()
 	textEditing = FALSE;	// Text
 	clickPolyLine = FALSE;
 	drawing = FALSE;
+	currentObj = NULL;
+
+	deletePosition = -1;			//폴리라인 삭제할 점위치 저장변수 초기화
 }
 
 CYPaintEditDoc::~CYPaintEditDoc()

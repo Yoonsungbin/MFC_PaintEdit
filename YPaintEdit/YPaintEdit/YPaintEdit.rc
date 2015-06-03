@@ -193,6 +193,7 @@ BEGIN
         MENUITEM "색(&O)\tCtrl+O",               ID_32793
         MENUITEM "도형 서식(&U)\tCtrl+U",           ID_32794
         MENUITEM "삭제(&D)\tCtrl+D",              ID_32797
+        MENUITEM "점 삭제(&P)\tCtrl+P",            ID_32798
     END
 END
 

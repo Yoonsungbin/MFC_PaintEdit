@@ -46,6 +46,8 @@ public:
 	CString tmp;						// Text
 	BOOL clickPolyLine;					//PolyLine선택 유무  true - > 클릭 false -> 초기생성
 
+	int deletePosition;					//PolyLine  한점 지울때 지울 위치 저장변수
+
 // 작업입니다.
 public:
 
