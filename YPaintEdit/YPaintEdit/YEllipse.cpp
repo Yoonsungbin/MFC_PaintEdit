@@ -13,13 +13,14 @@ YEllipse::~YEllipse()
 
 
 
-YEllipse::YEllipse(CPoint start, CPoint end, int color, int thick, int pattern)
+YEllipse::YEllipse(CPoint start, CPoint end, int color, int thick, int pattern,int inColor)
 {
 	sPoint = start;
 	ePoint = end;
 	setLineColor(color);
 	setLineThick(thick);
 	setLinePattern(pattern);
+	ChangeinColor(inColor);
 }
 
 void YEllipse::moveAll(int s, int e)
@@ -40,12 +41,14 @@ void YEllipse::draw(CDC* pDC)
 	//그리기
 	CPen pen(getLinePattern(), getLineThick(), getLineColor());
 	CPen* oldPen = pDC->SelectObject(&pen);
+	CBrush brush(getinColor());
+	CBrush* oldBrush = pDC->SelectObject(&brush);
 
 	//Graphics graphics(*pDC);
-	
-	pDC->Ellipse(sPoint.x, sPoint.y, ePoint.x,ePoint.y);
-	pDC->SelectObject(&oldPen);
 
+	pDC->Ellipse(sPoint.x, sPoint.y, ePoint.x, ePoint.y);
+	pDC->SelectObject(&oldPen);
+	pDC->SelectObject(oldBrush);
 	
 		if (getSelect()){
 
@@ -59,6 +62,22 @@ void YEllipse::draw(CDC* pDC)
 			pDC->SelectStockObject(NULL_BRUSH);
 			pDC->Rectangle(rect);  //rect 그리기
 			pDC->SelectObject(&oldPen);
+
+
+
+			//draw circle
+			mRect[0].SetRect(sPoint.x - 10, sPoint.y - 10, sPoint.x + 10, sPoint.y + 10);
+			mRect[1].SetRect(ePoint.x - 10, ePoint.y - 10, ePoint.x + 10, ePoint.y + 10);
+			mRect[2].SetRect(sPoint.x - 10, ePoint.y - 10, sPoint.x + 10, ePoint.y + 10);//3사분면
+			mRect[3].SetRect(ePoint.x - 10, sPoint.y - 10, ePoint.x + 10, sPoint.y + 10);//2사분면
+
+			CPen pen(PS_SOLID, 2, RGB(0, 0, 0));
+			oldPen = pDC->SelectObject(&pen);
+			pDC->SelectStockObject(WHITE_BRUSH);
+			pDC->Ellipse(mRect[0]);
+			pDC->Ellipse(mRect[1]);
+			pDC->Ellipse(mRect[2]);
+			pDC->Ellipse(mRect[3]);
 		}
 
 
@@ -81,19 +100,6 @@ void YEllipse::changeLineColor(){
 
 }
 
-
-void  YEllipse::ChangeinColor()
-{
-
-
-}
-
-
-
-void  YEllipse::ChangeSize()
-{
-
-}//크기변경
 
 
 void YEllipse::setRgn(){
@@ -144,17 +150,3 @@ BOOL YEllipse::checkRgn(CPoint point)
 	
 }
 
-
-void YEllipse::drawCircle(CDC *pDC){
-	//시작점 끝점 원그리기
-	mRect[0].SetRect(sPoint.x - 15, sPoint.y - 15, sPoint.x + 15, sPoint.y + 15);//시작점
-	mRect[1].SetRect(ePoint.x - 15, ePoint.y - 15, ePoint.x + 15, ePoint.y + 15);
-	//mRect[2].SetRect(ePoint.x - 15, ePoint.y - 15, ePoint.x + 15, ePoint.y + 15);
-	//mRect[3].SetRect(ePoint.x - 15, ePoint.y - 15, ePoint.x + 15, ePoint.y + 15);
-	
-	CPen pen(PS_SOLID, 2, RGB(0, 0, 0));
-	CPen* oldPen = pDC->SelectObject(&pen);
-	pDC->SelectStockObject(WHITE_BRUSH);
-	pDC->Ellipse(mRect[0]);
-	pDC->Ellipse(mRect[1]);
-}

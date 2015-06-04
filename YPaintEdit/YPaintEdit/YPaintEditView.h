@@ -98,6 +98,7 @@ public:
 	afx_msg void UpdateRMenuColorButton(CCmdUI *pCmdUI);
 	afx_msg void DeletePointButton();
 	afx_msg void UpdateDeletePointButton(CCmdUI *pCmdUI);
+	afx_msg void RMenuInColorButton();
 };
 
 #ifndef _DEBUG  // YPaintEditView.cpp의 디버그 버전

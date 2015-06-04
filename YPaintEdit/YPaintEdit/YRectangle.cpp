@@ -81,20 +81,6 @@ void YRectangle::changeLineColor(){
 }
 
 
-void  YRectangle::ChangeinColor()
-{
-
-
-}
-
-
-
-void  YRectangle::ChangeSize()
-{
-
-}//크기변경
-
-
 void YRectangle::setRgn(){
 
 	int left, top, right, bottom;

@@ -37,11 +37,6 @@ public:
 
 
 
-
-	void ChangeinColor();
-	void ChangeSize(); //크기변경
-
-
 	void drawCircle(CDC *pDC);// 리전 으로 선택시 원 생기게 할라고!!
 
 

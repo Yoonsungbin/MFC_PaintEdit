@@ -15,10 +15,11 @@ public:
 	void setLinePattern(int pa){ linePattern = pa; }
 	int getLinePattern() const{ return linePattern; }
 
-	virtual void ChangeinColor()=0;//내부색 변경
-	virtual void ChangeSize() = 0; //크기변경
+	void ChangeinColor(COLORREF c){ inColor = c; };//내부색 변경
+	COLORREF getinColor() const{ return inColor; }//내부색
 
-	
+
+
 private:
 	COLORREF lineColor;//선 색깔
 	int lineThick;//선 두께

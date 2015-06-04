@@ -60,6 +60,7 @@ BEGIN_MESSAGE_MAP(CYPaintEditView, CView)
 	ON_UPDATE_COMMAND_UI(ID_32793, &CYPaintEditView::UpdateRMenuColorButton)
 	ON_COMMAND(ID_32798, &CYPaintEditView::DeletePointButton)
 	ON_UPDATE_COMMAND_UI(ID_32798, &CYPaintEditView::UpdateDeletePointButton)
+	ON_COMMAND(ID_32799, &CYPaintEditView::RMenuInColorButton)
 END_MESSAGE_MAP()
 
 // CYPaintEditView 생성/소멸
@@ -384,7 +385,7 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 	}
 	case ellipse:
 	{
-		pDoc->pEllipse = new YEllipse(point, point, 1, 1, PS_SOLID);
+		pDoc->pEllipse = new YEllipse(point, point, 1, 1, PS_SOLID,RGB(255,255,255));
 		pDoc->pEllipse->setSelect(TRUE);
 		pDoc->pEllipse->setType(ellipse);
 		pDoc->drawing = TRUE;
@@ -1070,6 +1071,40 @@ void CYPaintEditView::RMenuColorButton() //마우스 오른쪽버튼 클릭후 -> 색 클릭시
 		Invalidate();
 	}
 }
+
+
+void CYPaintEditView::RMenuInColorButton()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+
+	CColorDialog dlg(RGB(255, 0, 0), CC_FULLOPEN);
+	int color; // 다이얼로그에서 가져온 색깔을 저장할 변수
+	int result = dlg.DoModal();
+	if (result == IDOK){
+		color = dlg.GetColor();
+
+		switch (pDoc->currentObj->getType()){
+		case ellipse:
+		{
+						pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
+						pDoc->pEllipse->ChangeinColor(color);
+						break;
+		}
+		case rectangle:
+		{
+						  pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
+						  pDoc->pRectangle->ChangeinColor(color);
+						  break;
+		}
+		default:
+			break;
+		}
+
+		Invalidate();
+	}
+}
+
 void CYPaintEditView::FigureSettingButton() //마우스 오른쪽 버튼 클릭후 -> 도형 서식 바꾸기
 {
 	menu_Figiure = FALSE;
@@ -1211,3 +1246,5 @@ void CYPaintEditView::UpdateDeletePointButton(CCmdUI *pCmdUI)
 {
 	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
 }
+
+
