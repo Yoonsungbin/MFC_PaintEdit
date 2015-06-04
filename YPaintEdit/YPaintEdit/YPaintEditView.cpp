@@ -105,21 +105,22 @@ void CYPaintEditView::OnRButtonUp(UINT /* nFlags */, CPoint point)
 {
 	CYPaintEditDoc* pDoc = GetDocument();
 
-	if (pDoc->yType == polyline){																//polyline 일 때만 한점지우기가 있으므로
-		for (int i = 0; i < pDoc->pPolyLine->getPolyList()->GetSize(); i++){
-			if (pDoc->pPolyLine->getMRect()[i].PtInRect(point)){
-				pDoc->deletePosition = i;							//삭제할 위치 저장
-				break;
-			}
-		}
-	}
 
 	// 클릭한 지점에 객체가 없다면 팝업메뉴를 안띄움
 	POSITION pos = pDoc->obj_List.GetHeadPosition();
 	while (pos) {
 		pDoc->currentObj = (YObject*)pDoc->obj_List.GetNext(pos);
-		if (pDoc->currentObj->checkRgn(point) == TRUE){
+		if (pDoc->currentObj->checkRgn(point) == TRUE && pDoc->currentObj->getSelect() == TRUE){			//클릭한 점이 영역안에 있고 객체가 선택되어져 있는상황에서만 메뉴를 띄운다.
 			pDoc->currentObj->setSelect(TRUE);
+
+			if (pDoc->currentObj->getType() == polyline){																//polyline 일 때만 한점지우기가 있으므로
+				for (int i = 0; i < pDoc->pPolyLine->getPolyList()->GetSize(); i++){
+					if (pDoc->pPolyLine->getMRect()[i].PtInRect(point)){
+						pDoc->deletePosition = i;							//삭제할 위치 저장
+						break;
+					}
+				}
+			}
 			ClientToScreen(&point);
 			OnContextMenu(this, point);
 			break;
@@ -612,7 +613,7 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 			{
 				//타원 연장 하기
 				pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
-				if (pDoc->pLine->getMRect()[0].PtInRect(point)){  // 시작점 클릭
+				if (pDoc->pEllipse->getMRect()[0].PtInRect(point)){  // 시작점 클릭
 					pDoc->pEllipse->setSPoint(point);
 					pDoc->pEllipse->setMoveMode(-1);  //시작점이동
 				}
@@ -634,7 +635,7 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 			{
 
 				pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
-				if (pDoc->pLine->getMRect()[0].PtInRect(point)){  // 시작점 클릭
+				if (pDoc->pRectangle->getMRect()[0].PtInRect(point)){  // 시작점 클릭
 					pDoc->pRectangle->setSPoint(point);
 					pDoc->pRectangle->setMoveMode(-1);  //시작점이동
 				}
@@ -1027,6 +1028,7 @@ void CYPaintEditView::UpdateMenuDefaultButton(CCmdUI *pCmdUI)
 
 
 // 마우스 우클릭 메뉴, 이벤트 처리 함수들 //
+//기능 : 팝업메뉴 -> 색변경
 void CYPaintEditView::RMenuColorButton() //마우스 오른쪽버튼 클릭후 -> 색 클릭시
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
@@ -1072,7 +1074,7 @@ void CYPaintEditView::RMenuColorButton() //마우스 오른쪽버튼 클릭후 -> 색 클릭시
 	}
 }
 
-
+//기능 : 팝업메뉴 -> 면색변경
 void CYPaintEditView::RMenuInColorButton()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
@@ -1105,6 +1107,7 @@ void CYPaintEditView::RMenuInColorButton()
 	}
 }
 
+//기능 : 팝업메뉴 -> 도형서식
 void CYPaintEditView::FigureSettingButton() //마우스 오른쪽 버튼 클릭후 -> 도형 서식 바꾸기
 {
 	menu_Figiure = FALSE;
@@ -1190,6 +1193,8 @@ void CYPaintEditView::FigureSettingButton() //마우스 오른쪽 버튼 클릭후 -> 도형 
 	}
 
 }
+
+//기능 : 팝업메뉴 -> 삭제
 void CYPaintEditView::OnDeleteClick()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
@@ -1214,15 +1219,34 @@ void CYPaintEditView::OnDeleteClick()
 	Invalidate();
 
 }
+
+//기능 : 팝업메뉴 -> 점삭제
 void CYPaintEditView::DeletePointButton()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	CYPaintEditDoc* pDoc = GetDocument();
 	CClientDC dc(this);
 	if (pDoc->deletePosition != -1) {
-		pDoc->pPolyLine->getPolyList()->RemoveAt(pDoc->pPolyLine->getPolyList()->FindIndex(pDoc->deletePosition));
-		pDoc->deletePosition = -1;
-		pDoc->pPolyLine->setRgn();
+
+		if (pDoc->pPolyLine->getPolyList()->GetSize() == 2){				// 점이 2개있는데 지울려고 점을 지울려고 할때 객체를 지우고 리스트에서도 제외 시킨다.
+			pDoc->pPolyLine->getPolyList()->RemoveAll();
+
+			POSITION pos = pDoc->obj_List.GetHeadPosition();
+			POSITION tpos;
+
+			while (pos) {
+				tpos = pos;													//위치를 저장한 후 에 다음 노드로 넘어간다.
+				YObject* tmp = (YObject*)pDoc->obj_List.GetNext(pos);
+				if (tmp->getSelect() == TRUE) break;						//선택된 객체가 있으면 반복을 종료하고 빠져나옴
+			}
+			pDoc->obj_List.RemoveAt(tpos);
+			pDoc->currentObj = NULL;
+		}
+		else {
+			pDoc->pPolyLine->getPolyList()->RemoveAt(pDoc->pPolyLine->getPolyList()->FindIndex(pDoc->deletePosition));
+			pDoc->deletePosition = -1;
+			pDoc->pPolyLine->setRgn();
+		}
 		Invalidate();
 	}
 
