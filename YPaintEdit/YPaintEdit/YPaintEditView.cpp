@@ -104,10 +104,12 @@ void CYPaintEditView::OnRButtonUp(UINT /* nFlags */, CPoint point)
 {
 	CYPaintEditDoc* pDoc = GetDocument();
 
-	for (int i = 0; i < pDoc->pPolyLine->getPolyList()->GetSize(); i++){
-		if (pDoc->pPolyLine->getMRect()[i].PtInRect(point)){
-			pDoc->deletePosition = i;							//삭제할 위치 저장
-			break;
+	if (pDoc->yType == polyline){																//polyline 일 때만 한점지우기가 있으므로
+		for (int i = 0; i < pDoc->pPolyLine->getPolyList()->GetSize(); i++){
+			if (pDoc->pPolyLine->getMRect()[i].PtInRect(point)){
+				pDoc->deletePosition = i;							//삭제할 위치 저장
+				break;
+			}
 		}
 	}
 
