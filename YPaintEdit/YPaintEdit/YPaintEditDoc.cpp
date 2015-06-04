@@ -41,12 +41,11 @@ END_MESSAGE_MAP()
 CYPaintEditDoc::CYPaintEditDoc()
 {
 	// TODO: 여기에 일회성 생성 코드를 추가합니다.
-	textEditing = FALSE;	// Text
-	clickPolyLine = FALSE;
 	drawing = FALSE;
-	currentObj = NULL;
+	textEditing = FALSE;
+	clickPolyLine = FALSE;
 
-	deletePosition = -1;			//폴리라인 삭제할 점위치 저장변수 초기화
+	deletePosition = -1;			// 폴리라인 삭제할 점 위치 저장변수 초기화
 }
 
 CYPaintEditDoc::~CYPaintEditDoc()

@@ -156,7 +156,9 @@ CYPaintEditDoc* CYPaintEditView::GetDocument() const // 디버그되지 않은 버전은 �
 #endif //_DEBUG
 
 
+
 ////////////////////////////// CYPaintEditView 메시지 처리기 //////////////////////////////
+
 
 
 // 도형을 그리는 함수 //
@@ -295,6 +297,7 @@ void CYPaintEditView::OnPaint()
 }
 
 
+
 // 키보드 입력을 받는 함수 // 
 void CYPaintEditView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) // Text
 {
@@ -322,6 +325,7 @@ void CYPaintEditView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) // Text
 	}
 	CView::OnChar(nChar, nRepCnt, nFlags);
 }
+
 
 
 // 마우스 클릭, 이벤트 처리 함수들 //
@@ -862,16 +866,18 @@ void CYPaintEditView::OnLButtonDblClk(UINT nFlags, CPoint point)
 }
 
 
+
 // 리본 메뉴, 에벤트 처리 함수들 //
 void CYPaintEditView::MenuLineButton()
 {
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	menu_Select = FALSE;
 	menu_Line = TRUE;
 	menu_PolyLine = FALSE;
 	menu_Ellipse = FALSE;
 	menu_Rectangle = FALSE;
 	menu_Text = FALSE;
-	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+
 	CYPaintEditDoc* pDoc = GetDocument();
 	pDoc->yType = line;
 
@@ -882,16 +888,16 @@ void CYPaintEditView::MenuLineButton()
 
 	}
 }
-
 void CYPaintEditView::MenuPolyLineButton()
 {
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	menu_Select = FALSE;
 	menu_Line = FALSE;
 	menu_PolyLine = TRUE;
 	menu_Ellipse = FALSE;
 	menu_Rectangle = FALSE;
 	menu_Text = FALSE;
-	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	
 	CYPaintEditDoc* pDoc = GetDocument();
 	pDoc->yType = polyline;
 
@@ -903,9 +909,9 @@ void CYPaintEditView::MenuPolyLineButton()
 	}
 	//Invalidate();
 }
-
 void CYPaintEditView::MenuEllipseButton()
 {
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	menu_Select = FALSE;
 	menu_Line = FALSE;
 	menu_PolyLine = FALSE;
@@ -913,9 +919,9 @@ void CYPaintEditView::MenuEllipseButton()
 	menu_Rectangle = FALSE;
 	menu_Text = FALSE;
 
-	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	CYPaintEditDoc* pDoc = GetDocument();
 	pDoc->yType = ellipse;
+
 	POSITION pos = pDoc->obj_List.GetHeadPosition();
 	while (pos) {
 		pDoc->currentObj = (YObject*)pDoc->obj_List.GetNext(pos);
@@ -923,18 +929,19 @@ void CYPaintEditView::MenuEllipseButton()
 
 	}
 }
-
 void CYPaintEditView::OnRectangleButton()
 {
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	menu_Select = FALSE;
 	menu_Line = FALSE;
 	menu_PolyLine = FALSE;
 	menu_Ellipse = FALSE;
 	menu_Rectangle = TRUE;
 	menu_Text = FALSE;
-	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	
 	CYPaintEditDoc* pDoc = GetDocument();
 	pDoc->yType = rectangle;
+
 	POSITION pos = pDoc->obj_List.GetHeadPosition();
 	while (pos) {
 		pDoc->currentObj = (YObject*)pDoc->obj_List.GetNext(pos);
@@ -942,18 +949,19 @@ void CYPaintEditView::OnRectangleButton()
 
 	}
 }
-
 void CYPaintEditView::MenuTextButton()
 {
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	menu_Select = FALSE;
 	menu_Line = FALSE;
 	menu_PolyLine = FALSE;
 	menu_Ellipse = FALSE;
 	menu_Rectangle = FALSE;
 	menu_Text = TRUE;
-	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	
 	CYPaintEditDoc* pDoc = GetDocument();
 	pDoc->yType = text;
+
 	POSITION pos = pDoc->obj_List.GetHeadPosition();
 	while (pos) {
 		pDoc->currentObj = (YObject*)pDoc->obj_List.GetNext(pos);
@@ -961,7 +969,6 @@ void CYPaintEditView::MenuTextButton()
 
 	}
 }
-
 void CYPaintEditView::MenuDefaultButton()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
@@ -984,47 +991,40 @@ void CYPaintEditView::MenuDefaultButton()
 	}
 	pDoc->currentObj = NULL;
 }
-void CYPaintEditView::UpdateMenuDefaultButton(CCmdUI *pCmdUI)
-
-{
-	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
-	pCmdUI->SetCheck(menu_Select);
-}
-
 
 void CYPaintEditView::UpdateMenuLineButton(CCmdUI *pCmdUI)
 {
 	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
 	pCmdUI->SetCheck(menu_Line);
 }
-
-
 void CYPaintEditView::UpdateMenuPolyLineButton(CCmdUI *pCmdUI)
 {
 	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
 	pCmdUI->SetCheck(menu_PolyLine);
 }
-
-
 void CYPaintEditView::UpdateOnRectangleButton(CCmdUI *pCmdUI)
 {
 	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
 	pCmdUI->SetCheck(menu_Rectangle);
 }
-
-
 void CYPaintEditView::UpdateMenuEllipseButton(CCmdUI *pCmdUI)
 {
 	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
 	pCmdUI->SetCheck(menu_Ellipse);
 }
-
-
 void CYPaintEditView::UpdateMenuTextButton(CCmdUI *pCmdUI)
 {
 	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
 	pCmdUI->SetCheck(menu_Text);
 }
+void CYPaintEditView::UpdateMenuDefaultButton(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+	pCmdUI->SetCheck(menu_Select);
+}
+
+
+
 // 마우스 우클릭 메뉴, 이벤트 처리 함수들 //
 void CYPaintEditView::RMenuColorButton() //마우스 오른쪽버튼 클릭후 -> 색 클릭시
 {
@@ -1070,7 +1070,6 @@ void CYPaintEditView::RMenuColorButton() //마우스 오른쪽버튼 클릭후 -> 색 클릭시
 		Invalidate();
 	}
 }
-
 void CYPaintEditView::FigureSettingButton() //마우스 오른쪽 버튼 클릭후 -> 도형 서식 바꾸기
 {
 	menu_Figiure = FALSE;
@@ -1156,7 +1155,6 @@ void CYPaintEditView::FigureSettingButton() //마우스 오른쪽 버튼 클릭후 -> 도형 
 	}
 
 }
-
 void CYPaintEditView::OnDeleteClick()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
@@ -1181,32 +1179,6 @@ void CYPaintEditView::OnDeleteClick()
 	Invalidate();
 
 }
-
-
-
-
-
-
-void CYPaintEditView::UpdateOnDeleteClick(CCmdUI *pCmdUI)
-{
-	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
-	
-}
-
-
-void CYPaintEditView::UpdateFigureSettingButton(CCmdUI *pCmdUI)
-{
-	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
-	pCmdUI->Enable(FALSE);  //팝업 비활성 하는 방법
-}
-
-
-void CYPaintEditView::UpdateRMenuColorButton(CCmdUI *pCmdUI)
-{
-	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
-}
-
-
 void CYPaintEditView::DeletePointButton()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
@@ -1221,7 +1193,20 @@ void CYPaintEditView::DeletePointButton()
 
 }
 
-
+void CYPaintEditView::UpdateRMenuColorButton(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+}
+void CYPaintEditView::UpdateFigureSettingButton(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+	pCmdUI->Enable(FALSE);  //팝업 비활성 하는 방법
+}
+void CYPaintEditView::UpdateOnDeleteClick(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+	
+}
 void CYPaintEditView::UpdateDeletePointButton(CCmdUI *pCmdUI)
 {
 	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.

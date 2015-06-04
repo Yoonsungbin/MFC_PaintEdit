@@ -35,7 +35,7 @@ public:
 
 // 작업입니다.
 public:
-	//CPoint	dx_sPoint;
+	CPoint	dx_sPoint;
 	//리본메뉴 비활성화를 위하여
 	BOOL menu_Select;
 	BOOL menu_Line;
