@@ -326,8 +326,11 @@ void CYPaintEditView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) // Text
 			}
 		}
 		else if (nChar == VK_RETURN){ // 입력 종료 (enter 키)
-			pDoc->textEditing = FALSE;
+			pDoc->pText->setRgn();
+			pDoc->pText->setSelect(FALSE);
 			pDoc->obj_List.AddTail(pDoc->pText);
+			pDoc->pText = NULL;
+			pDoc->textEditing = FALSE;
 			pDoc->tmp.Empty();
 			HideCaret();
 		}
@@ -400,12 +403,16 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 		if (pDoc->textEditing == FALSE){
 			pDoc->pText = new YText(point);
 			pDoc->pText->setType(text);
+			pDoc->pText->setSelect(TRUE);
 			pDoc->textEditing = TRUE;
 		}
 		else {
+			pDoc->pText->setRgn();
+			pDoc->pText->setSelect(FALSE);
 			pDoc->obj_List.AddTail(pDoc->pText);
-			pDoc->tmp.Empty();
+			pDoc->pText = NULL;
 			pDoc->textEditing = FALSE;
+			pDoc->tmp.Empty();
 			HideCaret();
 		}
 		break;
@@ -535,6 +542,7 @@ case choice:
 			}
 			case text:
 			{
+				pDoc->pText = (YText*)pDoc->currentObj;
 				break;
 			}
 			default:
@@ -652,6 +660,13 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 					}
 				}
 				break;
+			}
+			case text:
+			{
+				pDoc->pText->setSPoint(pDoc->pText->getSPoint() + t_point);
+				pDoc->pText->setEPoint(pDoc->pText->getEPoint() + t_point);
+				pDoc->pText->setRect(pDoc->pText->getSPoint(), pDoc->pText->getEPoint());
+				pDoc->pText->setRgn();
 			}
 			default:
 				break;

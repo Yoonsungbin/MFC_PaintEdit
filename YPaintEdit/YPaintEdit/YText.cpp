@@ -27,6 +27,12 @@ void YText::deleteAll(){
 
 }
 void YText::draw(CDC* dc){
+	if (isSelected == TRUE){
+		CPen pen(PS_DOT, 1, RGB(0, 0, 0));
+		dc->SelectObject(pen);
+		dc->Rectangle(sPoint.x - 1, sPoint.y - 1, ePoint.x + 1, ePoint.y + 1);
+	}
+
 	CFont f;
 	f.CreatePointFont(fontSize, font);
 	dc->SelectObject(f);
@@ -64,6 +70,7 @@ void YText::setRgn(){
 	}
 
 	// 리젼 생성
+	rgn.DeleteObject();
 	rgn.CreateRectRgn(left, top, right, bottom);
 }
 BOOL YText::checkRgn(CPoint point)
