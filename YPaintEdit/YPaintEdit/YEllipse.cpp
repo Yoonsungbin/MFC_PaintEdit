@@ -52,10 +52,9 @@ void YEllipse::draw(CDC* pDC)
 		pDC->SelectObject(&oldPen);
 		pDC->SelectObject(oldBrush);
 	}
-
-	else if ((getPatternflag() == TRUE))
+	else
 	{
-		CBrush brush(getSidePattern(), getSideColor());
+		CBrush brush(getSidePattern()-1, getSideColor());
 		CBrush* oldBrush = pDC->SelectObject(&brush);
 		pDC->Ellipse(sPoint.x, sPoint.y, ePoint.x, ePoint.y);
 		pDC->SelectObject(&oldPen);

@@ -13,7 +13,7 @@ YRectangle::~YRectangle()
 }
 
 
-YRectangle::YRectangle(CPoint start, CPoint end, int color, int thick, int pattern, int inColor, BOOL paflag)
+YRectangle::YRectangle(CPoint start, CPoint end, int color, int thick, int pattern, int inColor, int sidepattern, BOOL paflag)
 {
 	sPoint = start;
 	ePoint = end;
@@ -21,6 +21,7 @@ YRectangle::YRectangle(CPoint start, CPoint end, int color, int thick, int patte
 	setLineThick(thick);
 	setLinePattern(pattern);
 	setSideColor(inColor);
+	setSidePattern(sidepattern);
 	setPatternflag(paflag);
 }
 
@@ -55,10 +56,9 @@ void YRectangle::draw(CDC* pDC)
 		pDC->SelectObject(&oldPen);
 		pDC->SelectObject(oldBrush);
 	}
-
-	else if ((getPatternflag() == TRUE))
+	else
 	{
-		CBrush brush(getSidePattern(), getSideColor());
+		CBrush brush(getSidePattern()-1, getSideColor());
 		CBrush* oldBrush = pDC->SelectObject(&brush);
 		pDC->Rectangle(sPoint.x, sPoint.y, ePoint.x, ePoint.y);
 		pDC->SelectObject(&oldPen);
