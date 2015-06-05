@@ -5,7 +5,7 @@ class YRectangle :
 {
 public:
 	YRectangle();
-	YRectangle(CPoint start, CPoint end,int color, int thick, int pattern,int inColor);
+	YRectangle(CPoint start, CPoint end, int color, int thick, int pattern, int inColor, int sidepattern, BOOL patternFlag);
 	~YRectangle();
 
 

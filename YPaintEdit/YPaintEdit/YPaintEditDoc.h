@@ -46,6 +46,7 @@ public:
 	BOOL clickPolyLine;					// PolyLine 선택 유무  true - > 클릭 false -> 초기생성
 	int deletePosition;					// PolyLine 한점 지울 때 지울 위치 저장변수
 
+
 	CPoint Original_Point;				// move를 위한 시작지점
 
 // 작업입니다.

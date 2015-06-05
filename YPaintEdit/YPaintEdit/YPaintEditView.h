@@ -53,7 +53,8 @@ public:
 	int lineThick = 1;																	//두께 : 1	
 	int linePattern = 0;																// PS_SOLID
 	COLORREF sideColor = RGB(255,255,255);												//흰색
-	int sidePattern = NULL;																//HS_BDIAGONAL	
+	int sidePattern = 0;																//HS_BDIAGONAL	
+	BOOL sidePatternflag2=FALSE;
 	int fontSize;
 	int fontPattern;
 
@@ -114,6 +115,7 @@ public:
 	afx_msg void OnMenusidepattern();//면패턴
 	afx_msg void OnMenusidecolor();
 	afx_msg void OnUpdateMenusidepattern(CCmdUI *pCmdUI);
+	void UpdateMenu();
 };
 
 #ifndef _DEBUG  // YPaintEditView.cpp의 디버그 버전

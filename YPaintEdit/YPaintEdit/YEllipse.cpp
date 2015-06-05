@@ -13,7 +13,7 @@ YEllipse::~YEllipse()
 
 
 
-YEllipse::YEllipse(CPoint start, CPoint end, int color, int thick, int pattern, int inColor, int sidepattern)
+YEllipse::YEllipse(CPoint start, CPoint end, int color, int thick, int pattern, int inColor, int sidepattern,BOOL paflag)
 {
 	sPoint = start;
 	ePoint = end;
@@ -22,6 +22,7 @@ YEllipse::YEllipse(CPoint start, CPoint end, int color, int thick, int pattern, 
 	setLinePattern(pattern);
 	setSideColor(inColor);
 	setSidePattern(sidepattern);
+	setPatternflag(paflag);
 }
 
 void YEllipse::moveAll(int s, int e)
@@ -42,16 +43,31 @@ void YEllipse::draw(CDC* pDC)
 	//±×¸®±â
 	CPen pen(getLinePattern(), getLineThick(), getLineColor());
 	CPen* oldPen = pDC->SelectObject(&pen);
-	CBrush brush(getSidePattern(), getSideColor());
-	//CBrush brush(HS_BDIAGONAL, getinColor());
-	CBrush* oldBrush = pDC->SelectObject(&brush);
 
+	if (getPatternflag() == FALSE)
+	{
+		CBrush brush(getSideColor());
+		CBrush* oldBrush = pDC->SelectObject(&brush);
+		pDC->Ellipse(sPoint.x, sPoint.y, ePoint.x, ePoint.y);
+		pDC->SelectObject(&oldPen);
+		pDC->SelectObject(oldBrush);
+	}
+	else
+	{
+		CBrush brush(getSidePattern()-1, getSideColor());
+		CBrush* oldBrush = pDC->SelectObject(&brush);
+		pDC->Ellipse(sPoint.x, sPoint.y, ePoint.x, ePoint.y);
+		pDC->SelectObject(&oldPen);
+		pDC->SelectObject(oldBrush);
+	}
+	
+	
+	
+	
 
 	//Graphics graphics(*pDC);
 
-	pDC->Ellipse(sPoint.x, sPoint.y, ePoint.x, ePoint.y);
-	pDC->SelectObject(&oldPen);
-	pDC->SelectObject(oldBrush);
+
 
 	if (getSelect()){
 

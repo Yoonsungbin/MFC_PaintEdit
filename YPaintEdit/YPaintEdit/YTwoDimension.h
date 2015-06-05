@@ -22,6 +22,9 @@ public:
 	void setSidePattern(int pa){ sidePattern = pa; }   //면 패턴
 	int getSidePattern() const{ return sidePattern; }////면 패턴
 
+	void setPatternflag(BOOL ch){ Patternflag = ch; }//패턴플래그
+	BOOL getPatternflag() const{ return Patternflag; }
+
 
 
 private:
@@ -31,8 +34,9 @@ private:
 
 
 	COLORREF sideColor; //내부 색깔
-	//int inPattern; //속 패턴
 	int sidePattern;
 
+
+	BOOL Patternflag;
 };
 
