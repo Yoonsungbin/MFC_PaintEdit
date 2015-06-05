@@ -39,8 +39,6 @@ public:
 	YEllipse* pEllipse;					// 타원 작업을 위한 포인터
 	YRectangle* pRectangle;				// 사각형 작업을 위한 포인터
 	YText* pText;						// 텍스트 작업을 위한 포인터
-
-
 	
 	BOOL drawing ;						// 그리기 상태 확인변수
 	BOOL textEditing;					// 텍스트 편집 상태를 나타내는 변수

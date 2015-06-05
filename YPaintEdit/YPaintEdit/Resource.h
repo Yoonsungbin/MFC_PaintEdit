@@ -12,6 +12,7 @@
 #define IDB_FILESMALL                   115
 #define IDR_POPUP_EDIT                  119
 #define ID_STATUSBAR_PANE1              120
+#define ID_MENULINETHICK                120
 #define ID_STATUSBAR_PANE2              121
 #define IDS_STATUS_PANE1                122
 #define IDS_STATUS_PANE2                123
@@ -36,6 +37,8 @@
 #define IDS_EDIT_MENU                   306
 #define IDR_RIBBON                      307
 #define IDD_DIALOG1                     310
+#define IDB_PEN                         314
+#define IDB_BITMAP1                     315
 #define IDC_EDIT1                       1000
 #define IDC_SPIN1                       1006
 #define IDC_COMBO1                      1008
@@ -63,13 +66,19 @@
 #define ID_32797                        32797
 #define ID_32798                        32798
 #define ID_32799                        32799
+#define ID_MENUFONTTHICK                32800
+#define ID_COMBO3                       32802
+#define ID_MENULINEPATTERN              32804
+#define ID_MENULINECOLOR                32805
+#define ID_MENUSIDEPATTERN              32806
+#define ID_MENUSIDECOLOR                32807
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        313
-#define _APS_NEXT_COMMAND_VALUE         32800
+#define _APS_NEXT_RESOURCE_VALUE        316
+#define _APS_NEXT_COMMAND_VALUE         32818
 #define _APS_NEXT_CONTROL_VALUE         1010
 #define _APS_NEXT_SYMED_VALUE           310
 #endif

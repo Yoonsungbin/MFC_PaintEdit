@@ -23,14 +23,13 @@ protected: // serialization에서만 만들어집니다.
 
 // 특성입니다.
 public:
-
+	int ggg;
 // 작업입니다.
 public:
-
 // 재정의입니다.
 public:
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
-
+	CMFCRibbonBar* getRibbon(){ return &m_wndRibbonBar; }		//리본메뉴에 접근하기 위해서
 // 구현입니다.
 public:
 	virtual ~CMainFrame();

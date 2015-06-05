@@ -139,6 +139,8 @@
     <ResourceCompile Include="YPaintEdit.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="..\..\..\캡처.bmp" />
+    <Image Include="res\bitmap1.bmp" />
     <Image Include="res\buttons.bmp" />
     <Image Include="res\filelarge.bmp" />
     <Image Include="res\filesmall.bmp" />

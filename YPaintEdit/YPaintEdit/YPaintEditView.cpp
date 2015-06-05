@@ -18,7 +18,7 @@
 #ifndef SHARED_HANDLERS
 #include "YPaintEdit.h"
 #endif
-
+#include "MainFrm.h"
 #include "YPaintEditDoc.h"
 #include "YPaintEditView.h"
 
@@ -61,6 +61,11 @@ BEGIN_MESSAGE_MAP(CYPaintEditView, CView)
 	ON_COMMAND(ID_32798, &CYPaintEditView::DeletePointButton)
 	ON_UPDATE_COMMAND_UI(ID_32798, &CYPaintEditView::UpdateDeletePointButton)
 	ON_COMMAND(ID_32799, &CYPaintEditView::RMenuInColorButton)
+	ON_COMMAND(ID_MENULINETHICK, &CYPaintEditView::OnMenulinethick)
+	ON_COMMAND(ID_MENULINECOLOR, &CYPaintEditView::OnMenulinecolor)
+	ON_COMMAND(ID_MENULINEPATTERN, &CYPaintEditView::OnMenulinepattern)
+	ON_COMMAND(ID_MENUSIDEPATTERN, &CYPaintEditView::OnMenusidepattern)
+	ON_COMMAND(ID_MENUSIDECOLOR, &CYPaintEditView::OnMenusidecolor)
 END_MESSAGE_MAP()
 
 // CYPaintEditView 생성/소멸
@@ -167,28 +172,24 @@ CYPaintEditDoc* CYPaintEditView::GetDocument() const // 디버그되지 않은 버전은 �
 void CYPaintEditView::OnPaint()
 {
 	CPaintDC dc(this);
-
 	CRect rect;
 	GetClientRect(&rect);
 	CBitmap bitmap;
 
-	bitmap.CreateBitmap(rect.Width(), rect.Height(), 1, 1, NULL);			//전체화면을 대상으로 bitmap 생성
+	
 
 	CDC dcmem;
 	dcmem.CreateCompatibleDC(&dc);											//메모리 dc 생성
+	bitmap.CreateCompatibleBitmap(&dc,rect.Width(), rect.Height());			//전체화면을 대상으로 bitmap 생성
 	dcmem.SelectObject(&bitmap);											//비트맵 선택
-	
+
 	dcmem.SelectStockObject(NULL_PEN);
 	dcmem.Rectangle(&rect);
 
 	Paint(&dcmem);
-
-	dc.BitBlt(rect.left, rect.top, rect.Width(), rect.Height(), &dcmem,0,0, SRCCOPY);		//메모리에 있던 비트맵을 그린다.
-
-	bitmap.DeleteObject();
+	dc.BitBlt(rect.left, rect.top, rect.Width(), rect.Height(), &dcmem, 0, 0, SRCCOPY);		//메모리에 있던 비트맵을 그린다.
 	dcmem.DeleteDC();
-
-
+	bitmap.DeleteObject();
 }
 
 // 기능 : 어떤 도형을 그릴지 판단
@@ -368,7 +369,7 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 	case line:
 	{
 		//초기화
-		pDoc->pLine = new YLine(point, point, 1, 1, PS_SOLID);
+		pDoc->pLine = new YLine(point, point,lineColor, lineThick, linePattern);
 		pDoc->pLine->setType(line);
 		pDoc->pLine->setSelect(TRUE);
 		pDoc->drawing = TRUE;
@@ -377,7 +378,7 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 	case polyline:
 	{
 		if (pDoc->clickPolyLine == FALSE){   //시작 생성
-			pDoc->pPolyLine = new YPolyLine(1, 1, PS_SOLID);
+			pDoc->pPolyLine = new YPolyLine(RGB(255,0,0), 1, PS_SOLID);
 			pDoc->pPolyLine->setSelect(TRUE);
 			pDoc->pPolyLine->addPoint(point);
 			pDoc->pPolyLine->setType(polyline);
@@ -946,35 +947,34 @@ void CYPaintEditView::RMenuColorButton() //마우스 오른쪽버튼 클릭후 -> 색 클릭시
 	CYPaintEditDoc* pDoc = GetDocument();
 
 	CColorDialog dlg(RGB(255, 0, 0), CC_FULLOPEN);
-	int color; // 다이얼로그에서 가져온 색깔을 저장할 변수
 	int result = dlg.DoModal();
 	if (result == IDOK){
-		color = dlg.GetColor();
+		lineColor = dlg.GetColor();
 
 		switch (pDoc->currentObj->getType()){
 		case line:
 		{
 			pDoc->pLine = (YLine*)pDoc->currentObj;
-			pDoc->pLine->setLineColor(color);
+			pDoc->pLine->setLineColor(lineColor);
 			break;
 		}
 		case polyline:
 		{
 			pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
-			pDoc->pPolyLine->setLineColor(color);
+			pDoc->pPolyLine->setLineColor(lineColor);
 			break;
 		}
 
 		case ellipse:
 		{
 			pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
-			pDoc->pEllipse->setLineColor(color);
+			pDoc->pEllipse->setLineColor(lineColor);
 			break;
 		}
 		case rectangle:
 		{
 			pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
-			pDoc->pRectangle->setLineColor(color);
+			pDoc->pRectangle->setLineColor(lineColor);
 			break;
 		}
 		default:
@@ -1187,3 +1187,118 @@ void CYPaintEditView::UpdateDeletePointButton(CCmdUI *pCmdUI)
 
 
 
+
+void CYPaintEditView::OnMenulinethick()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+	CMainFrame* main = (CMainFrame*)AfxGetMainWnd();
+
+	CMFCRibbonEdit* thick = (CMFCRibbonEdit*)main->getRibbon()->FindByID(ID_MENULINETHICK);
+	
+	lineThick = (_ttoi)(thick->GetEditText());
+
+		switch (pDoc->yType){
+		case line:
+		{
+			pDoc->pLine = (YLine*)pDoc->currentObj;
+			pDoc->pLine->setLineThick(lineThick);
+			break;
+		}
+		case polyline:
+		{
+			pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
+			pDoc->pPolyLine->setLineThick(lineThick);
+			break;
+		}
+		case ellipse:
+		{
+			pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
+			pDoc->pEllipse->setLineThick(lineThick);
+			break;
+		}
+		case rectangle:
+		{
+			pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
+			pDoc->pRectangle->setLineThick(lineThick);
+			break;
+		}
+		default:
+			break;
+		}
+
+		Invalidate(FALSE);
+
+}
+
+
+void CYPaintEditView::OnMenulinecolor()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CMainFrame* main = (CMainFrame*)AfxGetMainWnd();
+	CYPaintEditDoc* pDoc = GetDocument();
+	CColorDialog dlg(RGB(255, 0, 0), CC_FULLOPEN);
+	//int color; // 다이얼로그에서 가져온 색깔을 저장할 변수
+	int result = dlg.DoModal();
+	if (result == IDOK){
+		lineColor = dlg.GetColor();
+	}
+	//if (pDoc->currentObj != NULL){
+		switch (pDoc->yType){
+		case line:
+		{
+			pDoc->pLine = (YLine*)pDoc->currentObj;
+			pDoc->pLine->setLineThick(lineThick);
+			break;
+		}
+		case polyline:
+		{
+			pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
+			pDoc->pPolyLine->setLineThick(lineThick);
+			break;
+		}
+		case ellipse:
+		{
+			pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
+			pDoc->pEllipse->setLineThick(lineThick);
+			break;
+		}
+		case rectangle:
+		{
+			pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
+			pDoc->pRectangle->setLineThick(lineThick);
+			break;
+		}
+		default:
+			break;
+		}
+
+		Invalidate(FALSE);
+	//}
+	//CMFCRibbonEdit* color = (CMFCRibbonEdit*)main->getRibbon()->FindByID(ID_MENULINETHICK);
+
+	//lineColor = (_ttoi)(color->GetEditText());
+}
+
+
+void CYPaintEditView::OnMenulinepattern()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CMainFrame* main = (CMainFrame*)AfxGetMainWnd();
+	CYPaintEditDoc* pDoc = GetDocument();
+	CMFCRibbonComboBox* pattern = (CMFCRibbonComboBox*)main->getRibbon()->FindByID(ID_MENULINEPATTERN);
+
+	linePattern = pattern->GetCurSel();
+}
+
+
+void CYPaintEditView::OnMenusidepattern()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+}
+
+
+void CYPaintEditView::OnMenusidecolor()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+}

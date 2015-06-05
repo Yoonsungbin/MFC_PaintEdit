@@ -36,8 +36,9 @@ void YLine::draw(CDC* pDC){
 	CPen pen(getLinePattern(),getLineThick() ,getLineColor() );
 	CPen* oldPen = pDC->SelectObject(&pen);
 
-	Graphics graphics(*pDC);
 	/*
+	Graphics graphics(*pDC);
+	
 	//GDI+ 사용법
 	Pen pen1(Color(0, 0, 255),5);  // 불투명 (255), 검정색(0,0,0)
 	pen1.SetDashStyle(DashStyleSolid);

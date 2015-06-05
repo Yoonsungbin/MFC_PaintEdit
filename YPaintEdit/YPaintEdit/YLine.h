@@ -5,7 +5,7 @@ class YLine :
 {
 public:
 	YLine();
-	YLine(CPoint start, CPoint end,int color,int thick, int pattern);
+	YLine(CPoint start, CPoint end,int color,int thick, int pattern);    //시작점 , 끝점 , 색 , 두께 , 패턴
 	~YLine();
 
 	virtual void moveAll(int s, int e);

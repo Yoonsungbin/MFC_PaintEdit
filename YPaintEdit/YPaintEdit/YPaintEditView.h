@@ -35,7 +35,6 @@ public:
 
 // 작업입니다.
 public:
-	CPoint	dx_sPoint;
 	//리본메뉴 비활성화를 위하여
 	BOOL menu_Select;
 	BOOL menu_Line;
@@ -48,6 +47,15 @@ public:
 	BOOL menu_Color;
 	BOOL menu_Figiure;
 	BOOL menu_Delete;
+
+	//메뉴에서 정하는 값들을 저장할 변수 (보여지는 view객체의 속성값들을 제어함)
+	COLORREF lineColor;
+	int lineThick;
+	int linePattern;
+	COLORREF sideColor;
+	int sidePattern;
+	int fontSize;
+	int fontPattern;
 
 // 재정의입니다.
 public:
@@ -100,6 +108,11 @@ public:
 	afx_msg void UpdateDeletePointButton(CCmdUI *pCmdUI);
 	afx_msg void RMenuInColorButton();
 	void Paint(CDC* dc);
+	afx_msg void OnMenulinethick();
+	afx_msg void OnMenulinecolor();
+	afx_msg void OnMenulinepattern();
+	afx_msg void OnMenusidepattern();
+	afx_msg void OnMenusidecolor();
 };
 
 #ifndef _DEBUG  // YPaintEditView.cpp의 디버그 버전

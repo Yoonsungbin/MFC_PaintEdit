@@ -164,7 +164,6 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
-	ON_COMMAND(ID_32771, &CAboutDlg::lineButtonClick)
 END_MESSAGE_MAP()
 
 // 대화 상자를 실행하기 위한 응용 프로그램 명령입니다.
@@ -198,9 +197,3 @@ void CYPaintEditApp::SaveCustomState()
 
 
 
-
-void CAboutDlg::lineButtonClick()
-{
-	// TODO: 여기에 명령 처리기 코드를 추가합니다.
-	
-}
