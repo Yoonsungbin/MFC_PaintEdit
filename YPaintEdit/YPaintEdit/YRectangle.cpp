@@ -13,7 +13,7 @@ YRectangle::~YRectangle()
 }
 
 
-YRectangle::YRectangle(CPoint start, CPoint end, int color, int thick, int pattern,int inColor)
+YRectangle::YRectangle(CPoint start, CPoint end, int color, int thick, int pattern, int inColor, BOOL paflag)
 {
 	sPoint = start;
 	ePoint = end;
@@ -21,6 +21,7 @@ YRectangle::YRectangle(CPoint start, CPoint end, int color, int thick, int patte
 	setLineThick(thick);
 	setLinePattern(pattern);
 	setSideColor(inColor);
+	setPatternflag(paflag);
 }
 
 
@@ -42,14 +43,28 @@ void YRectangle::draw(CDC* pDC)
 	//±×¸®±â
 	CPen pen(getLinePattern(), getLineThick(), getLineColor());
 	CPen* oldPen = pDC->SelectObject(&pen);
-	CBrush brush(getSideColor());
-	//CBrush brush(HS_BDIAGONAL, getinColor());
-	CBrush* oldBrush = pDC->SelectObject(&brush);
-	//Graphics graphics(*pDC);
 
-	pDC->Rectangle(sPoint.x, sPoint.y, ePoint.x, ePoint.y);
-	pDC->SelectObject(&oldPen);
-	pDC->SelectObject(oldBrush);
+	
+	
+
+	if (getPatternflag() == FALSE)
+	{
+		CBrush brush(getSideColor());
+		CBrush* oldBrush = pDC->SelectObject(&brush);
+		pDC->Rectangle(sPoint.x, sPoint.y, ePoint.x, ePoint.y);
+		pDC->SelectObject(&oldPen);
+		pDC->SelectObject(oldBrush);
+	}
+
+	else if ((getPatternflag() == TRUE))
+	{
+		CBrush brush(getSidePattern(), getSideColor());
+		CBrush* oldBrush = pDC->SelectObject(&brush);
+		pDC->Rectangle(sPoint.x, sPoint.y, ePoint.x, ePoint.y);
+		pDC->SelectObject(&oldPen);
+		pDC->SelectObject(oldBrush);
+	}
+
 
 	if (getSelect()){
 

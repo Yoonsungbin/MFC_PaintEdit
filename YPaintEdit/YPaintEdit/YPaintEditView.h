@@ -54,6 +54,7 @@ public:
 	int linePattern = 0;																// PS_SOLID
 	COLORREF sideColor = RGB(255,255,255);												//Èò»ö
 	int sidePattern = NULL;																//HS_BDIAGONAL	
+	BOOL sidePatternflag2=FALSE;
 	int fontSize;
 	int fontPattern;
 

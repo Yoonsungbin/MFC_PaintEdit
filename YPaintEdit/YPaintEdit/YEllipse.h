@@ -1,10 +1,11 @@
 #pragma once
 #include "YTwoDimension.h"
+
 class YEllipse :public YTwoDimension
 {
 public:
 	YEllipse();
-	YEllipse(CPoint start, CPoint end, int color, int thick, int pattern, int inColor,int sidepattern);
+	YEllipse(CPoint start, CPoint end, int color, int thick, int pattern, int inColor,int sidepattern,BOOL patternFlag);
 	~YEllipse();
 
 

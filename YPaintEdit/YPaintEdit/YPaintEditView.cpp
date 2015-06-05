@@ -179,7 +179,7 @@ void CYPaintEditView::OnPaint()
 
 	CDC dcmem;
 	dcmem.CreateCompatibleDC(&dc);											//메모리 dc 생성
-	bitmap.CreateCompatibleBitmap(&dc,rect.Width(), rect.Height());			//전체화면을 대상으로 bitmap 생성
+	bitmap.CreateCompatibleBitmap(&dc, rect.Width(), rect.Height());			//전체화면을 대상으로 bitmap 생성
 	dcmem.SelectObject(&bitmap);											//비트맵 선택
 
 	dcmem.SelectStockObject(NULL_PEN);
@@ -210,57 +210,57 @@ void CYPaintEditView::Paint(CDC* dc)
 		switch (pDoc->yType){
 		case line:
 		{
-			pDoc->pLine->draw(dc);
-			break;
+					 pDoc->pLine->draw(dc);
+					 break;
 		}
 		case polyline:
 		{
-			pDoc->pPolyLine->draw(dc);
-			break;
+						 pDoc->pPolyLine->draw(dc);
+						 break;
 		}
 		case ellipse:
 		{
-			pDoc->pEllipse->draw(dc);
-			break;
+						pDoc->pEllipse->draw(dc);
+						break;
 		}
 		case rectangle:
 		{
-			pDoc->pRectangle->draw(dc);
-			break;
+						  pDoc->pRectangle->draw(dc);
+						  break;
 		}
 		case choice:
 		{
-			if (pDoc->currentObj == NULL) break;
+					   if (pDoc->currentObj == NULL) break;
 
-			switch (pDoc->currentObj->getType()){
-			case line:
-			{
-				pDoc->pLine = (YLine*)pDoc->currentObj;
-				pDoc->pLine->draw(dc);
-				break;
-			}
-			case polyline:
-			{
-				pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
-				pDoc->pPolyLine->draw(dc);
-				break;
-			}
-			case ellipse:
-			{
-				pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
-				pDoc->pEllipse->draw(dc);
-				break;
-			}
-			case rectangle:
-			{
-				pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
-				pDoc->pRectangle->draw(dc);
-				break;
-			}
-			default:
-				break;
-			}
-			break;
+					   switch (pDoc->currentObj->getType()){
+					   case line:
+					   {
+									pDoc->pLine = (YLine*)pDoc->currentObj;
+									pDoc->pLine->draw(dc);
+									break;
+					   }
+					   case polyline:
+					   {
+										pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
+										pDoc->pPolyLine->draw(dc);
+										break;
+					   }
+					   case ellipse:
+					   {
+									   pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
+									   pDoc->pEllipse->draw(dc);
+									   break;
+					   }
+					   case rectangle:
+					   {
+										 pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
+										 pDoc->pRectangle->draw(dc);
+										 break;
+					   }
+					   default:
+						   break;
+					   }
+					   break;
 		}
 		default:
 			break;
@@ -361,231 +361,231 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 		// 각각의 케이스문  생성자 초기화 , doc의 각 객체포인터로 연결 ,타입 ,선택값(TRUE),drawing ,i
 	case line:
 	{
-		//초기화
-		pDoc->pLine = new YLine(point, point,lineColor, lineThick, linePattern);
-		pDoc->pLine->setType(line);
-		pDoc->pLine->setSelect(TRUE);
-		pDoc->drawing = TRUE;
-		break;
+				 //초기화
+				 pDoc->pLine = new YLine(point, point, lineColor, lineThick, linePattern);
+				 pDoc->pLine->setType(line);
+				 pDoc->pLine->setSelect(TRUE);
+				 pDoc->drawing = TRUE;
+				 break;
 	}
 	case polyline:
 	{
-		if (pDoc->clickPolyLine == FALSE){   //시작 생성
-			pDoc->pPolyLine = new YPolyLine(lineColor, lineThick, linePattern);
-			pDoc->pPolyLine->setSelect(TRUE);
-			pDoc->pPolyLine->addPoint(point);
-			pDoc->pPolyLine->setType(polyline);
-			pDoc->pPolyLine->setEPoint(point);
-			pDoc->pPolyLine->setDrawPolyLine(TRUE);
-			pDoc->drawing = TRUE;
-			pDoc->clickPolyLine = TRUE;
-	}
-		else{   //시작점생성후 클릭할때 마다
-			pDoc->drawing = TRUE;
-			pDoc->pPolyLine->addPoint(point);
-		}
-		break;
+					 if (pDoc->clickPolyLine == FALSE){   //시작 생성
+						 pDoc->pPolyLine = new YPolyLine(lineColor, lineThick, linePattern);
+						 pDoc->pPolyLine->setSelect(TRUE);
+						 pDoc->pPolyLine->addPoint(point);
+						 pDoc->pPolyLine->setType(polyline);
+						 pDoc->pPolyLine->setEPoint(point);
+						 pDoc->pPolyLine->setDrawPolyLine(TRUE);
+						 pDoc->drawing = TRUE;
+						 pDoc->clickPolyLine = TRUE;
+					 }
+					 else{   //시작점생성후 클릭할때 마다
+						 pDoc->drawing = TRUE;
+						 pDoc->pPolyLine->addPoint(point);
+					 }
+					 break;
 	}
 	case ellipse:
 	{
-		pDoc->pEllipse = new YEllipse(point, point, lineColor, lineThick, linePattern,sideColor,sidePattern);
-		pDoc->pEllipse->setSelect(TRUE);
-		pDoc->pEllipse->setType(ellipse);
-		pDoc->drawing = TRUE;
-		break;
+					pDoc->pEllipse = new YEllipse(point, point, lineColor, lineThick, linePattern, sideColor, sidePattern, sidePatternflag2);
+					pDoc->pEllipse->setSelect(TRUE);
+					pDoc->pEllipse->setType(ellipse);
+					pDoc->drawing = TRUE;
+					break;
 	}
 	case rectangle:
 	{
-	    pDoc->pRectangle = new YRectangle(point, point, lineColor, lineThick, linePattern, sideColor);
-		pDoc->pRectangle->setSelect(TRUE);
-		pDoc->pRectangle->setType(rectangle);
-		pDoc->drawing = TRUE;
-		break;
+					  pDoc->pRectangle = new YRectangle(point, point, lineColor, lineThick, linePattern, sideColor, sidePatternflag2);
+					  pDoc->pRectangle->setSelect(TRUE);
+					  pDoc->pRectangle->setType(rectangle);
+					  pDoc->drawing = TRUE;
+					  break;
 	}
 	case text:
 	{
-		if (pDoc->textEditing == FALSE){
-			pDoc->pText = new YText(point);
-			pDoc->pText->setType(text);
-			pDoc->pText->setSelect(TRUE);
-			pDoc->textEditing = TRUE;
-		}
-		else {
-			pDoc->pText->setRgn();
-			pDoc->pText->setSelect(FALSE);
-			pDoc->obj_List.AddTail(pDoc->pText);
-			pDoc->pText = NULL;
-			pDoc->textEditing = FALSE;
-			pDoc->tmp.Empty();
-			HideCaret();
-		}
-		break;
+				 if (pDoc->textEditing == FALSE){
+					 pDoc->pText = new YText(point);
+					 pDoc->pText->setType(text);
+					 pDoc->pText->setSelect(TRUE);
+					 pDoc->textEditing = TRUE;
+				 }
+				 else {
+					 pDoc->pText->setRgn();
+					 pDoc->pText->setSelect(FALSE);
+					 pDoc->obj_List.AddTail(pDoc->pText);
+					 pDoc->pText = NULL;
+					 pDoc->textEditing = FALSE;
+					 pDoc->tmp.Empty();
+					 HideCaret();
+				 }
+				 break;
 	}
-case choice:
+	case choice:
 	{
-		
-		// 4 // (선택된 도형이 있는 경우에서) 다시 선택할 때  - 기존에 선택한 도형을 선택할수도, 새로운 도형을 선택할수도, 빈공간을 선택할수도 있으므로 currentObj를 초기화하고, 좌표를 사용하여 다시 리스트 탐색
-		if (pDoc->currentObj != NULL)	{
-			pDoc->currentObj->setSelect(FALSE);
-			pDoc->currentObj = NULL;
-		}
-		
-	
-		// 0 // 리스트에서 좌표에 해당하는 도형을 찾는 부분
-		POSITION pos = pDoc->obj_List.GetTailPosition();
-		while (pos) {
-			pDoc->currentObj = (YObject*)pDoc->obj_List.GetPrev(pos);
 
-			// 좌표에 해당하는 도형이 있을 경우
-			if (pDoc->currentObj->checkRgn(point) == TRUE){
-				pDoc->currentObj->setSelect(TRUE);
-				break;
-			}
-			
-			// 도형이 선택되어 리젼과 끝점을 그려진 경우, 다시 선택했을때 끝점을 선택해도 선택되게 설정하는 부분
-			if (pDoc->currentObj == pDoc->pLine){
-				if (pDoc->pLine->getMRect()[0].PtInRect(point) || pDoc->pLine->getMRect()[1].PtInRect(point)) {
-					pDoc->currentObj->setSelect(TRUE);
-					break;
-				}
-			}
-			else if (pDoc->currentObj == pDoc->pEllipse){
-				if (pDoc->pEllipse->getMRect()[0].PtInRect(point) || pDoc->pEllipse->getMRect()[1].PtInRect(point), 
-					pDoc->pEllipse->getMRect()[2].PtInRect(point), pDoc->pEllipse->getMRect()[3].PtInRect(point)) {
-					pDoc->currentObj->setSelect(TRUE);
-					break;
-				}
-			}
-			else if (pDoc->currentObj == pDoc->pRectangle){
-				if (pDoc->pRectangle->getMRect()[0].PtInRect(point) || pDoc->pRectangle->getMRect()[1].PtInRect(point),
-					pDoc->pRectangle->getMRect()[2].PtInRect(point), pDoc->pRectangle->getMRect()[3].PtInRect(point)) {
-					pDoc->currentObj->setSelect(TRUE);
-					break;
-				}
+				   // 4 // (선택된 도형이 있는 경우에서) 다시 선택할 때  - 기존에 선택한 도형을 선택할수도, 새로운 도형을 선택할수도, 빈공간을 선택할수도 있으므로 currentObj를 초기화하고, 좌표를 사용하여 다시 리스트 탐색
+				   if (pDoc->currentObj != NULL)	{
+					   pDoc->currentObj->setSelect(FALSE);
+					   pDoc->currentObj = NULL;
+				   }
 
 
-			}
-		}
+				   // 0 // 리스트에서 좌표에 해당하는 도형을 찾는 부분
+				   POSITION pos = pDoc->obj_List.GetTailPosition();
+				   while (pos) {
+					   pDoc->currentObj = (YObject*)pDoc->obj_List.GetPrev(pos);
+
+					   // 좌표에 해당하는 도형이 있을 경우
+					   if (pDoc->currentObj->checkRgn(point) == TRUE){
+						   pDoc->currentObj->setSelect(TRUE);
+						   break;
+					   }
+
+					   // 도형이 선택되어 리젼과 끝점을 그려진 경우, 다시 선택했을때 끝점을 선택해도 선택되게 설정하는 부분
+					   if (pDoc->currentObj == pDoc->pLine){
+						   if (pDoc->pLine->getMRect()[0].PtInRect(point) || pDoc->pLine->getMRect()[1].PtInRect(point)) {
+							   pDoc->currentObj->setSelect(TRUE);
+							   break;
+						   }
+					   }
+					   else if (pDoc->currentObj == pDoc->pEllipse){
+						   if (pDoc->pEllipse->getMRect()[0].PtInRect(point) || pDoc->pEllipse->getMRect()[1].PtInRect(point)||
+							   pDoc->pEllipse->getMRect()[2].PtInRect(point)|| pDoc->pEllipse->getMRect()[3].PtInRect(point)) {
+							   pDoc->currentObj->setSelect(TRUE);
+							   break;
+						   }
+					   }
+					   else if (pDoc->currentObj == pDoc->pRectangle){
+						   if (pDoc->pRectangle->getMRect()[0].PtInRect(point) || pDoc->pRectangle->getMRect()[1].PtInRect(point)||
+							   pDoc->pRectangle->getMRect()[2].PtInRect(point)|| pDoc->pRectangle->getMRect()[3].PtInRect(point)) {
+							   pDoc->currentObj->setSelect(TRUE);
+							   break;
+						   }
 
 
-		// 1 // (리스트가 비어 있는 경우) 빈공간을 선택한 경우
-		if (pDoc->currentObj == NULL) // 리스트 탐색을 진행하지 않았으므로 currentObj는 NULL이다.
-			break;
+					   }
+				   }
 
 
-		// 2 // (리스트에 항목이 있는 경우) 빈공간을 선택하여 리스트에서 도형을 찾지 못하는 경우
-		else if (pDoc->currentObj->getSelect() == FALSE) // 자연스럽게 리스트의 마지막 요소가 currnetObj가 되고 그것은 항상 FALSE임을 이용
-			pDoc->currentObj = NULL;
+				   // 1 // (리스트가 비어 있는 경우) 빈공간을 선택한 경우
+				   if (pDoc->currentObj == NULL) // 리스트 탐색을 진행하지 않았으므로 currentObj는 NULL이다.
+					   break;
 
 
-		// 3 // (리스트에 항목이 있는 경우) 리스트에서 도형을 찾은 경우  - 선택된 도형 설정
-		else if (pDoc->currentObj->getSelect() == TRUE){
-			pDoc->Original_Point = point;  //선 이동시 기준점이 되는 좌표
-			pDoc->drawing = TRUE;
+				   // 2 // (리스트에 항목이 있는 경우) 빈공간을 선택하여 리스트에서 도형을 찾지 못하는 경우
+				   else if (pDoc->currentObj->getSelect() == FALSE) // 자연스럽게 리스트의 마지막 요소가 currnetObj가 되고 그것은 항상 FALSE임을 이용
+					   pDoc->currentObj = NULL;
 
-			switch (pDoc->currentObj->getType()){
-			case line:
-			{
-				pDoc->pLine = (YLine*)pDoc->currentObj;
-				if (pDoc->pLine->getMRect()[0].PtInRect(point)){  // 시작점 클릭
-					pDoc->pLine->setSPoint(point);
-					pDoc->pLine->setMoveMode(-1);  //시작점이동
-				}
-				else if (pDoc->pLine->getMRect()[1].PtInRect(point)){	// 끝점 클릭
-					pDoc->pLine->setEPoint(point);
-					pDoc->pLine->setMoveMode(1);  //끝점이동
-					break;
-				}
-				else if (pDoc->pLine->checkRgn(point)) {		//그 외 영역 클릭
-					pDoc->pLine->setMoveMode(0); //전체이동
-				}
-				break;
-			}
-			case polyline:
-			{
-				pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
-				for (int i = 0; i < pDoc->pPolyLine->getPolyList()->GetSize(); i++){
-					if (pDoc->pPolyLine->getMRect()[i].PtInRect(point)){
-						pDoc->pPolyLine->setIndex(i);
-						pDoc->pPolyLine->setMoveMode(1);  //한점이동
-						break;
-					}
-					else pDoc->pPolyLine->setMoveMode(0);  //전체이동
-				}
-				break;
-			}
-			case ellipse:
-			{
-							//LBUtton Down이야
-							pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
-							//1사분면
-							if (pDoc->pEllipse->getMRect()[0].PtInRect(point)){  // 시작점 클릭
-								pDoc->pEllipse->setSPoint(point);
-								pDoc->pEllipse->setMoveMode(-1);  //시작점 이동체크
-							}
-							else if (pDoc->pEllipse->getMRect()[1].PtInRect(point)){	// 끝점 클릭 4사분면
-								pDoc->pEllipse->setEPoint(point);
-								pDoc->pEllipse->setMoveMode(1);  //끝점 이동체크
-								break;
-							}
-							else if (pDoc->pEllipse->getMRect()[2].PtInRect(point)){	//3사분면
-								pDoc->pEllipse->setMixPoint(point);
 
-								pDoc->pEllipse->setMoveMode(2);  //3사분면 이동체크
-								break;
-							}
-							else if (pDoc->pEllipse->getMRect()[3].PtInRect(point)){	// 2사분면
+				   // 3 // (리스트에 항목이 있는 경우) 리스트에서 도형을 찾은 경우  - 선택된 도형 설정
+				   else if (pDoc->currentObj->getSelect() == TRUE){
+					   pDoc->Original_Point = point;  //선 이동시 기준점이 되는 좌표
+					   pDoc->drawing = TRUE;
 
-								pDoc->pEllipse->setMixPoint(point);
-								pDoc->pEllipse->setMoveMode(3);  //2사분면 이동 체크
-								break;
-							}
-							else if (pDoc->pEllipse->checkRgn(point)) {		//그 외 영역 클릭
-								pDoc->pEllipse->setMoveMode(0); //전체이동
-							}
-							break;
-			}
-			case rectangle:
-			{
-				pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
-				if (pDoc->pRectangle->getMRect()[0].PtInRect(point)){  // 시작점 클릭
-					pDoc->pRectangle->setSPoint(point);
-					pDoc->pRectangle->setMoveMode(-1);  //시작점 이동체크
-				}
-				else if (pDoc->pRectangle->getMRect()[1].PtInRect(point)){	// 끝점 클릭 4사분면
-					pDoc->pRectangle->setEPoint(point);
-					pDoc->pRectangle->setMoveMode(1);  //끝점 이동체크
-					break;
-				}
-				else if (pDoc->pRectangle->getMRect()[2].PtInRect(point)){	//3사분면
-					pDoc->pRectangle->setMixPoint(point);
+					   switch (pDoc->currentObj->getType()){
+					   case line:
+					   {
+									pDoc->pLine = (YLine*)pDoc->currentObj;
+									if (pDoc->pLine->getMRect()[0].PtInRect(point)){  // 시작점 클릭
+										pDoc->pLine->setSPoint(point);
+										pDoc->pLine->setMoveMode(-1);  //시작점이동
+									}
+									else if (pDoc->pLine->getMRect()[1].PtInRect(point)){	// 끝점 클릭
+										pDoc->pLine->setEPoint(point);
+										pDoc->pLine->setMoveMode(1);  //끝점이동
+										break;
+									}
+									else if (pDoc->pLine->checkRgn(point)) {		//그 외 영역 클릭
+										pDoc->pLine->setMoveMode(0); //전체이동
+									}
+									break;
+					   }
+					   case polyline:
+					   {
+										pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
+										for (int i = 0; i < pDoc->pPolyLine->getPolyList()->GetSize(); i++){
+											if (pDoc->pPolyLine->getMRect()[i].PtInRect(point)){
+												pDoc->pPolyLine->setIndex(i);
+												pDoc->pPolyLine->setMoveMode(1);  //한점이동
+												break;
+											}
+											else pDoc->pPolyLine->setMoveMode(0);  //전체이동
+										}
+										break;
+					   }
+					   case ellipse:
+					   {
+									   //LBUtton Down이야
+									   pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
+									   //1사분면
+									   if (pDoc->pEllipse->getMRect()[0].PtInRect(point)){  // 시작점 클릭
+										   pDoc->pEllipse->setSPoint(point);
+										   pDoc->pEllipse->setMoveMode(-1);  //시작점 이동체크
+									   }
+									   else if (pDoc->pEllipse->getMRect()[1].PtInRect(point)){	// 끝점 클릭 4사분면
+										   pDoc->pEllipse->setEPoint(point);
+										   pDoc->pEllipse->setMoveMode(1);  //끝점 이동체크
+										   break;
+									   }
+									   else if (pDoc->pEllipse->getMRect()[2].PtInRect(point)){	//3사분면
+										   pDoc->pEllipse->setMixPoint(point);
 
-					pDoc->pRectangle->setMoveMode(2);  //3사분면 이동체크
-					break;
-				}
-				else if (pDoc->pRectangle->getMRect()[3].PtInRect(point)){	// 2사분면
+										   pDoc->pEllipse->setMoveMode(2);  //3사분면 이동체크
+										   break;
+									   }
+									   else if (pDoc->pEllipse->getMRect()[3].PtInRect(point)){	// 2사분면
 
-					pDoc->pRectangle->setMixPoint(point);
-					pDoc->pRectangle->setMoveMode(3);  //2사분면 이동 체크
-					break;
-				}
-				else if (pDoc->pRectangle->checkRgn(point)) {		//그 외 영역 클릭
-					pDoc->pRectangle->setMoveMode(0); //전체이동
-				}
-				
-				break;
-			}
-			case text:
-			{
-				pDoc->pText = (YText*)pDoc->currentObj;
-				break;
-			}
-			default:
-				break;
-			}		
-		}
-		Invalidate(FALSE);
-		break;
+										   pDoc->pEllipse->setMixPoint(point);
+										   pDoc->pEllipse->setMoveMode(3);  //2사분면 이동 체크
+										   break;
+									   }
+									   else if (pDoc->pEllipse->checkRgn(point)) {		//그 외 영역 클릭
+										   pDoc->pEllipse->setMoveMode(0); //전체이동
+									   }
+									   break;
+					   }
+					   case rectangle:
+					   {
+										 pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
+										 if (pDoc->pRectangle->getMRect()[0].PtInRect(point)){  // 시작점 클릭
+											 pDoc->pRectangle->setSPoint(point);
+											 pDoc->pRectangle->setMoveMode(-1);  //시작점 이동체크
+										 }
+										 else if (pDoc->pRectangle->getMRect()[1].PtInRect(point)){	// 끝점 클릭 4사분면
+											 pDoc->pRectangle->setEPoint(point);
+											 pDoc->pRectangle->setMoveMode(1);  //끝점 이동체크
+											 break;
+										 }
+										 else if (pDoc->pRectangle->getMRect()[2].PtInRect(point)){	//3사분면
+											 pDoc->pRectangle->setMixPoint(point);
+
+											 pDoc->pRectangle->setMoveMode(2);  //3사분면 이동체크
+											 break;
+										 }
+										 else if (pDoc->pRectangle->getMRect()[3].PtInRect(point)){	// 2사분면
+
+											 pDoc->pRectangle->setMixPoint(point);
+											 pDoc->pRectangle->setMoveMode(3);  //2사분면 이동 체크
+											 break;
+										 }
+										 else if (pDoc->pRectangle->checkRgn(point)) {		//그 외 영역 클릭
+											 pDoc->pRectangle->setMoveMode(0); //전체이동
+										 }
+
+										 break;
+					   }
+					   case text:
+					   {
+									pDoc->pText = (YText*)pDoc->currentObj;
+									break;
+					   }
+					   default:
+						   break;
+					   }
+				   }
+				   Invalidate(FALSE);
+				   break;
 	}
 	default:
 		break;
@@ -603,109 +603,109 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 		switch (pDoc->yType){
 		case line:
 		{
-			pDoc->pLine->setEPoint(point);
-			break;
+					 pDoc->pLine->setEPoint(point);
+					 break;
 		}
 		case polyline:
 		{
-			pDoc->pPolyLine->setEPoint(point);
-			break;
+						 pDoc->pPolyLine->setEPoint(point);
+						 break;
 		}
 		case ellipse:
 		{
-			pDoc->pEllipse->setEPoint(point);
-			break;
+						pDoc->pEllipse->setEPoint(point);
+						break;
 		}
 		case rectangle:
 		{
-			pDoc->pRectangle->setEPoint(point);
-			break;
+						  pDoc->pRectangle->setEPoint(point);
+						  break;
 		}
 		case text:
 		{
-			break;
+					 break;
 		}
 		case choice:
 		{
-			if (pDoc->currentObj == NULL) break;  // 빈곳을 클릭했을때 (예외상황)
+					   if (pDoc->currentObj == NULL) break;  // 빈곳을 클릭했을때 (예외상황)
 
-			CPoint t_point = point - pDoc->Original_Point; // 좌표 움직임
-			pDoc->Original_Point = point;
+					   CPoint t_point = point - pDoc->Original_Point; // 좌표 움직임
+					   pDoc->Original_Point = point;
 
-			switch (pDoc->currentObj->getType()){
-			case line:
-			{
-				//pDoc->pLine = (YLine*)pDoc->currentObj;
-				//선택되었을때 이동 변수에따라 다른 move실행
-				if (pDoc->pLine->getSelect()){
-					if (pDoc->pLine->getMoveMode() == 0){  //전체이동
-						pDoc->pLine->moveAll(t_point.x, t_point.y);
-						pDoc->pLine->setRgn();
-					}
-					else {
-						pDoc->pLine->move(t_point.x, t_point.y);
-						pDoc->pLine->setRgn();
-					}
-				}
-				break;
-			}
-			case polyline:
-			{
-				//pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
-				if (pDoc->pPolyLine->getMoveMode() == 0){
-					if (pDoc->pPolyLine->getSelect()){
-						pDoc->pPolyLine->moveAll(t_point.x, t_point.y);
-						pDoc->pPolyLine->setRgn();
-					}
-				}
-				else {
-					pDoc->pPolyLine->move(t_point.x, t_point.y);
-					pDoc->pPolyLine->setRgn();
-				}
-				break;
-			}
-			case ellipse:
-			{
-				//pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
-				//선택되었을때 이동 변수에따라 다른 move실행
-				if (pDoc->pEllipse->getSelect()){
-					if (pDoc->pEllipse->getMoveMode() == 0){  //전체이동
-						pDoc->pEllipse->moveAll(t_point.x, t_point.y);
-						pDoc->pEllipse->setRgn();
-					}
-					else {
-						pDoc->pEllipse->move(t_point.x, t_point.y);
-						pDoc->pEllipse->setRgn();
-					}
-				}
-				break;
-			}
-			case rectangle:
-			{
-				//pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
-				//선택되었을때 이동 변수에따라 다른 move실행
-				if (pDoc->pRectangle->getSelect()){
-					if (pDoc->pRectangle->getMoveMode() == 0){  //전체이동
-						pDoc->pRectangle->moveAll(t_point.x, t_point.y);
-						pDoc->pRectangle->setRgn();
-					}
-					else {
-						pDoc->pRectangle->move(t_point.x, t_point.y);
-						pDoc->pRectangle->setRgn();
-					}
-				}
-				break;
-			}
-			case text:
-			{
-				pDoc->pText->setSPoint(pDoc->pText->getSPoint() + t_point);
-				pDoc->pText->setEPoint(pDoc->pText->getEPoint() + t_point);
-				pDoc->pText->setRect(pDoc->pText->getSPoint(), pDoc->pText->getEPoint());
-				pDoc->pText->setRgn();
-			}
-			default:
-				break;
-			}
+					   switch (pDoc->currentObj->getType()){
+					   case line:
+					   {
+									//pDoc->pLine = (YLine*)pDoc->currentObj;
+									//선택되었을때 이동 변수에따라 다른 move실행
+									if (pDoc->pLine->getSelect()){
+										if (pDoc->pLine->getMoveMode() == 0){  //전체이동
+											pDoc->pLine->moveAll(t_point.x, t_point.y);
+											pDoc->pLine->setRgn();
+										}
+										else {
+											pDoc->pLine->move(t_point.x, t_point.y);
+											pDoc->pLine->setRgn();
+										}
+									}
+									break;
+					   }
+					   case polyline:
+					   {
+										//pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
+										if (pDoc->pPolyLine->getMoveMode() == 0){
+											if (pDoc->pPolyLine->getSelect()){
+												pDoc->pPolyLine->moveAll(t_point.x, t_point.y);
+												pDoc->pPolyLine->setRgn();
+											}
+										}
+										else {
+											pDoc->pPolyLine->move(t_point.x, t_point.y);
+											pDoc->pPolyLine->setRgn();
+										}
+										break;
+					   }
+					   case ellipse:
+					   {
+									   //pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
+									   //선택되었을때 이동 변수에따라 다른 move실행
+									   if (pDoc->pEllipse->getSelect()){
+										   if (pDoc->pEllipse->getMoveMode() == 0){  //전체이동
+											   pDoc->pEllipse->moveAll(t_point.x, t_point.y);
+											   pDoc->pEllipse->setRgn();
+										   }
+										   else {
+											   pDoc->pEllipse->move(t_point.x, t_point.y);
+											   pDoc->pEllipse->setRgn();
+										   }
+									   }
+									   break;
+					   }
+					   case rectangle:
+					   {
+										 //pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
+										 //선택되었을때 이동 변수에따라 다른 move실행
+										 if (pDoc->pRectangle->getSelect()){
+											 if (pDoc->pRectangle->getMoveMode() == 0){  //전체이동
+												 pDoc->pRectangle->moveAll(t_point.x, t_point.y);
+												 pDoc->pRectangle->setRgn();
+											 }
+											 else {
+												 pDoc->pRectangle->move(t_point.x, t_point.y);
+												 pDoc->pRectangle->setRgn();
+											 }
+										 }
+										 break;
+					   }
+					   case text:
+					   {
+									pDoc->pText->setSPoint(pDoc->pText->getSPoint() + t_point);
+									pDoc->pText->setEPoint(pDoc->pText->getEPoint() + t_point);
+									pDoc->pText->setRect(pDoc->pText->getSPoint(), pDoc->pText->getEPoint());
+									pDoc->pText->setRgn();
+					   }
+					   default:
+						   break;
+					   }
 		}
 		default:
 			break;
@@ -723,42 +723,42 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 	switch (pDoc->yType){
 	case line:
 	{
-		pDoc->pLine->setRgn();
-		pDoc->pLine->setSelect(FALSE);
-		pDoc->obj_List.AddTail(pDoc->pLine);
-		pDoc->pLine = NULL;
-		pDoc->drawing = FALSE;
-		break;
+				 pDoc->pLine->setRgn();
+				 pDoc->pLine->setSelect(FALSE);
+				 pDoc->obj_List.AddTail(pDoc->pLine);
+				 pDoc->pLine = NULL;
+				 pDoc->drawing = FALSE;
+				 break;
 	}
 	case polyline:
 	{
-		break;
+					 break;
 	}
 	case ellipse:
 	{
-		pDoc->pEllipse->setRgn();
-		pDoc->pEllipse->setSelect(FALSE);
-		pDoc->obj_List.AddTail(pDoc->pEllipse);
-		pDoc->drawing = FALSE;
-		ReleaseCapture();
-		break;
+					pDoc->pEllipse->setRgn();
+					pDoc->pEllipse->setSelect(FALSE);
+					pDoc->obj_List.AddTail(pDoc->pEllipse);
+					pDoc->drawing = FALSE;
+					ReleaseCapture();
+					break;
 	}
 	case rectangle:
 	{
-		pDoc->pRectangle->setRgn();
-		pDoc->pRectangle->setSelect(FALSE);
-		pDoc->obj_List.AddTail(pDoc->pRectangle);
-		pDoc->drawing = FALSE;
-		ReleaseCapture();
-		break;
+					  pDoc->pRectangle->setRgn();
+					  pDoc->pRectangle->setSelect(FALSE);
+					  pDoc->obj_List.AddTail(pDoc->pRectangle);
+					  pDoc->drawing = FALSE;
+					  ReleaseCapture();
+					  break;
 	}
 	case text:
 	{
-		break;
+				 break;
 	}
 	case choice:
 	{
-		break;
+				   break;
 	}
 	default:
 		break;
@@ -816,7 +816,7 @@ void CYPaintEditView::MenuPolyLineButton()
 	menu_Ellipse = FALSE;
 	menu_Rectangle = FALSE;
 	menu_Text = FALSE;
-	
+
 	CYPaintEditDoc* pDoc = GetDocument();
 	pDoc->yType = polyline;
 
@@ -856,7 +856,7 @@ void CYPaintEditView::OnRectangleButton()
 	menu_Ellipse = FALSE;
 	menu_Rectangle = TRUE;
 	menu_Text = FALSE;
-	
+
 	CYPaintEditDoc* pDoc = GetDocument();
 	pDoc->yType = rectangle;
 
@@ -876,7 +876,7 @@ void CYPaintEditView::MenuTextButton()
 	menu_Ellipse = FALSE;
 	menu_Rectangle = FALSE;
 	menu_Text = TRUE;
-	
+
 	CYPaintEditDoc* pDoc = GetDocument();
 	pDoc->yType = text;
 
@@ -958,28 +958,28 @@ void CYPaintEditView::RMenuColorButton() //마우스 오른쪽버튼 클릭후 -> 색 클릭시
 		switch (pDoc->currentObj->getType()){
 		case line:
 		{
-			pDoc->pLine = (YLine*)pDoc->currentObj;
-			pDoc->pLine->setLineColor(lineColor);
-			break;
+					 pDoc->pLine = (YLine*)pDoc->currentObj;
+					 pDoc->pLine->setLineColor(lineColor);
+					 break;
 		}
 		case polyline:
 		{
-			pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
-			pDoc->pPolyLine->setLineColor(lineColor);
-			break;
+						 pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
+						 pDoc->pPolyLine->setLineColor(lineColor);
+						 break;
 		}
 
 		case ellipse:
 		{
-			pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
-			pDoc->pEllipse->setLineColor(lineColor);
-			break;
+						pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
+						pDoc->pEllipse->setLineColor(lineColor);
+						break;
 		}
 		case rectangle:
 		{
-			pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
-			pDoc->pRectangle->setLineColor(lineColor);
-			break;
+						  pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
+						  pDoc->pRectangle->setLineColor(lineColor);
+						  break;
 		}
 		default:
 			break;
@@ -1031,31 +1031,31 @@ void CYPaintEditView::FigureSettingButton() //마우스 오른쪽 버튼 클릭후 -> 도형 
 	switch (pDoc->currentObj->getType()){
 	case line:
 	{
-		pDoc->pLine = (YLine*)pDoc->currentObj;
-		dlg.lineThick = pDoc->pLine->getLineThick();
-		dlg.linePattern = pDoc->pLine->getLinePattern();
-		break;
+				 pDoc->pLine = (YLine*)pDoc->currentObj;
+				 dlg.lineThick = pDoc->pLine->getLineThick();
+				 dlg.linePattern = pDoc->pLine->getLinePattern();
+				 break;
 	}
 	case polyline:
 	{
-		pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
-		dlg.lineThick = pDoc->pPolyLine->getLineThick();
-		dlg.linePattern = pDoc->pPolyLine->getLinePattern();
-		break;
+					 pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
+					 dlg.lineThick = pDoc->pPolyLine->getLineThick();
+					 dlg.linePattern = pDoc->pPolyLine->getLinePattern();
+					 break;
 	}
 	case ellipse:
 	{
-		pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
-		dlg.lineThick = pDoc->pEllipse->getLineThick();
-		dlg.linePattern = pDoc->pEllipse->getLinePattern();
-		break;
+					pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
+					dlg.lineThick = pDoc->pEllipse->getLineThick();
+					dlg.linePattern = pDoc->pEllipse->getLinePattern();
+					break;
 	}
 	case rectangle:
 	{
-		pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
-		dlg.lineThick = pDoc->pRectangle->getLineThick();
-		dlg.linePattern = pDoc->pRectangle->getLinePattern();
-		break;
+					  pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
+					  dlg.lineThick = pDoc->pRectangle->getLineThick();
+					  dlg.linePattern = pDoc->pRectangle->getLinePattern();
+					  break;
 	}
 
 
@@ -1069,31 +1069,31 @@ void CYPaintEditView::FigureSettingButton() //마우스 오른쪽 버튼 클릭후 -> 도형 
 		switch (pDoc->currentObj->getType()){
 		case line:
 		{
-			pDoc->pLine = (YLine*)pDoc->currentObj;
-			pDoc->pLine->setLineThick(dlg.lineThick);
-			pDoc->pLine->setLinePattern(dlg.linePattern);
-			break;
+					 pDoc->pLine = (YLine*)pDoc->currentObj;
+					 pDoc->pLine->setLineThick(dlg.lineThick);
+					 pDoc->pLine->setLinePattern(dlg.linePattern);
+					 break;
 		}
 		case polyline:
 		{
-			pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
-			pDoc->pPolyLine->setLineThick(dlg.lineThick);
-			pDoc->pPolyLine->setLinePattern(dlg.linePattern);
-			break;
+						 pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
+						 pDoc->pPolyLine->setLineThick(dlg.lineThick);
+						 pDoc->pPolyLine->setLinePattern(dlg.linePattern);
+						 break;
 		}
 		case ellipse:
 		{
-			pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
-			pDoc->pEllipse->setLineThick(dlg.lineThick);
-			pDoc->pEllipse->setLinePattern(dlg.linePattern);
-			break;
+						pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
+						pDoc->pEllipse->setLineThick(dlg.lineThick);
+						pDoc->pEllipse->setLinePattern(dlg.linePattern);
+						break;
 		}
 		case rectangle:
 		{
-			pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
-			pDoc->pRectangle->setLineThick(dlg.lineThick);
-			pDoc->pRectangle->setLinePattern(dlg.linePattern);
-			break;
+						  pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
+						  pDoc->pRectangle->setLineThick(dlg.lineThick);
+						  pDoc->pRectangle->setLinePattern(dlg.linePattern);
+						  break;
 		}
 
 
@@ -1115,8 +1115,8 @@ void CYPaintEditView::OnDeleteClick()
 	POSITION pos = pDoc->obj_List.GetHeadPosition();
 	POSITION tpos;
 	if (pDoc->obj_List.GetSize() == 1){									//객체가 하나만 남아있을때
- 		pDoc->obj_List.RemoveAll();
-		
+		pDoc->obj_List.RemoveAll();
+
 	}
 	else {
 		while (pos) {
@@ -1173,7 +1173,7 @@ void CYPaintEditView::UpdateFigureSettingButton(CCmdUI *pCmdUI)
 void CYPaintEditView::UpdateOnDeleteClick(CCmdUI *pCmdUI)
 {
 	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
-	
+
 }
 void CYPaintEditView::UpdateDeletePointButton(CCmdUI *pCmdUI)
 {
@@ -1191,32 +1191,32 @@ void CYPaintEditView::OnMenulinethick()
 
 	CMFCRibbonEdit* thick = (CMFCRibbonEdit*)main->getRibbon()->FindByID(ID_MENULINETHICK);
 	lineThick = (_ttoi)(thick->GetEditText());
-	
+
 	if (pDoc->currentObj != NULL){
 		switch (pDoc->currentObj->getType()){
 		case line:
 		{
-			pDoc->pLine = (YLine*)pDoc->currentObj;
-			pDoc->pLine->setLineThick(lineThick);
-			break;
+					 pDoc->pLine = (YLine*)pDoc->currentObj;
+					 pDoc->pLine->setLineThick(lineThick);
+					 break;
 		}
 		case polyline:
 		{
-			pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
-			pDoc->pPolyLine->setLineThick(lineThick);
-			break;
+						 pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
+						 pDoc->pPolyLine->setLineThick(lineThick);
+						 break;
 		}
 		case ellipse:
 		{
-			pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
-			pDoc->pEllipse->setLineThick(lineThick);
-			break;
+						pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
+						pDoc->pEllipse->setLineThick(lineThick);
+						break;
 		}
 		case rectangle:
 		{
-			pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
-			pDoc->pRectangle->setLineThick(lineThick);
-			break;
+						  pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
+						  pDoc->pRectangle->setLineThick(lineThick);
+						  break;
 		}
 		default:
 			break;
@@ -1243,27 +1243,27 @@ void CYPaintEditView::OnMenulinecolor()
 		switch (pDoc->currentObj->getType()){
 		case line:
 		{
-			pDoc->pLine = (YLine*)pDoc->currentObj;
-			pDoc->pLine->setLineColor(lineColor);
-			break;
+					 pDoc->pLine = (YLine*)pDoc->currentObj;
+					 pDoc->pLine->setLineColor(lineColor);
+					 break;
 		}
 		case polyline:
 		{
-			pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
-			pDoc->pPolyLine->setLineColor(lineColor);
-			break;
+						 pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
+						 pDoc->pPolyLine->setLineColor(lineColor);
+						 break;
 		}
 		case ellipse:
 		{
-			pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
-			pDoc->pEllipse->setLineColor(lineColor);
-			break;
+						pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
+						pDoc->pEllipse->setLineColor(lineColor);
+						break;
 		}
 		case rectangle:
 		{
-			pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
-			pDoc->pRectangle->setLineColor(lineColor);
-			break;
+						  pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
+						  pDoc->pRectangle->setLineColor(lineColor);
+						  break;
 		}
 		default:
 			break;
@@ -1282,37 +1282,37 @@ void CYPaintEditView::OnMenulinepattern()
 	CMFCRibbonComboBox* pattern = (CMFCRibbonComboBox*)main->getRibbon()->FindByID(ID_MENULINEPATTERN);
 
 	linePattern = pattern->GetCurSel();
-	
+
 	if (pDoc->currentObj != NULL){
 		switch (pDoc->currentObj->getType()){
 		case line:
 		{
-			pDoc->pLine = (YLine*)pDoc->currentObj;
-			pDoc->pLine->setLinePattern(linePattern);
-			break;
+					 pDoc->pLine = (YLine*)pDoc->currentObj;
+					 pDoc->pLine->setLinePattern(linePattern);
+					 break;
 		}
 		case polyline:
 		{
-			pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
-			pDoc->pPolyLine->setLinePattern(linePattern);
-			break;
+						 pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
+						 pDoc->pPolyLine->setLinePattern(linePattern);
+						 break;
 		}
 		case ellipse:
 		{
-			pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
-			pDoc->pEllipse->setLinePattern(linePattern);
-			break;
+						pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
+						pDoc->pEllipse->setLinePattern(linePattern);
+						break;
 		}
 		case rectangle:
 		{
-			pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
-			pDoc->pRectangle->setLinePattern(linePattern);
-			break;
+						  pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
+						  pDoc->pRectangle->setLinePattern(linePattern);
+						  break;
 		}
 		default:
 			break;
 		}
-		
+
 		Invalidate(FALSE);
 	}
 }
@@ -1334,15 +1334,15 @@ void CYPaintEditView::OnMenusidecolor()
 		switch (pDoc->currentObj->getType()){
 		case ellipse:
 		{
-			pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
-			pDoc->pEllipse->setSideColor(sideColor);
-			break;
+						pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
+						pDoc->pEllipse->setSideColor(sideColor);
+						break;
 		}
 		case rectangle:
 		{
-			pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
-			pDoc->pRectangle->setSideColor(sideColor);
-			break;
+						  pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
+						  pDoc->pRectangle->setSideColor(sideColor);
+						  break;
 		}
 		default:
 			break;
@@ -1367,15 +1367,17 @@ void CYPaintEditView::OnMenusidepattern()
 		switch (pDoc->currentObj->getType()){
 		case ellipse:
 		{
-			pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
-			pDoc->pEllipse->setSidePattern(sidePattern);
-			break;
+						pDoc->pEllipse->setPatternflag(TRUE);
+						pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
+						pDoc->pEllipse->setSidePattern(sidePattern);
+
+						break;
 		}
 		case rectangle:
-		{
-			pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
-			pDoc->pRectangle->setSidePattern(sidePattern);
-			break;
+		{					pDoc->pRectangle->setPatternflag(TRUE);
+						  pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
+						  pDoc->pRectangle->setSidePattern(sidePattern);
+						  break;
 		}
 		default:
 			break;
@@ -1387,8 +1389,44 @@ void CYPaintEditView::OnMenusidepattern()
 //기능 : 면 패턴 Update
 void CYPaintEditView::OnUpdateMenusidepattern(CCmdUI *pCmdUI)
 {
-	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+
 	CYPaintEditDoc* pDoc = GetDocument();
-	if (pDoc->yType == ellipse || pDoc->yType == rectangle)	pCmdUI->Enable(TRUE);
-	else pCmdUI->Enable(FALSE);
+	if (pDoc->currentObj != NULL){
+		if (pDoc->currentObj->getType() == ellipse || pDoc->currentObj->getType() == rectangle)	
+		{
+			pCmdUI->Enable(TRUE);
+			
+
+			if (pDoc->currentObj != NULL){
+				switch (pDoc->currentObj->getType()){
+				case ellipse:
+				{				
+								pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
+								pDoc->pEllipse->setSidePattern(sidePattern);
+
+								break;
+				}
+				case rectangle:
+				{
+								  pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
+								  pDoc->pRectangle->setSidePattern(sidePattern);
+								  break;
+				}
+				default:
+					break;
+				}
+
+				Invalidate(FALSE);
+			}
+
+
+
+		}
+		else pCmdUI->Enable(FALSE);
+	}
+	else {
+		if (pDoc->yType == ellipse)pCmdUI->Enable(TRUE);
+		else  pCmdUI->Enable(FALSE);
+	}
+
 }
