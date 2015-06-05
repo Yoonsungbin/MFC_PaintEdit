@@ -72,13 +72,14 @@
 #define ID_MENULINECOLOR                32805
 #define ID_MENUSIDEPATTERN              32806
 #define ID_MENUSIDECOLOR                32807
+#define ID_32818                        32818
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        316
-#define _APS_NEXT_COMMAND_VALUE         32818
+#define _APS_NEXT_COMMAND_VALUE         32819
 #define _APS_NEXT_CONTROL_VALUE         1010
 #define _APS_NEXT_SYMED_VALUE           310
 #endif

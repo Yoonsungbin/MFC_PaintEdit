@@ -67,6 +67,8 @@ BEGIN_MESSAGE_MAP(CYPaintEditView, CView)
 	ON_COMMAND(ID_MENUSIDEPATTERN, &CYPaintEditView::OnMenusidepattern)
 	ON_COMMAND(ID_MENUSIDECOLOR, &CYPaintEditView::OnMenusidecolor)
 	ON_UPDATE_COMMAND_UI(ID_MENUSIDEPATTERN, &CYPaintEditView::OnUpdateMenusidepattern)
+	ON_COMMAND(ID_32818, &CYPaintEditView::OnTextChange)
+	ON_UPDATE_COMMAND_UI(ID_32818, &CYPaintEditView::OnUpdateTextChange)
 END_MESSAGE_MAP()
 
 // CYPaintEditView 생성/소멸
@@ -1225,7 +1227,6 @@ void CYPaintEditView::OnMenulinethick()
 		Invalidate(FALSE);
 	}
 }
-
 //기능 : 선 색
 void CYPaintEditView::OnMenulinecolor()
 {
@@ -1272,7 +1273,6 @@ void CYPaintEditView::OnMenulinecolor()
 		Invalidate(FALSE);
 	}
 }
-
 //기능 : 선 패턴
 void CYPaintEditView::OnMenulinepattern()
 {
@@ -1316,7 +1316,6 @@ void CYPaintEditView::OnMenulinepattern()
 		Invalidate(FALSE);
 	}
 }
-
 //기능 : 면 색
 void CYPaintEditView::OnMenusidecolor()
 {
@@ -1352,7 +1351,6 @@ void CYPaintEditView::OnMenusidecolor()
 	}
 
 }
-
 //기능 : 면 패턴
 void CYPaintEditView::OnMenusidepattern()
 {
@@ -1429,4 +1427,35 @@ void CYPaintEditView::OnUpdateMenusidepattern(CCmdUI *pCmdUI)
 		else  pCmdUI->Enable(FALSE);
 	}
 
+}
+void CYPaintEditView::OnTextChange()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+
+	CFontDialog dlg;
+	if (dlg.DoModal() == IDOK){
+		// 글꼴, 글꼴효과, 크기, 색, 효과 
+
+		//pDoc->pText->setFontColor(dlg.GetColor());
+		//pDoc->pText->setFontSize(dlg.GetSize());
+		//pDoc->pText->setFontColor(dlg.getfo());
+		//pDoc->pText->setFontColor(dlg.GetColor());
+		Invalidate();
+	}
+}
+void CYPaintEditView::OnUpdateTextChange(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+	
+	if (pDoc->currentObj->getType() == text){
+		pCmdUI->Enable(TRUE);
+
+		//pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
+		//pDoc->pEllipse->setSidePattern(sidePattern);
+		//Invalidate(FALSE);
+	}
+	else 
+		pCmdUI->Enable(FALSE);
 }

@@ -115,6 +115,8 @@ public:
 	afx_msg void OnMenusidepattern();//면패턴
 	afx_msg void OnMenusidecolor();
 	afx_msg void OnUpdateMenusidepattern(CCmdUI *pCmdUI);
+	afx_msg void OnTextChange();
+	afx_msg void OnUpdateTextChange(CCmdUI *pCmdUI);
 };
 
 #ifndef _DEBUG  // YPaintEditView.cpp의 디버그 버전
