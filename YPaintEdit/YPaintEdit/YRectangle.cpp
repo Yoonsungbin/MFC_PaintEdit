@@ -20,7 +20,7 @@ YRectangle::YRectangle(CPoint start, CPoint end, int color, int thick, int patte
 	setLineColor(color);
 	setLineThick(thick);
 	setLinePattern(pattern);
-	ChangeinColor(inColor);
+	setSideColor(inColor);
 }
 
 
@@ -42,7 +42,7 @@ void YRectangle::draw(CDC* pDC)
 	//±×¸®±â
 	CPen pen(getLinePattern(), getLineThick(), getLineColor());
 	CPen* oldPen = pDC->SelectObject(&pen);
-	CBrush brush(getinColor());
+	CBrush brush(getSideColor());
 	//CBrush brush(HS_BDIAGONAL, getinColor());
 	CBrush* oldBrush = pDC->SelectObject(&brush);
 	//Graphics graphics(*pDC);

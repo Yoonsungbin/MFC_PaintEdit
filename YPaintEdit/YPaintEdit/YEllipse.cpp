@@ -20,7 +20,7 @@ YEllipse::YEllipse(CPoint start, CPoint end, int color, int thick, int pattern, 
 	setLineColor(color);
 	setLineThick(thick);
 	setLinePattern(pattern);
-	ChangeinColor(inColor);
+	setSideColor(inColor);
 	setSidePattern(sidepattern);
 }
 
@@ -42,7 +42,7 @@ void YEllipse::draw(CDC* pDC)
 	//±×¸®±â
 	CPen pen(getLinePattern(), getLineThick(), getLineColor());
 	CPen* oldPen = pDC->SelectObject(&pen);
-	CBrush brush(getSidePattern(), getinColor());
+	CBrush brush(getSidePattern(), getSideColor());
 	//CBrush brush(HS_BDIAGONAL, getinColor());
 	CBrush* oldBrush = pDC->SelectObject(&brush);
 

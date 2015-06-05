@@ -66,6 +66,7 @@ BEGIN_MESSAGE_MAP(CYPaintEditView, CView)
 	ON_COMMAND(ID_MENULINEPATTERN, &CYPaintEditView::OnMenulinepattern)
 	ON_COMMAND(ID_MENUSIDEPATTERN, &CYPaintEditView::OnMenusidepattern)
 	ON_COMMAND(ID_MENUSIDECOLOR, &CYPaintEditView::OnMenusidecolor)
+	ON_UPDATE_COMMAND_UI(ID_MENUSIDEPATTERN, &CYPaintEditView::OnUpdateMenusidepattern)
 END_MESSAGE_MAP()
 
 // CYPaintEditView 생성/소멸
@@ -387,7 +388,7 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 	}
 	case ellipse:
 	{
-		pDoc->pEllipse = new YEllipse(point, point, lineColor, lineThick, linePattern, sideColor, sidePattern);
+		pDoc->pEllipse = new YEllipse(point, point, lineColor, lineThick, linePattern,sideColor,sidePattern);
 		pDoc->pEllipse->setSelect(TRUE);
 		pDoc->pEllipse->setType(ellipse);
 		pDoc->drawing = TRUE;
@@ -1002,13 +1003,13 @@ void CYPaintEditView::RMenuInColorButton()
 		case ellipse:
 		{
 						pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
-						pDoc->pEllipse->ChangeinColor(sideColor);
+						pDoc->pEllipse->setSideColor(sideColor);
 						break;
 		}
 		case rectangle:
 		{
 						  pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
-						  pDoc->pRectangle->ChangeinColor(sideColor);
+						  pDoc->pRectangle->setSideColor(sideColor);
 						  break;
 		}
 		default:
@@ -1334,13 +1335,13 @@ void CYPaintEditView::OnMenusidecolor()
 		case ellipse:
 		{
 			pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
-			pDoc->pEllipse->ChangeinColor(sideColor);
+			pDoc->pEllipse->setSideColor(sideColor);
 			break;
 		}
 		case rectangle:
 		{
 			pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
-			pDoc->pRectangle->ChangeinColor(sideColor);
+			pDoc->pRectangle->setSideColor(sideColor);
 			break;
 		}
 		default:
@@ -1358,9 +1359,8 @@ void CYPaintEditView::OnMenusidepattern()
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	CMainFrame* main = (CMainFrame*)AfxGetMainWnd();
 	CYPaintEditDoc* pDoc = GetDocument();
-	CMFCRibbonComboBox* pattern = (CMFCRibbonComboBox*)main->getRibbon()->FindByID(ID_MENULINEPATTERN);
+	CMFCRibbonComboBox* pattern = (CMFCRibbonComboBox*)main->getRibbon()->FindByID(ID_MENUSIDEPATTERN);
 
-	//linePattern = pattern->GetCurSel()
 	sidePattern = pattern->GetCurSel();
 
 	if (pDoc->currentObj != NULL){
@@ -1368,13 +1368,13 @@ void CYPaintEditView::OnMenusidepattern()
 		case ellipse:
 		{
 			pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
-			pDoc->pEllipse->setLinePattern(sidePattern);
+			pDoc->pEllipse->setSidePattern(sidePattern);
 			break;
 		}
 		case rectangle:
 		{
 			pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
-			pDoc->pRectangle->setLinePattern(sidePattern);
+			pDoc->pRectangle->setSidePattern(sidePattern);
 			break;
 		}
 		default:
@@ -1383,4 +1383,12 @@ void CYPaintEditView::OnMenusidepattern()
 
 		Invalidate(FALSE);
 	}
+}
+//기능 : 면 패턴 Update
+void CYPaintEditView::OnUpdateMenusidepattern(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+	if (pDoc->yType == ellipse || pDoc->yType == rectangle)	pCmdUI->Enable(TRUE);
+	else pCmdUI->Enable(FALSE);
 }

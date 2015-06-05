@@ -15,12 +15,12 @@ public:
 	void setLinePattern(int pa){ linePattern = pa; }
 	int getLinePattern() const{ return linePattern; }
 
-	void ChangeinColor(COLORREF c){ inColor = c; };//내부색 변경
-	COLORREF getinColor() const{ return inColor; }//내부색
+	void setSideColor(COLORREF c){ sideColor = c; };//내부색 변경
+	COLORREF getSideColor() const{ return sideColor; }//내부색
 
 
-	void setSidePattern(int pa){ SidePattern = pa; }   //면 패턴
-	int getSidePattern() const{ return SidePattern; }////면 패턴
+	void setSidePattern(int pa){ sidePattern = pa; }   //면 패턴
+	int getSidePattern() const{ return sidePattern; }////면 패턴
 
 
 
@@ -30,9 +30,9 @@ private:
 	int linePattern;//선 패턴
 
 
-	COLORREF inColor; //내부 색깔
+	COLORREF sideColor; //내부 색깔
 	//int inPattern; //속 패턴
-	int SidePattern;
+	int sidePattern;
 
 };
 
