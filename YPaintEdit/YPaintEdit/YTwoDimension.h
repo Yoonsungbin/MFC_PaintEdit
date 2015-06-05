@@ -19,6 +19,10 @@ public:
 	COLORREF getinColor() const{ return inColor; }//내부색
 
 
+	void setSidePattern(int pa){ SidePattern = pa; }   //면 패턴
+	int getSidePattern() const{ return SidePattern; }////면 패턴
+
+
 
 private:
 	COLORREF lineColor;//선 색깔
@@ -27,7 +31,8 @@ private:
 
 
 	COLORREF inColor; //내부 색깔
-	int inPattern; //속 패턴
+	//int inPattern; //속 패턴
+	int SidePattern;
 
 };
 

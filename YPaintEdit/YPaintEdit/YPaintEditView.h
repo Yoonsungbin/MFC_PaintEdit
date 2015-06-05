@@ -52,8 +52,8 @@ public:
 	COLORREF lineColor = RGB(0,0,0);													//검은색
 	int lineThick = 1;																	//두께 : 1	
 	int linePattern = 0;																// PS_SOLID
-	COLORREF sideColor = RGB(255,255,255);												//흰색
-	int sidePattern = 0;																//HS_BDIAGONAL	
+	COLORREF sideColor = RGB(255,255,255);//흰색
+	int sidePattern = 0;	//HS_BDIAGONAL	
 	int fontSize;
 	int fontPattern;
 
@@ -111,7 +111,7 @@ public:
 	afx_msg void OnMenulinethick();
 	afx_msg void OnMenulinecolor();
 	afx_msg void OnMenulinepattern();
-	afx_msg void OnMenusidepattern();
+	afx_msg void OnMenusidepattern();//면패턴
 	afx_msg void OnMenusidecolor();
 };
 

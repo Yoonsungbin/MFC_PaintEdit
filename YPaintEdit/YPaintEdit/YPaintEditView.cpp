@@ -387,7 +387,7 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 	}
 	case ellipse:
 	{
-		pDoc->pEllipse = new YEllipse(point, point, lineColor, lineThick, linePattern, sideColor);
+		pDoc->pEllipse = new YEllipse(point, point, lineColor, lineThick, linePattern, sideColor, sidePattern);
 		pDoc->pEllipse->setSelect(TRUE);
 		pDoc->pEllipse->setType(ellipse);
 		pDoc->drawing = TRUE;
@@ -395,7 +395,7 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 	}
 	case rectangle:
 	{
-		pDoc->pRectangle = new YRectangle(point, point, lineColor, lineThick, linePattern);
+	    pDoc->pRectangle = new YRectangle(point, point, lineColor, lineThick, linePattern, sideColor);
 		pDoc->pRectangle->setSelect(TRUE);
 		pDoc->pRectangle->setType(rectangle);
 		pDoc->drawing = TRUE;
@@ -449,16 +449,20 @@ case choice:
 				}
 			}
 			else if (pDoc->currentObj == pDoc->pEllipse){
-				if (pDoc->pEllipse->getMRect()[0].PtInRect(point) || pDoc->pEllipse->getMRect()[1].PtInRect(point)) {
+				if (pDoc->pEllipse->getMRect()[0].PtInRect(point) || pDoc->pEllipse->getMRect()[1].PtInRect(point), 
+					pDoc->pEllipse->getMRect()[2].PtInRect(point), pDoc->pEllipse->getMRect()[3].PtInRect(point)) {
 					pDoc->currentObj->setSelect(TRUE);
 					break;
 				}
 			}
 			else if (pDoc->currentObj == pDoc->pRectangle){
-				if (pDoc->pRectangle->getMRect()[0].PtInRect(point) || pDoc->pRectangle->getMRect()[1].PtInRect(point)) {
+				if (pDoc->pRectangle->getMRect()[0].PtInRect(point) || pDoc->pRectangle->getMRect()[1].PtInRect(point),
+					pDoc->pRectangle->getMRect()[2].PtInRect(point), pDoc->pRectangle->getMRect()[3].PtInRect(point)) {
 					pDoc->currentObj->setSelect(TRUE);
 					break;
 				}
+
+
 			}
 		}
 
@@ -511,36 +515,63 @@ case choice:
 			}
 			case ellipse:
 			{
-				pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
-				if (pDoc->pEllipse->getMRect()[0].PtInRect(point)){  // 시작점 클릭
-					pDoc->pEllipse->setSPoint(point);
-					pDoc->pEllipse->setMoveMode(-1);  //시작점이동
-				}
-				else if (pDoc->pEllipse->getMRect()[1].PtInRect(point)){	// 끝점 클릭
-					pDoc->pEllipse->setEPoint(point);
-					pDoc->pEllipse->setMoveMode(1);  //끝점이동
-					break;
-				}
-				else if (pDoc->pEllipse->checkRgn(point)) {		//그 외 영역 클릭
-					pDoc->pEllipse->setMoveMode(0); //전체이동
-				}
-				break;
+							//LBUtton Down이야
+							pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
+							//1사분면
+							if (pDoc->pEllipse->getMRect()[0].PtInRect(point)){  // 시작점 클릭
+								pDoc->pEllipse->setSPoint(point);
+								pDoc->pEllipse->setMoveMode(-1);  //시작점 이동체크
+							}
+							else if (pDoc->pEllipse->getMRect()[1].PtInRect(point)){	// 끝점 클릭 4사분면
+								pDoc->pEllipse->setEPoint(point);
+								pDoc->pEllipse->setMoveMode(1);  //끝점 이동체크
+								break;
+							}
+							else if (pDoc->pEllipse->getMRect()[2].PtInRect(point)){	//3사분면
+								pDoc->pEllipse->setMixPoint(point);
+
+								pDoc->pEllipse->setMoveMode(2);  //3사분면 이동체크
+								break;
+							}
+							else if (pDoc->pEllipse->getMRect()[3].PtInRect(point)){	// 2사분면
+
+								pDoc->pEllipse->setMixPoint(point);
+								pDoc->pEllipse->setMoveMode(3);  //2사분면 이동 체크
+								break;
+							}
+							else if (pDoc->pEllipse->checkRgn(point)) {		//그 외 영역 클릭
+								pDoc->pEllipse->setMoveMode(0); //전체이동
+							}
+							break;
 			}
 			case rectangle:
 			{
 				pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
 				if (pDoc->pRectangle->getMRect()[0].PtInRect(point)){  // 시작점 클릭
 					pDoc->pRectangle->setSPoint(point);
-					pDoc->pRectangle->setMoveMode(-1);  //시작점이동
+					pDoc->pRectangle->setMoveMode(-1);  //시작점 이동체크
 				}
-				else if (pDoc->pRectangle->getMRect()[1].PtInRect(point)){	// 끝점 클릭
+				else if (pDoc->pRectangle->getMRect()[1].PtInRect(point)){	// 끝점 클릭 4사분면
 					pDoc->pRectangle->setEPoint(point);
-					pDoc->pRectangle->setMoveMode(1);  //끝점이동
+					pDoc->pRectangle->setMoveMode(1);  //끝점 이동체크
+					break;
+				}
+				else if (pDoc->pRectangle->getMRect()[2].PtInRect(point)){	//3사분면
+					pDoc->pRectangle->setMixPoint(point);
+
+					pDoc->pRectangle->setMoveMode(2);  //3사분면 이동체크
+					break;
+				}
+				else if (pDoc->pRectangle->getMRect()[3].PtInRect(point)){	// 2사분면
+
+					pDoc->pRectangle->setMixPoint(point);
+					pDoc->pRectangle->setMoveMode(3);  //2사분면 이동 체크
 					break;
 				}
 				else if (pDoc->pRectangle->checkRgn(point)) {		//그 외 영역 클릭
 					pDoc->pRectangle->setMoveMode(0); //전체이동
 				}
+				
 				break;
 			}
 			case text:
@@ -962,7 +993,7 @@ void CYPaintEditView::RMenuInColorButton()
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	CYPaintEditDoc* pDoc = GetDocument();
 
-	CColorDialog dlg(RGB(0, 0, 0), CC_FULLOPEN);
+	CColorDialog dlg(RGB(255, 0, 0), CC_FULLOPEN);
 	int result = dlg.DoModal();
 	if (result == IDOK){
 		sideColor = dlg.GetColor();
@@ -1200,7 +1231,7 @@ void CYPaintEditView::OnMenulinecolor()
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	CMainFrame* main = (CMainFrame*)AfxGetMainWnd();
 	CYPaintEditDoc* pDoc = GetDocument();
-	CColorDialog dlg(RGB(0, 0, 0), CC_FULLOPEN);
+	CColorDialog dlg(RGB(255, 0, 0), CC_FULLOPEN);
 
 	int result = dlg.DoModal();
 	if (result == IDOK){
@@ -1291,7 +1322,7 @@ void CYPaintEditView::OnMenusidecolor()
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	CMainFrame* main = (CMainFrame*)AfxGetMainWnd();
 	CYPaintEditDoc* pDoc = GetDocument();
-	CColorDialog dlg(RGB(0, 0, 0), CC_FULLOPEN);
+	CColorDialog dlg(RGB(255, 0, 0), CC_FULLOPEN);
 
 	int result = dlg.DoModal();
 	if (result == IDOK){
@@ -1329,6 +1360,7 @@ void CYPaintEditView::OnMenusidepattern()
 	CYPaintEditDoc* pDoc = GetDocument();
 	CMFCRibbonComboBox* pattern = (CMFCRibbonComboBox*)main->getRibbon()->FindByID(ID_MENULINEPATTERN);
 
+	//linePattern = pattern->GetCurSel()
 	sidePattern = pattern->GetCurSel();
 
 	if (pDoc->currentObj != NULL){

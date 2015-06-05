@@ -5,7 +5,7 @@ class YRectangle :
 {
 public:
 	YRectangle();
-	YRectangle(CPoint start, CPoint end,int color, int thick, int pattern);
+	YRectangle(CPoint start, CPoint end,int color, int thick, int pattern,int inColor);
 	~YRectangle();
 
 
@@ -26,8 +26,14 @@ public:
 	void setEPoint(CPoint point){
 		ePoint = point;
 	}
-	CPoint getEPoint(){ return ePoint; }
 
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	CPoint getMixPoint(){ return mixPoint; }
+	void setMixPoint(CPoint point){
+		mixPoint = point;
+	}
+	////////////////////////////////////////////////////////////////////////////////////
+	CPoint getEPoint(){ return ePoint; }
 	CRect* getMRect(){ return mRect; }
 
 
@@ -37,14 +43,13 @@ public:
 
 
 
-	void drawCircle(CDC *pDC);// 리전 으로 선택시 원 생기게 할라고!!
-
 
 private:
 	CRect rect;
 	CPoint sPoint;
 	CPoint ePoint;
-	CRect mRect[2]; //끝점 동그라미 그리기위한 
+	CPoint mixPoint;
+	CRect mRect[4]; //끝점 동그라미 그리기위한 
 
 	int moveMode; //시작점 끝점 중 어떤거 이동시키는지 확인하는거
 };
