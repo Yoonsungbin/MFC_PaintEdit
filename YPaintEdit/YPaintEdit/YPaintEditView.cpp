@@ -1389,6 +1389,12 @@ void CYPaintEditView::OnUpdateMenusidepattern(CCmdUI *pCmdUI)
 {
 	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
 	CYPaintEditDoc* pDoc = GetDocument();
-	if (pDoc->yType == ellipse || pDoc->yType == rectangle)	pCmdUI->Enable(TRUE);
-	else pCmdUI->Enable(FALSE);
+	if (pDoc->currentObj != NULL){
+		if (pDoc->currentObj->getType() == ellipse || pDoc->currentObj->getType() == rectangle)	pCmdUI->Enable(TRUE);
+		else pCmdUI->Enable(FALSE);
+	}
+	else {
+		if (pDoc->yType == ellipse)pCmdUI->Enable(TRUE);
+		else  pCmdUI->Enable(FALSE);
+	}
 }
