@@ -49,11 +49,11 @@ public:
 	BOOL menu_Delete;
 
 	//메뉴에서 정하는 값들을 저장할 변수 (보여지는 view객체의 속성값들을 제어함)
-	COLORREF lineColor;
-	int lineThick;
-	int linePattern;
-	COLORREF sideColor;
-	int sidePattern;
+	COLORREF lineColor = RGB(0,0,0);													//검은색
+	int lineThick = 1;																	//두께 : 1	
+	int linePattern = 0;																// PS_SOLID
+	COLORREF sideColor = RGB(255,255,255);												//흰색
+	int sidePattern = 0;																//HS_BDIAGONAL	
 	int fontSize;
 	int fontPattern;
 
