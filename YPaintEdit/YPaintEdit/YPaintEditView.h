@@ -135,6 +135,14 @@ public:
 	afx_msg void OnUpdateMenulinethick(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateMenulinepattern(CCmdUI *pCmdUI);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg void OnGrouplinethick();
+	afx_msg void OnUpdateGrouplinethick(CCmdUI *pCmdUI);
+	afx_msg void OnGrouplinepattern();
+	afx_msg void OnUpdateGrouplinepattern(CCmdUI *pCmdUI);
+	afx_msg void OnGroupsidepattern();
+	afx_msg void OnUpdateGroupsidepattern(CCmdUI *pCmdUI);
+	afx_msg void OnGroupbutton();
+	afx_msg void OnUpdateGroupbutton(CCmdUI *pCmdUI);
 };
 
 #ifndef _DEBUG  // YPaintEditView.cpp의 디버그 버전

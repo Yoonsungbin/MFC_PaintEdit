@@ -80,6 +80,14 @@ BEGIN_MESSAGE_MAP(CYPaintEditView, CView)
 	ON_UPDATE_COMMAND_UI(ID_MENULINETHICK, &CYPaintEditView::OnUpdateMenulinethick)
 	ON_UPDATE_COMMAND_UI(ID_MENULINEPATTERN, &CYPaintEditView::OnUpdateMenulinepattern)
 	ON_WM_ERASEBKGND()
+	ON_COMMAND(ID_GROUPLINETHICK, &CYPaintEditView::OnGrouplinethick)
+	ON_UPDATE_COMMAND_UI(ID_GROUPLINETHICK, &CYPaintEditView::OnUpdateGrouplinethick)
+	ON_COMMAND(ID_GROUPLINEPATTERN, &CYPaintEditView::OnGrouplinepattern)
+	ON_UPDATE_COMMAND_UI(ID_GROUPLINEPATTERN, &CYPaintEditView::OnUpdateGrouplinepattern)
+	ON_COMMAND(ID_GROUPSIDEPATTERN, &CYPaintEditView::OnGroupsidepattern)
+	ON_UPDATE_COMMAND_UI(ID_GROUPSIDEPATTERN, &CYPaintEditView::OnUpdateGroupsidepattern)
+	ON_COMMAND(ID_GROUPBUTTON, &CYPaintEditView::OnGroupbutton)
+	ON_UPDATE_COMMAND_UI(ID_GROUPBUTTON, &CYPaintEditView::OnUpdateGroupbutton)
 END_MESSAGE_MAP()
 
 // CYPaintEditView 생성/소멸
@@ -1713,4 +1721,55 @@ BOOL CYPaintEditView::OnEraseBkgnd(CDC* pDC)
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
 
 	return TRUE;
+}
+
+
+
+
+
+void CYPaintEditView::OnGrouplinethick()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+}
+
+
+void CYPaintEditView::OnUpdateGrouplinethick(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+}
+
+
+void CYPaintEditView::OnGrouplinepattern()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+}
+
+
+void CYPaintEditView::OnUpdateGrouplinepattern(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+}
+
+
+void CYPaintEditView::OnGroupsidepattern()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+}
+
+
+void CYPaintEditView::OnUpdateGroupsidepattern(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+}
+
+
+void CYPaintEditView::OnGroupbutton()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+}
+
+
+void CYPaintEditView::OnUpdateGroupbutton(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
 }
