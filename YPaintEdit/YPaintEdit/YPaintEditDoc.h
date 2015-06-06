@@ -20,7 +20,7 @@
 #include "YEllipse.h"
 #include "YRectangle.h"
 #include "YText.h"
-
+#include "YGroup.h"
 
 class CYPaintEditDoc : public CDocument
 {
@@ -30,25 +30,28 @@ protected: // serialization에서만 만들어집니다.
 
 // 특성입니다.
 public:
-	YObject_Type yType;					// 현재 작업중인 도형의 타입을 나타내는 변수
-	YObject* currentObj;				// 현재 작업중인 도형의 객체를 가리키는 포인터
-	CPtrList obj_List;					// 작업이 완료된 도형들을 보관하는 리스트
+	YObject_Type yType;							// 현재 작업중인 도형의 타입을 나타내는 변수
+	YObject* currentObj;						// 현재 작업중인 도형의 객체를 가리키는 포인터
+	CPtrList obj_List;							// 작업이 완료된 도형들을 보관하는 리스트
 	
-	YLine* pLine;						// 선 작업을 위한 포인터
-	YPolyLine* pPolyLine;				// 다각선 작업을 위한 포인터
-	YEllipse* pEllipse;					// 타원 작업을 위한 포인터
-	YRectangle* pRectangle;				// 사각형 작업을 위한 포인터
-	YText* pText;						// 텍스트 작업을 위한 포인터
-	
+	YLine* pLine;								// 선 작업을 위한 포인터
+	YPolyLine* pPolyLine;						// 다각선 작업을 위한 포인터
+	YEllipse* pEllipse;							// 타원 작업을 위한 포인터
+	YRectangle* pRectangle;						// 사각형 작업을 위한 포인터
+	YText* pText;								// 텍스트 작업을 위한 포인터
+	YGroup* pGroup;								// 그룹 작업을 위한 포인터
 
-	BOOL drawing ;						// 그리기 상태 확인변수
-	BOOL textEditing;					// 텍스트 편집 상태를 나타내는 변수
-	CString tmp;						// 텍스트를 임시로 저장하는 변수
-	BOOL clickPolyLine;					// PolyLine 선택 유무  true - > 클릭 false -> 초기생성
-	int deletePosition;					// PolyLine 한점 지울 때 지울 위치 저장변수
+	BOOL drawing ;								// 그리기 상태 확인변수
+	BOOL textEditing;							// 텍스트 편집 상태를 나타내는 변수
+	CString tmp;								// 텍스트를 임시로 저장하는 변수
+	BOOL clickPolyLine;							// PolyLine 선택 유무  true - > 클릭 false -> 초기생성
+	int deletePosition;							// PolyLine 한점 지울 때 지울 위치 저장변수
 
-	CPoint Original_Point;				// move를 위한 시작지점
+	CPoint Original_Point;						// move를 위한 시작지점
 
+	BOOL grouping;								// 그룹화중임을 나타내주는 변수
+	CList<YObject*, YObject*> current_group;	// 현재 그룹 리스트
+	int allNum;									// 총 만든 도형의 개수
 // 작업입니다.
 public:
 

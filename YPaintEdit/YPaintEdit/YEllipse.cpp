@@ -161,7 +161,7 @@ void YEllipse::setRgn(){
 		right = sPoint.x;
 		bottom = sPoint.y;
 	}
-
+	YObject::setORect(left, top, right, bottom);
 	rgn.DeleteObject();
 	rgn.CreateRectRgn(left, top, right, bottom);
 }

@@ -133,6 +133,7 @@ void YPolyLine::setRgn(){
 		if (rect.right < dPoint.x)rect.right = dPoint.x;
 		if (rect.bottom < dPoint.y) rect.bottom = dPoint.y;
 	}
+	YObject::setORect(rect.left, rect.top, rect.right, rect.bottom);
 	rgn.DeleteObject();  //이전영역 지우고 다시만들기
 	rgn.CreateRectRgn(rect.left, rect.top, rect.right, rect.bottom);
 }

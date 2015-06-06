@@ -135,8 +135,10 @@ public:
 	afx_msg void OnUpdateMenusidepattern(CCmdUI *pCmdUI);
 	afx_msg void OnMenulinecolor();
 	afx_msg void OnMenusidecolor();
-	afx_msg void OnGroupbutton();
-	afx_msg void OnUpdateGroupbutton(CCmdUI *pCmdUI);
+	afx_msg void OnGroupsbutton();
+	afx_msg void OnUpdateGroupsbutton(CCmdUI *pCmdUI);
+	afx_msg void OnDeletegroupbutton();
+	afx_msg void OnUpdateDeletegroupbutton(CCmdUI *pCmdUI);
 	afx_msg void OnGrouplinethick();
 	afx_msg void OnUpdateGrouplinethick(CCmdUI *pCmdUI);
 	afx_msg void OnGrouplinepattern();
@@ -163,6 +165,8 @@ public:
 	/* 의미 확인하고 정리하자 */
 	afx_msg void OnRectangleButton();
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	
+	
 };
 
 #ifndef _DEBUG  // YPaintEditView.cpp의 디버그 버전

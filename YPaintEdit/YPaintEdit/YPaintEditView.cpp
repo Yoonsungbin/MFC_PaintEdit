@@ -22,6 +22,7 @@
 #include "YPaintEditDoc.h"
 #include "YPaintEditView.h"
 #include "TextEditDialog.h"
+#include "YGroup.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -70,8 +71,10 @@ BEGIN_MESSAGE_MAP(CYPaintEditView, CView)
 	ON_UPDATE_COMMAND_UI(ID_MENULINETHICK, &CYPaintEditView::OnUpdateMenulinethick)
 	ON_UPDATE_COMMAND_UI(ID_MENULINEPATTERN, &CYPaintEditView::OnUpdateMenulinepattern)
 	ON_UPDATE_COMMAND_UI(ID_MENUSIDEPATTERN, &CYPaintEditView::OnUpdateMenusidepattern)
-	ON_COMMAND(ID_GROUPBUTTON, &CYPaintEditView::OnGroupbutton)
-	ON_UPDATE_COMMAND_UI(ID_GROUPBUTTON, &CYPaintEditView::OnUpdateGroupbutton)
+	ON_COMMAND(ID_GROUPSBUTTON, &CYPaintEditView::OnGroupsbutton)
+	ON_UPDATE_COMMAND_UI(ID_GROUPSBUTTON, &CYPaintEditView::OnUpdateGroupsbutton)
+	ON_COMMAND(ID_DELETEGROUPBUTTON, &CYPaintEditView::OnDeletegroupbutton)
+	ON_UPDATE_COMMAND_UI(ID_DELETEGROUPBUTTON, &CYPaintEditView::OnUpdateDeletegroupbutton)
 	ON_COMMAND(ID_GROUPLINETHICK, &CYPaintEditView::OnGrouplinethick)
 	ON_UPDATE_COMMAND_UI(ID_GROUPLINETHICK, &CYPaintEditView::OnUpdateGrouplinethick)
 	ON_COMMAND(ID_GROUPLINEPATTERN, &CYPaintEditView::OnGrouplinepattern)
@@ -96,6 +99,8 @@ BEGIN_MESSAGE_MAP(CYPaintEditView, CView)
 
 	/* 의미 확인하고 정리하자 */
 	ON_WM_ERASEBKGND()
+	
+	
 END_MESSAGE_MAP()
 
 // CYPaintEditView 생성/소멸
@@ -403,6 +408,7 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 	{
 				 //초기화
 				 pDoc->pLine = new YLine(point, point, lineColor, lineThick, linePattern);
+				 pDoc->pLine->setOrder(pDoc->allNum++);
 				 pDoc->pLine->setType(line);
 				 pDoc->pLine->setSelect(TRUE);
 				 pDoc->drawing = TRUE;
@@ -412,6 +418,7 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 	{
 					 if (pDoc->clickPolyLine == FALSE){   //시작 생성
 						 pDoc->pPolyLine = new YPolyLine(lineColor, lineThick, linePattern);
+						 pDoc->pPolyLine->setOrder(pDoc->allNum++);
 						 pDoc->pPolyLine->setSelect(TRUE);
 						 pDoc->pPolyLine->addPoint(point);
 						 pDoc->pPolyLine->setType(polyline);
@@ -429,6 +436,7 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 	case ellipse:
 	{
 					pDoc->pEllipse = new YEllipse(point, point, lineColor, lineThick, linePattern, sideColor, sidePattern, sidePatternflag2);
+					pDoc->pEllipse->setOrder(pDoc->allNum++);
 					pDoc->pEllipse->setSelect(TRUE);
 					pDoc->pEllipse->setType(ellipse);
 					pDoc->drawing = TRUE;
@@ -437,6 +445,7 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 	case rectangle:
 	{
 					  pDoc->pRectangle = new YRectangle(point, point, lineColor, lineThick, linePattern, sideColor,sidePattern, sidePatternflag2);
+					  pDoc->pRectangle->setOrder(pDoc->allNum++);
 					  pDoc->pRectangle->setSelect(TRUE);
 					  pDoc->pRectangle->setType(rectangle);
 					  pDoc->drawing = TRUE;
@@ -446,6 +455,7 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 	{
 				 if (pDoc->textEditing == FALSE){
 					 pDoc->pText = new YText(point,font,fontColor,bkColor,fontSize);
+					 pDoc->pText->setOrder(pDoc->allNum++);
 					 pDoc->pText->setType(text);
 					 pDoc->pText->setSelect(TRUE);
 					 pDoc->textEditing = TRUE;
@@ -465,7 +475,7 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 	{
 
 				   // 4 // (선택된 도형이 있는 경우에서) 다시 선택할 때  - 기존에 선택한 도형을 선택할수도, 새로운 도형을 선택할수도, 빈공간을 선택할수도 있으므로 currentObj를 초기화하고, 좌표를 사용하여 다시 리스트 탐색
-				   if (pDoc->currentObj != NULL)	{
+				   if (pDoc->grouping == FALSE && pDoc->currentObj != NULL)	{
 					   pDoc->currentObj->setSelect(FALSE);
 					   pDoc->currentObj = NULL;
 				   }
@@ -478,8 +488,15 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 
 					   // 좌표에 해당하는 도형이 있을 경우
 					   if (pDoc->currentObj->checkRgn(point) == TRUE){
-						   pDoc->currentObj->setSelect(TRUE);
-						   break;
+						   if (pDoc->grouping == FALSE){
+							   pDoc->currentObj->setSelect(TRUE);
+							   break;
+						   }
+						   else{
+							   pDoc->currentObj->setSelect(TRUE);
+							   pDoc->current_group.AddTail(pDoc->currentObj);
+							   break;
+						   }
 					   }
 
 					   // 도형이 선택되어 리젼과 끝점을 그려진 경우, 다시 선택했을때 끝점을 선택해도 선택되게 설정하는 부분
@@ -620,10 +637,16 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 									pDoc->pText = (YText*)pDoc->currentObj;
 									break;
 					   }
+					   case group:
+						   pDoc->pGroup = (YGroup*)pDoc->currentObj;
 					   default:
 						   break;
 					   }
 				   }
+				   // 그룹화 중 이동 못하게
+				   if (pDoc->grouping == TRUE)
+					   pDoc->currentObj = NULL;
+
 				   UpdateMenu();
 				   Invalidate(FALSE);
 				   break;
@@ -744,6 +767,13 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 									pDoc->pText->setRect(pDoc->pText->getSPoint(), pDoc->pText->getEPoint());
 									pDoc->pText->setRgn();
 					   }
+					   case group:
+						   pDoc->pGroup->setSPoint(pDoc->pGroup->getSPoint() + t_point);
+						   pDoc->pGroup->setEPoint(pDoc->pGroup->getEPoint() + t_point);
+						   pDoc->pGroup->setORect(pDoc->pGroup->getSPoint().x, pDoc->pGroup->getSPoint().y, pDoc->pGroup->getEPoint().x, pDoc->pGroup->getEPoint().y);
+						   pDoc->pGroup->moveAll(t_point.x,t_point.y);
+						   pDoc->pGroup->setRgn();
+						   break;
 					   default:
 						   break;
 					   }
@@ -821,6 +851,49 @@ void CYPaintEditView::OnLButtonDblClk(UINT nFlags, CPoint point)
 		pDoc->obj_List.AddTail(pDoc->pPolyLine);
 		pDoc->pPolyLine = NULL;
 		Invalidate(FALSE);
+	}
+
+	if (pDoc->grouping == TRUE){
+		
+		// 그룹내 중복 제거
+		POSITION pos = pDoc->current_group.GetHeadPosition();
+		while (pos) {
+			pDoc->currentObj = (YObject*)pDoc->obj_List.GetNext(pos);
+			if (pDoc->currentObj->checkRgn(point) == TRUE){
+				pDoc->current_group.RemoveTail();
+				pDoc->currentObj = NULL;
+				break;
+			}
+		}
+		
+		// obj_List에서 그룹화된 도형을 꺼내는 부분
+		YObject* search;
+		POSITION tpos;
+		pos = pDoc->current_group.GetHeadPosition();
+		while (pos) {
+			search = pDoc->current_group.GetNext(pos);
+			POSITION pos2 = pDoc->obj_List.GetHeadPosition();
+			while (pos2) {
+				tpos = pos2;
+				pDoc->currentObj = (YObject*)pDoc->obj_List.GetNext(pos2);
+				if (pDoc->currentObj->getOrder() == search->getOrder()){
+					pDoc->obj_List.RemoveAt(tpos);
+					break;
+				}
+			}
+		}
+
+		// 그룹 객체 생성 및 obj_List에 연결하는 부분
+		YGroup* tgroup = new YGroup(pDoc->current_group);
+		tgroup->setType(group);
+		tgroup->setOrder(pDoc->allNum++);
+		tgroup->setSelect(TRUE);
+		pDoc->obj_List.AddTail(tgroup);
+
+		// 그룹화 변수 초기화
+		pDoc->current_group.RemoveAll();
+		pDoc->grouping = FALSE;
+		Invalidate();
 	}
 	CView::OnLButtonDblClk(nFlags, point);
 }
@@ -1386,13 +1459,55 @@ void CYPaintEditView::OnMenusidecolor() //기능 : 면 색
 }
 
 // 그룹 패널
-void CYPaintEditView::OnGroupbutton()
+void CYPaintEditView::OnGroupsbutton()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+
+	pDoc->grouping = TRUE;
+	if (pDoc->currentObj != NULL){
+		pDoc->currentObj->setSelect(FALSE);
+		pDoc->currentObj = NULL;
+		Invalidate();
+	}
 }
-void CYPaintEditView::OnUpdateGroupbutton(CCmdUI *pCmdUI)
+void CYPaintEditView::OnUpdateGroupsbutton(CCmdUI *pCmdUI)
 {
 	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+
+	if (pDoc->yType == choice)
+		pCmdUI->Enable(TRUE);
+	else
+		pCmdUI->Enable(FALSE);
+}
+void CYPaintEditView::OnDeletegroupbutton()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+	if (pDoc->currentObj->getType() == group){
+		POSITION tpos = pDoc->obj_List.GetHeadPosition();
+		YObject* tmp0;
+		CList<YObject*, YObject*>* tmp = ((YGroup*)pDoc->currentObj)->getList();
+		POSITION pos = tmp->GetHeadPosition();
+		while (pos){
+			tmp0 = tmp->GetNext(pos);
+			pDoc->obj_List.AddTail(tmp0);
+		}
+		pDoc->obj_List.RemoveAt(tpos);
+		Invalidate();
+	}
+}
+void CYPaintEditView::OnUpdateDeletegroupbutton(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+
+	if (pDoc->yType == choice){
+		pCmdUI->Enable(TRUE);
+	}
+	else
+		pCmdUI->Enable(FALSE);
 }
 void CYPaintEditView::OnGrouplinethick()
 {
@@ -1795,6 +1910,7 @@ void CYPaintEditView::UpdateDeletePointButton(CCmdUI *pCmdUI)
 {
 	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
 }
+
 
 
 

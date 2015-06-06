@@ -60,6 +60,7 @@
 #define ID_CONTEXT3                     32786
 #define ID_BUTTON2                      32788
 #define ID_MENUTEXTBUTTON               32788
+#define ID_DGROUPSBUTTON                32788
 #define ID_BUTTON4                      32789
 #define ID_TEXTEDITBUTTON               32789
 #define ID_BUTTON5                      32790
@@ -89,13 +90,15 @@
 #define ID_GROUPLINETHICK               32827
 #define ID_GROUPLINEPATTERN             32828
 #define ID_GROUPSIDEPATTERN             32829
+#define ID_GROUPSBUTTON                 32831
+#define ID_DELETEGROUPBUTTON            32832
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        316
-#define _APS_NEXT_COMMAND_VALUE         32830
+#define _APS_NEXT_COMMAND_VALUE         32833
 #define _APS_NEXT_CONTROL_VALUE         1010
 #define _APS_NEXT_SYMED_VALUE           312
 #endif
