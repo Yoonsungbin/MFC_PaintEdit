@@ -116,9 +116,6 @@ void YPolyLine::move(int s, int e){
 	}
 
 }
-void YPolyLine::changeLineColor(){
-
-}
 
 void YPolyLine::setRgn(){
 	POSITION pos = polyList.GetHeadPosition();

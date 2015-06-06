@@ -132,11 +132,6 @@ void YEllipse::move(int s, int e){//늘리기 작업
 
 }
 
-void YEllipse::changeLineColor(){
-
-}
-
-
 
 void YEllipse::setRgn(){
 

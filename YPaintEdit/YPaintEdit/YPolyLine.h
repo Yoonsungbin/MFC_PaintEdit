@@ -13,7 +13,6 @@ public:
 	virtual void draw(CDC* pDC);
 
 	virtual void move(int s, int e);
-	virtual void changeLineColor();
 
 	virtual void setRgn();				//리젼설정
 	BOOL virtual checkRgn(CPoint point);	//리젼안에 있는지검사

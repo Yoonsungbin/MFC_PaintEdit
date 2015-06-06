@@ -47,7 +47,9 @@ public:
 	BOOL menu_Color;
 	BOOL menu_Figiure;
 	BOOL menu_Delete;
-
+	BOOL menu_cut;
+	BOOL menu_copy;
+	BOOL menu_paste;
 	//메뉴에서 정하는 값들을 저장할 변수 (보여지는 view객체의 속성값들을 제어함)
 	COLORREF lineColor = RGB(0,0,0);													//검은색
 	int lineThick = 1;																	//두께 : 1	
@@ -63,6 +65,8 @@ public:
 	COLORREF bkColor;
 	int fontSize;
 
+	//잘래내기 ,붙쳐넣기 하기 위한 변수
+	YObject* cutObj = NULL;
 // 재정의입니다.
 public:
 	virtual void OnDraw(CDC* pDC);  // 이 뷰를 그리기 위해 재정의되었습니다.
@@ -143,6 +147,12 @@ public:
 	afx_msg void OnUpdateGroupsidepattern(CCmdUI *pCmdUI);
 	afx_msg void OnGroupbutton();
 	afx_msg void OnUpdateGroupbutton(CCmdUI *pCmdUI);
+	afx_msg void OnEditCut();
+	afx_msg void OnEditPaste();
+	afx_msg void OnEditCopy();
+	afx_msg void OnUpdateEditCut(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateEditCopy(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateEditPaste(CCmdUI *pCmdUI);
 };
 
 #ifndef _DEBUG  // YPaintEditView.cpp의 디버그 버전

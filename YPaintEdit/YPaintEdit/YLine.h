@@ -13,7 +13,6 @@ public:
 	virtual void draw(CDC* cPC);
 
 	virtual void move(int s,int e);
-	virtual void changeLineColor();
 
 	virtual void setRgn();
 	BOOL virtual checkRgn(CPoint point);

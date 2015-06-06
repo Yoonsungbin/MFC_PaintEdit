@@ -125,11 +125,6 @@ void YRectangle::move(int s, int e){
 	}
 }
 
-void YRectangle::changeLineColor(){
-
-}
-
-
 void YRectangle::setRgn(){
 
 	int left, top, right, bottom;

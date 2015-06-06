@@ -88,6 +88,12 @@ BEGIN_MESSAGE_MAP(CYPaintEditView, CView)
 	ON_UPDATE_COMMAND_UI(ID_GROUPSIDEPATTERN, &CYPaintEditView::OnUpdateGroupsidepattern)
 	ON_COMMAND(ID_GROUPBUTTON, &CYPaintEditView::OnGroupbutton)
 	ON_UPDATE_COMMAND_UI(ID_GROUPBUTTON, &CYPaintEditView::OnUpdateGroupbutton)
+	ON_COMMAND(ID_EDIT_CUT, &CYPaintEditView::OnEditCut)
+	ON_COMMAND(ID_EDIT_PASTE, &CYPaintEditView::OnEditPaste)
+	ON_COMMAND(ID_EDIT_COPY, &CYPaintEditView::OnEditCopy)
+	ON_UPDATE_COMMAND_UI(ID_EDIT_CUT, &CYPaintEditView::OnUpdateEditCut)
+	ON_UPDATE_COMMAND_UI(ID_EDIT_COPY, &CYPaintEditView::OnUpdateEditCopy)
+	ON_UPDATE_COMMAND_UI(ID_EDIT_PASTE, &CYPaintEditView::OnUpdateEditPaste)
 END_MESSAGE_MAP()
 
 // CYPaintEditView 생성/소멸
@@ -1063,7 +1069,6 @@ void CYPaintEditView::OnDeleteClick()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	CYPaintEditDoc* pDoc = GetDocument();
-	CPtrList tempList;
 
 	POSITION pos = pDoc->obj_List.GetHeadPosition();
 	POSITION tpos;
@@ -1081,7 +1086,6 @@ void CYPaintEditView::OnDeleteClick()
 	}
 	pDoc->currentObj = NULL;
 	Invalidate(FALSE);
-
 }
 
 void CYPaintEditView::UpdateOnDeleteClick(CCmdUI *pCmdUI)
@@ -1772,4 +1776,159 @@ void CYPaintEditView::OnGroupbutton()
 void CYPaintEditView::OnUpdateGroupbutton(CCmdUI *pCmdUI)
 {
 	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+}
+
+
+void CYPaintEditView::OnEditCut()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	 menu_cut = FALSE;
+	 menu_copy = FALSE;
+	 menu_paste = TRUE;
+
+	CYPaintEditDoc* pDoc = GetDocument();
+
+	cutObj = NULL;
+
+	if (pDoc->currentObj != NULL){
+		cutObj = pDoc->currentObj;
+
+		POSITION pos = pDoc->obj_List.GetHeadPosition();
+		POSITION tpos;
+		if (pDoc->obj_List.GetSize() == 1){									//객체가 하나만 남아있을때
+			pDoc->obj_List.RemoveAll();
+
+		}
+		else {
+			while (pos) {
+				tpos = pos;													//위치를 저장한 후 에 다음 노드로 넘어간다.
+				YObject* tmp = (YObject*)pDoc->obj_List.GetNext(pos);
+				if (tmp == pDoc->currentObj) break;
+			}
+			pDoc->obj_List.RemoveAt(tpos);
+		}
+		pDoc->currentObj = NULL;
+
+		Invalidate(FALSE);
+	}
+}
+
+
+void CYPaintEditView::OnEditPaste()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+
+	menu_cut = TRUE;
+	menu_copy = TRUE;
+	menu_paste = TRUE;
+	if (cutObj != NULL){
+		CYPaintEditDoc* pDoc = GetDocument();
+		
+		if (cutObj->getRgn() != pDoc->currentObj->getRgn()) cutObj->moveAll(20, 20);					//첫 위치 붙여넣기 이후 계속 이동해서 붙여넣기 하기 위해서
+		switch (cutObj->getType()){
+		case line:
+		{
+			YLine* temp = (YLine*)cutObj;
+			pDoc->pLine = new YLine(temp->getSPoint(), temp->getEPoint(), temp->getLineColor(), temp->getLineThick(), temp->getLinePattern());
+			pDoc->pLine->setType(line);
+			pDoc->pLine->setSelect(TRUE);
+			pDoc->pLine->setRgn();
+			pDoc->obj_List.AddTail(pDoc->pLine);
+			pDoc->pLine->moveAll(20, 20);
+			break;
+		}
+		case polyline:
+		{
+			YPolyLine* temp = (YPolyLine*)cutObj;
+			pDoc->pPolyLine = new YPolyLine(temp->getLineColor(), temp->getLineThick(), temp->getLinePattern());
+
+			POSITION pos = temp->getPolyList()->GetHeadPosition();
+			while (pos){
+				CPoint point = temp->getPolyList()->GetNext(pos);
+				pDoc->pPolyLine->addPoint(point);
+			}
+			pDoc->pPolyLine->setType(polyline);
+			pDoc->pPolyLine->setSelect(TRUE);
+			pDoc->pPolyLine->setRgn();
+			pDoc->obj_List.AddTail(pDoc->pPolyLine);
+			pDoc->pPolyLine->moveAll(20, 20);
+			break;
+		}
+		case ellipse:
+		{
+
+			YEllipse* temp = (YEllipse*)cutObj;
+			pDoc->pEllipse = new YEllipse(temp->getSPoint(), temp->getEPoint(), temp->getLineColor(), temp->getLineThick(), temp->getLinePattern(), temp->getSideColor(), temp->getSidePattern(), temp->getPatternflag());
+			pDoc->pEllipse->setType(ellipse);
+			pDoc->pEllipse->setSelect(TRUE);
+			pDoc->pEllipse->setRgn();
+			pDoc->obj_List.AddTail(pDoc->pEllipse);
+			break;
+		}
+		case rectangle:
+		{
+			YRectangle* temp = (YRectangle*)cutObj;
+			pDoc->pRectangle = new YRectangle(temp->getSPoint(), temp->getEPoint(), temp->getLineColor(), temp->getLineThick(), temp->getLinePattern(), temp->getSideColor(), temp->getSidePattern(), temp->getPatternflag());
+			pDoc->pRectangle->setType(rectangle);
+			pDoc->pRectangle->setSelect(TRUE);
+			pDoc->pRectangle->setRgn();
+			pDoc->obj_List.AddTail(pDoc->pRectangle);
+			break;
+		}
+		case text:
+		{
+			YText* temp = (YText*)cutObj;
+			pDoc->pText = new YText(temp->getSPoint(), temp->getText(), temp->getFontColor(), temp->getBkColor(), temp->getFontSize());
+			pDoc->pText->setType(text);
+			pDoc->pText->setSelect(TRUE);
+			pDoc->pText->setRgn();
+			pDoc->obj_List.AddTail(pDoc->pText);
+			break;
+		}
+		default:
+			break;
+		}
+		cutObj->setSelect(FALSE);
+		if (cutObj->getRgn() == pDoc->currentObj->getRgn()) cutObj->moveAll(20, 20);					//복사하는 도형 그 위치 그대로 한번 출력 한 후 이동
+		Invalidate(FALSE);
+	}
+}
+
+
+void CYPaintEditView::OnEditCopy()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+		menu_cut = TRUE;
+		menu_copy = TRUE;
+		menu_paste = TRUE;
+
+		CYPaintEditDoc* pDoc = GetDocument();
+
+		cutObj = NULL;
+
+		if (pDoc->currentObj != NULL){
+			cutObj = pDoc->currentObj;
+			cutObj->setSelect(FALSE);
+		}
+}
+
+
+void CYPaintEditView::OnUpdateEditCut(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+	pCmdUI->Enable(menu_cut);
+}
+
+
+void CYPaintEditView::OnUpdateEditCopy(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+	pCmdUI->Enable(menu_copy);
+}
+
+
+void CYPaintEditView::OnUpdateEditPaste(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+	pCmdUI->Enable(menu_paste);
 }

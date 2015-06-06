@@ -86,9 +86,6 @@ void YLine::move(int s,int e){
 	}
 }
 
-void YLine::changeLineColor(){
-
-}
 
 void YLine::setRgn(){
 	int left, top, right, bottom;

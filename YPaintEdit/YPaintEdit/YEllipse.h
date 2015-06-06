@@ -15,7 +15,6 @@ public:
 	void draw(CDC*);
 
 	void move(int s, int e);
-	void changeLineColor();
 
 	void setRgn();
 	BOOL  checkRgn(CPoint point);
