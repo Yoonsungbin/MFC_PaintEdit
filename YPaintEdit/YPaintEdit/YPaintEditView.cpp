@@ -77,6 +77,9 @@ BEGIN_MESSAGE_MAP(CYPaintEditView, CView)
 	ON_UPDATE_COMMAND_UI(ID_MENUDEFAULTTBUTTON, &CYPaintEditView::OnUpdateMenudefaulttbutton)
 	ON_COMMAND(ID_TEXTEDITBUTTON, &CYPaintEditView::OnTexteditbutton)
 	ON_UPDATE_COMMAND_UI(ID_TEXTEDITBUTTON, &CYPaintEditView::OnUpdateTexteditbutton)
+	ON_UPDATE_COMMAND_UI(ID_MENULINETHICK, &CYPaintEditView::OnUpdateMenulinethick)
+	ON_UPDATE_COMMAND_UI(ID_MENULINEPATTERN, &CYPaintEditView::OnUpdateMenulinepattern)
+	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 // CYPaintEditView 생성/소멸
@@ -1378,6 +1381,19 @@ void CYPaintEditView::OnMenulinecolor()
 		Invalidate(FALSE);
 	}
 }
+
+void CYPaintEditView::OnUpdateMenulinethick(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+
+	if (pDoc->currentObj != NULL){
+		if (pDoc->currentObj->getType() == text) pCmdUI->Enable(FALSE);
+	}
+	else {
+		if (pDoc->yType == text) pCmdUI->Enable(FALSE);
+	}
+}
 //기능 : 선 패턴
 void CYPaintEditView::OnMenulinepattern()
 {
@@ -1419,6 +1435,19 @@ void CYPaintEditView::OnMenulinepattern()
 		}
 
 		Invalidate(FALSE);
+	}
+}
+
+void CYPaintEditView::OnUpdateMenulinepattern(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+
+	if (pDoc->currentObj != NULL){
+		if (pDoc->currentObj->getType() == text) pCmdUI->Enable(FALSE);
+	}
+	else {
+		if (pDoc->yType == text) pCmdUI->Enable(FALSE);
 	}
 }
 //기능 : 면 색
@@ -1677,4 +1706,11 @@ void CYPaintEditView::OnUpdateMenufontbkcolor(CCmdUI *pCmdUI)
 	}
 	else
 		pCmdUI->Enable(FALSE);
+}
+
+BOOL CYPaintEditView::OnEraseBkgnd(CDC* pDC)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+
+	return TRUE;
 }

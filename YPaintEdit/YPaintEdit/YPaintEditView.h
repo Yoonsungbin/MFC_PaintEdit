@@ -132,6 +132,9 @@ public:
 	afx_msg void OnUpdateMenudefaulttbutton(CCmdUI *pCmdUI);
 	afx_msg void OnTexteditbutton();
 	afx_msg void OnUpdateTexteditbutton(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateMenulinethick(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateMenulinepattern(CCmdUI *pCmdUI);
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 };
 
 #ifndef _DEBUG  // YPaintEditView.cpp의 디버그 버전
