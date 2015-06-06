@@ -35,38 +35,44 @@ public:
 
 // 작업입니다.
 public:
-	//리본메뉴 비활성화를 위하여
+	// 리본 메뉴 //
+	// 리본 메뉴 (도형 패널) : 버튼들의 비/활성화를 위해 선언
 	BOOL menu_Select;
 	BOOL menu_Line;
 	BOOL menu_PolyLine;
-	BOOL menu_Ellipse;
 	BOOL menu_Rectangle;
+	BOOL menu_Ellipse;
 	BOOL menu_Text;
 
-	//팝업메뉴를 비활성화 하기 위해서
+	// 리본 메뉴 (텍스트속성 패널) : 메뉴들의 초기값 설정 및 값들의 임시 저장을 위해 선언
+	int fontSize;
+	CString font;
+	CString texts;
+	COLORREF fontColor;
+	COLORREF bkColor;
+
+	// 리본 메뉴 (도형속성 패널) : 메뉴들의 초기값 설정 및 값들의 임시 저장을 위해 선언 
+	int lineThick = 1;
+	int linePattern = 0;
+	int sidePattern = 0;
+	BOOL sidePatternflag2 = FALSE;
+
+	// 리본 메뉴 (색 패널) : 메뉴들의 초기값 설정 및 값들의 임시 저장을 위해 선언
+	COLORREF lineColor = RGB(0, 0, 0);
+	COLORREF sideColor = RGB(255, 255, 255);
+
+
+	// 팝업 메뉴 //
+	// 팝업 메뉴 : 메뉴들의 비/활성화를 위해 선언
+	BOOL menu_cut;
+	BOOL menu_paste;
+	BOOL menu_copy;
 	BOOL menu_Color;
 	BOOL menu_Figiure;
 	BOOL menu_Delete;
-	BOOL menu_cut;
-	BOOL menu_copy;
-	BOOL menu_paste;
-	//메뉴에서 정하는 값들을 저장할 변수 (보여지는 view객체의 속성값들을 제어함)
-	COLORREF lineColor = RGB(0,0,0);													//검은색
-	int lineThick = 1;																	//두께 : 1	
-	int linePattern = 0;																// PS_SOLID
-	COLORREF sideColor = RGB(255,255,255);												//흰색
-	int sidePattern = 0;																//HS_BDIAGONAL	
-	BOOL sidePatternflag2=FALSE;
+	
+	YObject* cutObj = NULL;			// 잘라내기, 붙여넣기를 위한 변수 선언
 
-	// 텍스트 초기값 변수 및 메뉴 설정시 사용할 변수
-	CString texts;
-	CString font;
-	COLORREF fontColor;
-	COLORREF bkColor;
-	int fontSize;
-
-	//잘래내기 ,붙쳐넣기 하기 위한 변수
-	YObject* cutObj = NULL;
 // 재정의입니다.
 public:
 	virtual void OnDraw(CDC* pDC);  // 이 뷰를 그리기 위해 재정의되었습니다.
@@ -90,30 +96,27 @@ protected:
 	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
 	DECLARE_MESSAGE_MAP()
 public:
+	void Paint(CDC* dc);
+	afx_msg void OnPaint();
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg void OnPaint();
-	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
-	afx_msg void RMenuColorButton();
-	afx_msg void FigureSettingButton();
 	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
-	afx_msg void OnDeleteClick();
-	afx_msg void OnRectangleButton();
-	afx_msg void UpdateOnDeleteClick(CCmdUI *pCmdUI);
-	afx_msg void UpdateFigureSettingButton(CCmdUI *pCmdUI);
-	afx_msg void UpdateRMenuColorButton(CCmdUI *pCmdUI);
-	afx_msg void DeletePointButton();
-	afx_msg void UpdateDeletePointButton(CCmdUI *pCmdUI);
-	afx_msg void RMenuInColorButton();
-	void Paint(CDC* dc);
-	afx_msg void OnMenulinethick();
-	afx_msg void OnMenulinecolor();
-	afx_msg void OnMenulinepattern();
-	afx_msg void OnMenusidepattern();//면패턴
-	afx_msg void OnMenusidecolor();
-	afx_msg void OnUpdateMenusidepattern(CCmdUI *pCmdUI);
+	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
+
 	void UpdateMenu();
+	afx_msg void OnMenudefaulttbutton();
+	afx_msg void OnUpdateMenudefaulttbutton(CCmdUI *pCmdUI);
+	afx_msg void OnMenulinebutton();
+	afx_msg void OnUpdateMenulinebutton(CCmdUI *pCmdUI);
+	afx_msg void OnMenupolylinebutton();
+	afx_msg void OnUpdateMenupolylinebutton(CCmdUI *pCmdUI);
+	afx_msg void OnMenurectanglebutton();
+	afx_msg void OnUpdateMenurectanglebutton(CCmdUI *pCmdUI);
+	afx_msg void OnMenuellipsebutton();
+	afx_msg void OnUpdateMenuellipsebutton(CCmdUI *pCmdUI);
+	afx_msg void OnTexteditbutton();
+	afx_msg void OnUpdateTexteditbutton(CCmdUI *pCmdUI);
 	afx_msg void OnMenufontsize();
 	afx_msg void OnMenufont();
 	afx_msg void OnMenutextbutton();
@@ -124,35 +127,42 @@ public:
 	afx_msg void OnUpdateMenutextbutton(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateMenufontcolor(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateMenufontbkcolor(CCmdUI *pCmdUI);
-	afx_msg void OnMenurectanglebutton();
-	afx_msg void OnUpdateMenurectanglebutton(CCmdUI *pCmdUI);
-	afx_msg void OnMenulinebutton();
-	afx_msg void OnUpdateMenulinebutton(CCmdUI *pCmdUI);
-	afx_msg void OnMenuellipsebutton();
-	afx_msg void OnUpdateMenuellipsebutton(CCmdUI *pCmdUI);
-	afx_msg void OnMenupolylinebutton();
-	afx_msg void OnUpdateMenupolylinebutton(CCmdUI *pCmdUI);
-	afx_msg void OnMenudefaulttbutton();
-	afx_msg void OnUpdateMenudefaulttbutton(CCmdUI *pCmdUI);
-	afx_msg void OnTexteditbutton();
-	afx_msg void OnUpdateTexteditbutton(CCmdUI *pCmdUI);
+	afx_msg void OnMenulinethick();
+	afx_msg void OnMenulinepattern();
+	afx_msg void OnMenusidepattern();
 	afx_msg void OnUpdateMenulinethick(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateMenulinepattern(CCmdUI *pCmdUI);
-	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg void OnUpdateMenusidepattern(CCmdUI *pCmdUI);
+	afx_msg void OnMenulinecolor();
+	afx_msg void OnMenusidecolor();
+	afx_msg void OnGroupbutton();
+	afx_msg void OnUpdateGroupbutton(CCmdUI *pCmdUI);
 	afx_msg void OnGrouplinethick();
 	afx_msg void OnUpdateGrouplinethick(CCmdUI *pCmdUI);
 	afx_msg void OnGrouplinepattern();
 	afx_msg void OnUpdateGrouplinepattern(CCmdUI *pCmdUI);
 	afx_msg void OnGroupsidepattern();
 	afx_msg void OnUpdateGroupsidepattern(CCmdUI *pCmdUI);
-	afx_msg void OnGroupbutton();
-	afx_msg void OnUpdateGroupbutton(CCmdUI *pCmdUI);
 	afx_msg void OnEditCut();
 	afx_msg void OnEditPaste();
 	afx_msg void OnEditCopy();
 	afx_msg void OnUpdateEditCut(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateEditCopy(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateEditPaste(CCmdUI *pCmdUI);
+	afx_msg void RMenuColorButton();
+	afx_msg void RMenuInColorButton();
+	afx_msg void FigureSettingButton();
+	afx_msg void OnDeleteClick();
+	afx_msg void DeletePointButton();
+	afx_msg void UpdateRMenuColorButton(CCmdUI *pCmdUI);
+	afx_msg void UpdateFigureSettingButton(CCmdUI *pCmdUI);
+	afx_msg void UpdateOnDeleteClick(CCmdUI *pCmdUI);
+	afx_msg void UpdateDeletePointButton(CCmdUI *pCmdUI);
+
+
+	/* 의미 확인하고 정리하자 */
+	afx_msg void OnRectangleButton();
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 };
 
 #ifndef _DEBUG  // YPaintEditView.cpp의 디버그 버전
