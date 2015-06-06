@@ -196,7 +196,6 @@ BEGIN
         MENUITEM "삭제(&D)\tCtrl+D",              ID_32797
         MENUITEM "점 삭제(&P)\tCtrl+P",            ID_32798
         MENUITEM "도형 색",                        ID_32799
-        MENUITEM "텍스트 서식",                      ID_32818
     END
 END
 

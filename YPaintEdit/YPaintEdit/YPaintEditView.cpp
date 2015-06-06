@@ -67,8 +67,17 @@ BEGIN_MESSAGE_MAP(CYPaintEditView, CView)
 	ON_COMMAND(ID_MENUSIDEPATTERN, &CYPaintEditView::OnMenusidepattern)
 	ON_COMMAND(ID_MENUSIDECOLOR, &CYPaintEditView::OnMenusidecolor)
 	ON_UPDATE_COMMAND_UI(ID_MENUSIDEPATTERN, &CYPaintEditView::OnUpdateMenusidepattern)
-	ON_COMMAND(ID_32818, &CYPaintEditView::OnTextChange)
-	ON_UPDATE_COMMAND_UI(ID_32818, &CYPaintEditView::OnUpdateTextChange)
+
+	ON_COMMAND(ID_MENUFONTSIZE, &CYPaintEditView::OnMenufontsize)
+	ON_COMMAND(ID_MENUFONT, &CYPaintEditView::OnMenufont)
+	ON_COMMAND(ID_MENUTEXTBUTTON, &CYPaintEditView::OnMenutextbutton)
+	ON_COMMAND(ID_MENUFONTCOLOR, &CYPaintEditView::OnMenufontcolor)
+	ON_COMMAND(ID_MENUFONTBKCOLOR, &CYPaintEditView::OnMenufontbkcolor)
+	ON_UPDATE_COMMAND_UI(ID_MENUFONTSIZE, &CYPaintEditView::OnUpdateMenufontsize)
+	ON_UPDATE_COMMAND_UI(ID_MENUFONT, &CYPaintEditView::OnUpdateMenufont)
+	ON_UPDATE_COMMAND_UI(ID_MENUTEXTBUTTON, &CYPaintEditView::OnUpdateMenutextbutton)
+	ON_UPDATE_COMMAND_UI(ID_MENUFONTCOLOR, &CYPaintEditView::OnUpdateMenufontcolor)
+	ON_UPDATE_COMMAND_UI(ID_MENUFONTBKCOLOR, &CYPaintEditView::OnUpdateMenufontbkcolor)
 END_MESSAGE_MAP()
 
 // CYPaintEditView 생성/소멸
@@ -1401,40 +1410,6 @@ void CYPaintEditView::OnUpdateMenusidepattern(CCmdUI *pCmdUI)
 	}
 
 }
-
-void CYPaintEditView::OnTextChange()
-{
-	// TODO: 여기에 명령 처리기 코드를 추가합니다.
-	CYPaintEditDoc* pDoc = GetDocument();
-
-	CFontDialog dlg;
-	if (dlg.DoModal() == IDOK){
-		// 글꼴, 글꼴효과, 크기, 색, 효과 
-
-		//pDoc->pText->setFontColor(dlg.GetColor());
-		//pDoc->pText->setFontSize(dlg.GetSize());
-		//pDoc->pText->setFontColor(dlg.getfo());
-		//pDoc->pText->setFontColor(dlg.GetColor());
-		Invalidate();
-	}
-}
-void CYPaintEditView::OnUpdateTextChange(CCmdUI *pCmdUI)
-{
-	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
-	CYPaintEditDoc* pDoc = GetDocument();
-	
-	if (pDoc->currentObj->getType() == text){
-		pCmdUI->Enable(TRUE);
-
-		//pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
-		//pDoc->pEllipse->setSidePattern(sidePattern);
-		//Invalidate(FALSE);
-	}
-	else 
-		pCmdUI->Enable(FALSE);
-}
-
-
 void CYPaintEditView::UpdateMenu(){
 	CMainFrame* main = (CMainFrame*)AfxGetMainWnd();
 	CYPaintEditDoc* pDoc = GetDocument();
@@ -1487,4 +1462,114 @@ void CYPaintEditView::UpdateMenu(){
 			break;
 		}
 	}
+}
+
+
+
+
+
+
+// 상단 메뉴 텍스트
+void CYPaintEditView::OnMenufontsize()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+	CMainFrame* main = (CMainFrame*)AfxGetMainWnd();
+	CMFCRibbonEdit* fontsize = (CMFCRibbonEdit*)main->getRibbon()->FindByID(ID_MENUFONTSIZE);
+	fontSize = (_ttoi)(fontsize->GetEditText())*10;
+
+	if (pDoc->currentObj != NULL && pDoc->currentObj->getType() == text){
+		pDoc->pText = (YText*)pDoc->currentObj;
+		pDoc->pText->setFontSize(fontSize);
+
+		// 글자크기변경 -> 끝점 변경,렉트변경,리젼변경
+		CDC* dc = GetDC();
+		CFont f;
+		f.CreatePointFont(pDoc->pText->getFontSize(), pDoc->pText->getFont());
+		dc->SelectObject(f);
+		CSize s = dc->GetTextExtent(pDoc->pText->getText(), pDoc->pText->getText().GetLength());
+
+		pDoc->pText->setEPoint(CPoint(pDoc->pText->getSPoint().x + s.cx, pDoc->pText->getSPoint().y + s.cy));
+		pDoc->pText->setRect(pDoc->pText->getSPoint(), pDoc->pText->getEPoint());
+		pDoc->pText->setRgn();
+	}
+	Invalidate(FALSE);
+}
+void CYPaintEditView::OnMenufont()
+{
+	CYPaintEditDoc* pDoc = GetDocument();
+	CMainFrame* main = (CMainFrame*)AfxGetMainWnd();
+	CMFCRibbonComboBox* fonts = (CMFCRibbonComboBox*)main->getRibbon()->FindByID(ID_MENUFONT);
+	font = fonts->GetText();
+
+	if (pDoc->currentObj != NULL && pDoc->currentObj->getType() == text){
+		pDoc->pText = (YText*)pDoc->currentObj;
+		pDoc->pText->setFont(font);
+
+		// 글자크기변경 -> 끝점 변경,렉트변경,리젼변경
+		CDC* dc = GetDC();
+		CFont f;
+		f.CreatePointFont(pDoc->pText->getFontSize(), pDoc->pText->getFont());
+		dc->SelectObject(f);
+		CSize s = dc->GetTextExtent(pDoc->pText->getText(), pDoc->pText->getText().GetLength());
+
+		pDoc->pText->setEPoint(CPoint(pDoc->pText->getSPoint().x + s.cx, pDoc->pText->getSPoint().y + s.cy));
+		pDoc->pText->setRect(pDoc->pText->getSPoint(), pDoc->pText->getEPoint());
+		pDoc->pText->setRgn();
+	}
+	Invalidate(FALSE);
+}
+void CYPaintEditView::OnMenutextbutton()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+}
+void CYPaintEditView::OnMenufontcolor()
+{
+	
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CMainFrame* main = (CMainFrame*)AfxGetMainWnd();
+	CYPaintEditDoc* pDoc = GetDocument();
+	CMFCRibbonColorButton* fontcolor = (CMFCRibbonColorButton*)main->getRibbon()->FindByID(ID_MENUFONTCOLOR);
+
+	fontColor = fontcolor->GetColor();
+	if (pDoc->currentObj != NULL && pDoc->currentObj->getType() == text){
+		pDoc->pText = (YText*)pDoc->currentObj;
+		pDoc->pText->setFontColor(fontColor);
+		Invalidate(FALSE);
+	}
+}
+void CYPaintEditView::OnMenufontbkcolor()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CMainFrame* main = (CMainFrame*)AfxGetMainWnd();
+	CYPaintEditDoc* pDoc = GetDocument();
+	CMFCRibbonColorButton* bkcolor = (CMFCRibbonColorButton*)main->getRibbon()->FindByID(ID_MENUFONTBKCOLOR);
+
+	bkColor = bkcolor->GetColor();
+	if (pDoc->currentObj != NULL && pDoc->currentObj->getType() == text){
+		pDoc->pText = (YText*)pDoc->currentObj;
+		pDoc->pText->setBkColor(bkColor);
+		Invalidate(FALSE);
+	}
+}
+
+void CYPaintEditView::OnUpdateMenufontsize(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+}
+void CYPaintEditView::OnUpdateMenufont(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+}
+void CYPaintEditView::OnUpdateMenutextbutton(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+}
+void CYPaintEditView::OnUpdateMenufontcolor(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+}
+void CYPaintEditView::OnUpdateMenufontbkcolor(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
 }

@@ -7,12 +7,11 @@ YText::YText()
 {
 }
 YText::YText(CPoint point){
-	yType = text;					// YObject의 타입을 Text로 초기화
 	sPoint = point;					// 텍스트 박스의 왼쪽,위의 점을 초기화
-	fontSize = 500;					// 글자크기 초기화
 	font = _T("바탕");				// 글자체 초기화
 	fontColor = RGB(0, 0, 0);		// 글자색 초기화
 	bkColor = RGB(255, 255, 255);	// 배경색 초기화
+	fontSize = 500;					// 글자크기 초기화
 }
 YText::~YText()
 {

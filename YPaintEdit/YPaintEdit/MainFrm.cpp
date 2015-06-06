@@ -77,17 +77,16 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	//메뉴 리본 초기화
 	CMFCRibbonEdit* thick = (CMFCRibbonEdit*)m_wndRibbonBar.FindByID(ID_MENULINETHICK);
-
 	thick->SetEditText(_T("1"));
-
 	CMFCRibbonComboBox* linePattern = (CMFCRibbonComboBox*)m_wndRibbonBar.FindByID(ID_MENULINEPATTERN);
-
 	 linePattern->SelectItem(0);
-
 	CMFCRibbonComboBox* sidePattern = (CMFCRibbonComboBox*)m_wndRibbonBar.FindByID(ID_MENUSIDEPATTERN);
-
 	sidePattern->SelectItem(0);
 
+	CMFCRibbonEdit* fontSize = (CMFCRibbonEdit*)m_wndRibbonBar.FindByID(ID_MENUFONTSIZE);
+	fontSize->SetEditText(_T("50"));
+	CMFCRibbonComboBox* font = (CMFCRibbonComboBox*)m_wndRibbonBar.FindByID(ID_MENUFONT);
+	font->SelectItem(0);
 	
 	return 0;
 }

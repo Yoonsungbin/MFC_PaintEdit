@@ -48,7 +48,7 @@ private:
 	CPoint sPoint;			// 텍스트 박스의 왼쪽,위의 점
 	CPoint ePoint;			// 텍스트 박스의 오른족,아래의 점
 	CRect rect;				// 텍스트 박스
-	CString texts;			// 텍스트
+	CString texts;			// 문자열
 	CString font;			// 글자체
 	COLORREF fontColor;		// 글자색
 	COLORREF bkColor;		// 배경색

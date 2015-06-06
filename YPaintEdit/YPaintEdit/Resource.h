@@ -54,12 +54,16 @@
 #define ID_32779                        32779
 #define ID_32780                        32780
 #define ID_COMBO2                       32784
+#define ID_MENUFONT                     32784
 #define ID_BUTTON3                      32785
 #define ID_CONTEXT3                     32786
 #define ID_BUTTON2                      32788
+#define ID_MENUTEXTBUTTON               32788
 #define ID_BUTTON4                      32789
 #define ID_BUTTON5                      32790
+#define ID_MENUFONTCOLOR                32790
 #define ID_BUTTON6                      32791
+#define ID_MENUFONTBKCOLOR              32791
 #define ID_BUTTON7                      32792
 #define ID_32793                        32793
 #define ID_32794                        32794
@@ -73,13 +77,14 @@
 #define ID_MENUSIDEPATTERN              32806
 #define ID_MENUSIDECOLOR                32807
 #define ID_32818                        32818
+#define ID_MENUFONTSIZE                 32819
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        316
-#define _APS_NEXT_COMMAND_VALUE         32819
+#define _APS_NEXT_COMMAND_VALUE         32821
 #define _APS_NEXT_CONTROL_VALUE         1010
 #define _APS_NEXT_SYMED_VALUE           310
 #endif

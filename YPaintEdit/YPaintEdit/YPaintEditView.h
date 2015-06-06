@@ -55,8 +55,12 @@ public:
 	COLORREF sideColor = RGB(255,255,255);												//흰색
 	int sidePattern = 0;																//HS_BDIAGONAL	
 	BOOL sidePatternflag2=FALSE;
+
+	CString texts;
+	CString font;
+	COLORREF fontColor;
+	COLORREF bkColor;
 	int fontSize;
-	int fontPattern;
 
 // 재정의입니다.
 public:
@@ -115,9 +119,17 @@ public:
 	afx_msg void OnMenusidepattern();//면패턴
 	afx_msg void OnMenusidecolor();
 	afx_msg void OnUpdateMenusidepattern(CCmdUI *pCmdUI);
-	afx_msg void OnTextChange();
-	afx_msg void OnUpdateTextChange(CCmdUI *pCmdUI);
 	void UpdateMenu();
+	afx_msg void OnMenufontsize();
+	afx_msg void OnMenufont();
+	afx_msg void OnMenutextbutton();
+	afx_msg void OnMenufontcolor();
+	afx_msg void OnMenufontbkcolor();
+	afx_msg void OnUpdateMenufontsize(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateMenufont(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateMenutextbutton(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateMenufontcolor(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateMenufontbkcolor(CCmdUI *pCmdUI);
 };
 
 #ifndef _DEBUG  // YPaintEditView.cpp의 디버그 버전
