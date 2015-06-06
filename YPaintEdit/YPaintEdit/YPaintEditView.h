@@ -90,22 +90,11 @@ public:
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnPaint();
 	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
-	afx_msg void MenuLineButton();
-	afx_msg void MenuDefaultButton();
-	afx_msg void MenuTextButton();
-	afx_msg void MenuEllipseButton();
 	afx_msg void RMenuColorButton();
 	afx_msg void FigureSettingButton();
 	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
-	afx_msg void MenuPolyLineButton();
 	afx_msg void OnDeleteClick();
 	afx_msg void OnRectangleButton();
-	afx_msg void UpdateMenuDefaultButton(CCmdUI *pCmdUI);
-	afx_msg void UpdateMenuLineButton(CCmdUI *pCmdUI);
-	afx_msg void UpdateMenuPolyLineButton(CCmdUI *pCmdUI);
-	afx_msg void UpdateOnRectangleButton(CCmdUI *pCmdUI);
-	afx_msg void UpdateMenuEllipseButton(CCmdUI *pCmdUI);
-	afx_msg void UpdateMenuTextButton(CCmdUI *pCmdUI);
 	afx_msg void UpdateOnDeleteClick(CCmdUI *pCmdUI);
 	afx_msg void UpdateFigureSettingButton(CCmdUI *pCmdUI);
 	afx_msg void UpdateRMenuColorButton(CCmdUI *pCmdUI);
@@ -130,6 +119,18 @@ public:
 	afx_msg void OnUpdateMenutextbutton(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateMenufontcolor(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateMenufontbkcolor(CCmdUI *pCmdUI);
+	afx_msg void OnMenurectanglebutton();
+	afx_msg void OnUpdateMenurectanglebutton(CCmdUI *pCmdUI);
+	afx_msg void OnMenulinebutton();
+	afx_msg void OnUpdateMenulinebutton(CCmdUI *pCmdUI);
+	afx_msg void OnMenuellipsebutton();
+	afx_msg void OnUpdateMenuellipsebutton(CCmdUI *pCmdUI);
+	afx_msg void OnMenupolylinebutton();
+	afx_msg void OnUpdateMenupolylinebutton(CCmdUI *pCmdUI);
+	afx_msg void OnMenudefaulttbutton();
+	afx_msg void OnUpdateMenudefaulttbutton(CCmdUI *pCmdUI);
+	afx_msg void OnTexteditbutton();
+	afx_msg void OnUpdateTexteditbutton(CCmdUI *pCmdUI);
 };
 
 #ifndef _DEBUG  // YPaintEditView.cpp의 디버그 버전

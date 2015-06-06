@@ -39,22 +39,8 @@ BEGIN_MESSAGE_MAP(CYPaintEditView, CView)
 	ON_WM_MOUSEMOVE()
 	ON_WM_PAINT()
 	ON_WM_CHAR()
-	ON_COMMAND(ID_BUTTON3, &CYPaintEditView::MenuLineButton)
-	ON_COMMAND(ID_BUTTON2, &CYPaintEditView::MenuDefaultButton)
-	ON_COMMAND(ID_BUTTON7, &CYPaintEditView::MenuTextButton)
-	ON_COMMAND(ID_BUTTON6, &CYPaintEditView::MenuEllipseButton)
-	ON_COMMAND(ID_32793, &CYPaintEditView::RMenuColorButton)
-	ON_COMMAND(ID_32794, &CYPaintEditView::FigureSettingButton)
 	ON_WM_LBUTTONDBLCLK()
-	ON_COMMAND(ID_BUTTON5, &CYPaintEditView::MenuPolyLineButton)
 	ON_COMMAND(ID_32797, &CYPaintEditView::OnDeleteClick)
-	ON_COMMAND(ID_BUTTON4, &CYPaintEditView::OnRectangleButton)
-	ON_UPDATE_COMMAND_UI(ID_BUTTON2, &CYPaintEditView::UpdateMenuDefaultButton)
-	ON_UPDATE_COMMAND_UI(ID_BUTTON3, &CYPaintEditView::UpdateMenuLineButton)
-	ON_UPDATE_COMMAND_UI(ID_BUTTON5, &CYPaintEditView::UpdateMenuPolyLineButton)
-	ON_UPDATE_COMMAND_UI(ID_BUTTON4, &CYPaintEditView::UpdateOnRectangleButton)
-	ON_UPDATE_COMMAND_UI(ID_BUTTON6, &CYPaintEditView::UpdateMenuEllipseButton)
-	ON_UPDATE_COMMAND_UI(ID_BUTTON7, &CYPaintEditView::UpdateMenuTextButton)
 	ON_UPDATE_COMMAND_UI(ID_32797, &CYPaintEditView::UpdateOnDeleteClick)
 	ON_UPDATE_COMMAND_UI(ID_32794, &CYPaintEditView::UpdateFigureSettingButton)
 	ON_UPDATE_COMMAND_UI(ID_32793, &CYPaintEditView::UpdateRMenuColorButton)
@@ -78,6 +64,18 @@ BEGIN_MESSAGE_MAP(CYPaintEditView, CView)
 	ON_UPDATE_COMMAND_UI(ID_MENUTEXTBUTTON, &CYPaintEditView::OnUpdateMenutextbutton)
 	ON_UPDATE_COMMAND_UI(ID_MENUFONTCOLOR, &CYPaintEditView::OnUpdateMenufontcolor)
 	ON_UPDATE_COMMAND_UI(ID_MENUFONTBKCOLOR, &CYPaintEditView::OnUpdateMenufontbkcolor)
+	ON_COMMAND(ID_MENURECTANGLEBUTTON, &CYPaintEditView::OnMenurectanglebutton)
+	ON_UPDATE_COMMAND_UI(ID_MENURECTANGLEBUTTON, &CYPaintEditView::OnUpdateMenurectanglebutton)
+	ON_COMMAND(ID_MENULINEBUTTON, &CYPaintEditView::OnMenulinebutton)
+	ON_UPDATE_COMMAND_UI(ID_MENULINEBUTTON, &CYPaintEditView::OnUpdateMenulinebutton)
+	ON_COMMAND(ID_MENUELLIPSEBUTTON, &CYPaintEditView::OnMenuellipsebutton)
+	ON_UPDATE_COMMAND_UI(ID_MENUELLIPSEBUTTON, &CYPaintEditView::OnUpdateMenuellipsebutton)
+	ON_COMMAND(ID_MENUPOLYLINEBUTTON, &CYPaintEditView::OnMenupolylinebutton)
+	ON_UPDATE_COMMAND_UI(ID_MENUPOLYLINEBUTTON, &CYPaintEditView::OnUpdateMenupolylinebutton)
+	ON_COMMAND(ID_MENUDEFAULTTBUTTON, &CYPaintEditView::OnMenudefaulttbutton)
+	ON_UPDATE_COMMAND_UI(ID_MENUDEFAULTTBUTTON, &CYPaintEditView::OnUpdateMenudefaulttbutton)
+	ON_COMMAND(ID_TEXTEDITBUTTON, &CYPaintEditView::OnTexteditbutton)
+	ON_UPDATE_COMMAND_UI(ID_TEXTEDITBUTTON, &CYPaintEditView::OnUpdateTexteditbutton)
 END_MESSAGE_MAP()
 
 // CYPaintEditView 생성/소멸
@@ -797,161 +795,61 @@ void CYPaintEditView::OnLButtonDblClk(UINT nFlags, CPoint point)
 }
 
 
-
-// 리본 메뉴, 에벤트 처리 함수들 //
-void CYPaintEditView::MenuLineButton()
-{
-	// TODO: 여기에 명령 처리기 코드를 추가합니다.
-	menu_Select = FALSE;
-	menu_Line = TRUE;
-	menu_PolyLine = FALSE;
-	menu_Ellipse = FALSE;
-	menu_Rectangle = FALSE;
-	menu_Text = FALSE;
-
+//기능 : 객체 클릭 했을때 해당되는 속성으로 메뉴값 최신화
+void CYPaintEditView::UpdateMenu(){
+	CMainFrame* main = (CMainFrame*)AfxGetMainWnd();
 	CYPaintEditDoc* pDoc = GetDocument();
-	pDoc->yType = line;
 
-	POSITION pos = pDoc->obj_List.GetHeadPosition();
-	while (pos) {
-		pDoc->currentObj = (YObject*)pDoc->obj_List.GetNext(pos);
-		if (pDoc->currentObj->getSelect() == TRUE) pDoc->currentObj->setSelect(FALSE);
+	CMFCRibbonEdit* lineThick = (CMFCRibbonEdit*)main->getRibbon()->FindByID(ID_MENULINETHICK);
+	CMFCRibbonComboBox* sidePattern = (CMFCRibbonComboBox*)main->getRibbon()->FindByID(ID_MENUSIDEPATTERN);
+	CMFCRibbonComboBox* linePattern = (CMFCRibbonComboBox*)main->getRibbon()->FindByID(ID_MENULINEPATTERN);
+
+	if (pDoc->currentObj != NULL){
+		switch (pDoc->currentObj->getType()){
+		case line:
+		{
+			CString str;
+			lineThick->SetEditText(str);
+			linePattern->OnSelectItem(pDoc->pLine->getLinePattern());
+			break;
+		}
+		case polyline:
+		{
+			CString str;
+			str.Format(_T("%d"), pDoc->pPolyLine->getLineThick());
+			lineThick->SetEditText(str);
+			linePattern->OnSelectItem(pDoc->pPolyLine->getLinePattern());
+			break;
+		}
+		case ellipse:
+		{
+			CString str;
+			str.Format(_T("%d"), pDoc->pEllipse->getLineThick());
+			lineThick->SetEditText(str);
+			linePattern->OnSelectItem(pDoc->pEllipse->getLinePattern());
+			sidePattern->OnSelectItem(pDoc->pEllipse->getSidePattern());
+
+			break;
+		}
+		case rectangle:
+		{
+			CString str;
+			str.Format(_T("%d"), pDoc->pRectangle->getLineThick());
+			lineThick->SetEditText(str);
+			linePattern->OnSelectItem(pDoc->pRectangle->getLinePattern());
+			sidePattern->OnSelectItem(pDoc->pRectangle->getSidePattern());
+			break;
+		}
+		case text:
+		{
+			break;
+		}
+		default:
+			break;
+		}
 	}
-	pDoc->currentObj = NULL;
-}
-void CYPaintEditView::MenuPolyLineButton()
-{
-	// TODO: 여기에 명령 처리기 코드를 추가합니다.
-	menu_Select = FALSE;
-	menu_Line = FALSE;
-	menu_PolyLine = TRUE;
-	menu_Ellipse = FALSE;
-	menu_Rectangle = FALSE;
-	menu_Text = FALSE;
-
-	CYPaintEditDoc* pDoc = GetDocument();
-	pDoc->yType = polyline;
-
-	POSITION pos = pDoc->obj_List.GetHeadPosition();
-	while (pos) {
-		pDoc->currentObj = (YObject*)pDoc->obj_List.GetNext(pos);
-		if (pDoc->currentObj->getSelect() == TRUE) pDoc->currentObj->setSelect(FALSE);
-	}
-	pDoc->currentObj = NULL;
-}
-void CYPaintEditView::MenuEllipseButton()
-{
-	// TODO: 여기에 명령 처리기 코드를 추가합니다.
-	menu_Select = FALSE;
-	menu_Line = FALSE;
-	menu_PolyLine = FALSE;
-	menu_Ellipse = TRUE;
-	menu_Rectangle = FALSE;
-	menu_Text = FALSE;
-
-	CYPaintEditDoc* pDoc = GetDocument();
-	pDoc->yType = ellipse;
-
-	POSITION pos = pDoc->obj_List.GetHeadPosition();
-	while (pos) {
-		pDoc->currentObj = (YObject*)pDoc->obj_List.GetNext(pos);
-		if (pDoc->currentObj->getSelect() == TRUE) pDoc->currentObj->setSelect(FALSE);
-	}
-	pDoc->currentObj = NULL;
-}
-void CYPaintEditView::OnRectangleButton()
-{
-	// TODO: 여기에 명령 처리기 코드를 추가합니다.
-	menu_Select = FALSE;
-	menu_Line = FALSE;
-	menu_PolyLine = FALSE;
-	menu_Ellipse = FALSE;
-	menu_Rectangle = TRUE;
-	menu_Text = FALSE;
-
-	CYPaintEditDoc* pDoc = GetDocument();
-	pDoc->yType = rectangle;
-
-	POSITION pos = pDoc->obj_List.GetHeadPosition();
-	while (pos) {
-		pDoc->currentObj = (YObject*)pDoc->obj_List.GetNext(pos);
-		if (pDoc->currentObj->getSelect() == TRUE) pDoc->currentObj->setSelect(FALSE);
-	}
-	pDoc->currentObj = NULL;
-}
-void CYPaintEditView::MenuTextButton()
-{
-	// TODO: 여기에 명령 처리기 코드를 추가합니다.
-	menu_Select = FALSE;
-	menu_Line = FALSE;
-	menu_PolyLine = FALSE;
-	menu_Ellipse = FALSE;
-	menu_Rectangle = FALSE;
-	menu_Text = TRUE;
-
-	CYPaintEditDoc* pDoc = GetDocument();
-	pDoc->yType = text;
-
-	POSITION pos = pDoc->obj_List.GetHeadPosition();
-	while (pos) {
-		pDoc->currentObj = (YObject*)pDoc->obj_List.GetNext(pos);
-		if (pDoc->currentObj->getSelect() == TRUE) pDoc->currentObj->setSelect(FALSE);
-	}
-	pDoc->currentObj = NULL;
-}
-void CYPaintEditView::MenuDefaultButton()
-{
-	// TODO: 여기에 명령 처리기 코드를 추가합니다.
-
-	menu_Select = TRUE;
-	menu_Line = FALSE;
-	menu_PolyLine = FALSE;
-	menu_Ellipse = FALSE;
-	menu_Rectangle = FALSE;
-	menu_Text = FALSE;
-
-	CYPaintEditDoc* pDoc = GetDocument();
-	pDoc->yType = choice;
-
-	//선택을 누름으로써 모든 객체 선택여부를 FALSE로
-	POSITION pos = pDoc->obj_List.GetHeadPosition();
-	while (pos){
-		pDoc->currentObj = (YObject*)pDoc->obj_List.GetNext(pos);
-		pDoc->currentObj->setSelect(FALSE);
-	}
-	pDoc->currentObj = NULL;
 }
 
-void CYPaintEditView::UpdateMenuLineButton(CCmdUI *pCmdUI)
-{
-	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
-	pCmdUI->SetCheck(menu_Line);
-}
-void CYPaintEditView::UpdateMenuPolyLineButton(CCmdUI *pCmdUI)
-{
-	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
-	pCmdUI->SetCheck(menu_PolyLine);
-}
-void CYPaintEditView::UpdateOnRectangleButton(CCmdUI *pCmdUI)
-{
-	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
-	pCmdUI->SetCheck(menu_Rectangle);
-}
-void CYPaintEditView::UpdateMenuEllipseButton(CCmdUI *pCmdUI)
-{
-	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
-	pCmdUI->SetCheck(menu_Ellipse);
-}
-void CYPaintEditView::UpdateMenuTextButton(CCmdUI *pCmdUI)
-{
-	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
-	pCmdUI->SetCheck(menu_Text);
-}
-void CYPaintEditView::UpdateMenuDefaultButton(CCmdUI *pCmdUI)
-{
-	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
-	pCmdUI->SetCheck(menu_Select);
-}
 
 
 
@@ -1000,6 +898,11 @@ void CYPaintEditView::RMenuColorButton() //마우스 오른쪽버튼 클릭후 -> 색 클릭시
 		Invalidate(FALSE);
 	}
 }
+
+void CYPaintEditView::UpdateRMenuColorButton(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+}
 //기능 : 팝업메뉴 -> 면색변경
 void CYPaintEditView::RMenuInColorButton()
 {
@@ -1031,6 +934,9 @@ void CYPaintEditView::RMenuInColorButton()
 		Invalidate(FALSE);
 	}
 }
+
+
+///////////////////////////////////////팝업 메뉴////////////////////////////
 //기능 : 팝업메뉴 -> 도형서식
 void CYPaintEditView::FigureSettingButton() //마우스 오른쪽 버튼 클릭후 -> 도형 서식 바꾸기
 {
@@ -1117,6 +1023,13 @@ void CYPaintEditView::FigureSettingButton() //마우스 오른쪽 버튼 클릭후 -> 도형 
 	}
 
 }
+
+void CYPaintEditView::UpdateFigureSettingButton(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+	pCmdUI->Enable(FALSE);  //팝업 비활성 하는 방법
+}
+
 //기능 : 팝업메뉴 -> 삭제
 void CYPaintEditView::OnDeleteClick()
 {
@@ -1140,6 +1053,12 @@ void CYPaintEditView::OnDeleteClick()
 	}
 	pDoc->currentObj = NULL;
 	Invalidate(FALSE);
+
+}
+
+void CYPaintEditView::UpdateOnDeleteClick(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
 
 }
 //기능 : 팝업메뉴 -> 점삭제
@@ -1174,26 +1093,188 @@ void CYPaintEditView::DeletePointButton()
 
 }
 
-void CYPaintEditView::UpdateRMenuColorButton(CCmdUI *pCmdUI)
-{
-	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
-}
-void CYPaintEditView::UpdateFigureSettingButton(CCmdUI *pCmdUI)
-{
-	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
-	pCmdUI->Enable(FALSE);  //팝업 비활성 하는 방법
-}
-void CYPaintEditView::UpdateOnDeleteClick(CCmdUI *pCmdUI)
-{
-	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
-
-}
 void CYPaintEditView::UpdateDeletePointButton(CCmdUI *pCmdUI)
 {
 	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
 }
 
 
+///////////////////////////////////메 뉴 //////////////////////////////////
+
+void CYPaintEditView::OnMenudefaulttbutton()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	menu_Select = TRUE;
+	menu_Line = FALSE;
+	menu_PolyLine = FALSE;
+	menu_Ellipse = FALSE;
+	menu_Rectangle = FALSE;
+	menu_Text = FALSE;
+
+	CYPaintEditDoc* pDoc = GetDocument();
+	pDoc->yType = choice;
+
+	//선택을 누름으로써 모든 객체 선택여부를 FALSE로
+	POSITION pos = pDoc->obj_List.GetHeadPosition();
+	while (pos){
+		pDoc->currentObj = (YObject*)pDoc->obj_List.GetNext(pos);
+		pDoc->currentObj->setSelect(FALSE);
+	}
+	pDoc->currentObj = NULL;
+}
+
+
+void CYPaintEditView::OnUpdateMenudefaulttbutton(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+	pCmdUI->SetCheck(menu_Select);
+}
+
+void CYPaintEditView::OnMenurectanglebutton()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	menu_Select = FALSE;
+	menu_Line = FALSE;
+	menu_PolyLine = FALSE;
+	menu_Ellipse = FALSE;
+	menu_Rectangle = TRUE;
+	menu_Text = FALSE;
+
+	CYPaintEditDoc* pDoc = GetDocument();
+	pDoc->yType = rectangle;
+
+	POSITION pos = pDoc->obj_List.GetHeadPosition();
+	while (pos) {
+		pDoc->currentObj = (YObject*)pDoc->obj_List.GetNext(pos);
+		if (pDoc->currentObj->getSelect() == TRUE) pDoc->currentObj->setSelect(FALSE);
+	}
+	pDoc->currentObj = NULL;
+}
+
+
+void CYPaintEditView::OnUpdateMenurectanglebutton(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+	pCmdUI->SetCheck(menu_Rectangle);
+}
+
+
+void CYPaintEditView::OnMenulinebutton()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	menu_Select = FALSE;
+	menu_Line = TRUE;
+	menu_PolyLine = FALSE;
+	menu_Ellipse = FALSE;
+	menu_Rectangle = FALSE;
+	menu_Text = FALSE;
+
+	CYPaintEditDoc* pDoc = GetDocument();
+	pDoc->yType = line;
+
+	POSITION pos = pDoc->obj_List.GetHeadPosition();
+	while (pos) {
+		pDoc->currentObj = (YObject*)pDoc->obj_List.GetNext(pos);
+		if (pDoc->currentObj->getSelect() == TRUE) pDoc->currentObj->setSelect(FALSE);
+	}
+	pDoc->currentObj = NULL;
+}
+
+
+void CYPaintEditView::OnUpdateMenulinebutton(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+	pCmdUI->SetCheck(menu_Line);
+}
+
+
+void CYPaintEditView::OnMenuellipsebutton()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	menu_Select = FALSE;
+	menu_Line = FALSE;
+	menu_PolyLine = FALSE;
+	menu_Ellipse = TRUE;
+	menu_Rectangle = FALSE;
+	menu_Text = FALSE;
+
+	CYPaintEditDoc* pDoc = GetDocument();
+	pDoc->yType = ellipse;
+
+	POSITION pos = pDoc->obj_List.GetHeadPosition();
+	while (pos) {
+		pDoc->currentObj = (YObject*)pDoc->obj_List.GetNext(pos);
+		if (pDoc->currentObj->getSelect() == TRUE) pDoc->currentObj->setSelect(FALSE);
+	}
+	pDoc->currentObj = NULL;
+}
+
+
+void CYPaintEditView::OnUpdateMenuellipsebutton(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+	pCmdUI->SetCheck(menu_Ellipse);
+}
+
+
+void CYPaintEditView::OnMenupolylinebutton()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	menu_Select = FALSE;
+	menu_Line = FALSE;
+	menu_PolyLine = TRUE;
+	menu_Ellipse = FALSE;
+	menu_Rectangle = FALSE;
+	menu_Text = FALSE;
+
+	CYPaintEditDoc* pDoc = GetDocument();
+	pDoc->yType = polyline;
+
+	POSITION pos = pDoc->obj_List.GetHeadPosition();
+	while (pos) {
+		pDoc->currentObj = (YObject*)pDoc->obj_List.GetNext(pos);
+		if (pDoc->currentObj->getSelect() == TRUE) pDoc->currentObj->setSelect(FALSE);
+	}
+	pDoc->currentObj = NULL;
+}
+
+
+void CYPaintEditView::OnUpdateMenupolylinebutton(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+	pCmdUI->SetCheck(menu_PolyLine);
+}
+
+void CYPaintEditView::OnMenutextbutton()
+{
+	menu_Select = FALSE;
+	menu_Line = FALSE;
+	menu_PolyLine = FALSE;
+	menu_Ellipse = FALSE;
+	menu_Rectangle = FALSE;
+	menu_Text = TRUE;
+
+	CYPaintEditDoc* pDoc = GetDocument();
+	pDoc->yType = text;
+
+	POSITION pos = pDoc->obj_List.GetHeadPosition();
+	while (pos) {
+		pDoc->currentObj = (YObject*)pDoc->obj_List.GetNext(pos);
+		if (pDoc->currentObj->getSelect() == TRUE) pDoc->currentObj->setSelect(FALSE);
+	}
+	pDoc->currentObj = NULL;
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+
+}
+
+void CYPaintEditView::OnUpdateMenutextbutton(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다
+	pCmdUI->SetCheck(menu_Text);
+}
+
+
+///////////////////////////////////도형 속성 ///////////////////////////
 
 //기능 : 선 굵기
 void CYPaintEditView::OnMenulinethick()
@@ -1209,27 +1290,27 @@ void CYPaintEditView::OnMenulinethick()
 		switch (pDoc->currentObj->getType()){
 		case line:
 		{
-					 pDoc->pLine = (YLine*)pDoc->currentObj;
-					 pDoc->pLine->setLineThick(lineThick);
-					 break;
+			pDoc->pLine = (YLine*)pDoc->currentObj;
+			pDoc->pLine->setLineThick(lineThick);
+			break;
 		}
 		case polyline:
 		{
-					pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
-					pDoc->pPolyLine->setLineThick(lineThick);
-					break;
+			pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
+			pDoc->pPolyLine->setLineThick(lineThick);
+			break;
 		}
 		case ellipse:
 		{
-					pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
-					pDoc->pEllipse->setLineThick(lineThick);
-					break;
+			pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
+			pDoc->pEllipse->setLineThick(lineThick);
+			break;
 		}
 		case rectangle:
 		{
-					pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
-					pDoc->pRectangle->setLineThick(lineThick);
-					break;
+			pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
+			pDoc->pRectangle->setLineThick(lineThick);
+			break;
 		}
 		default:
 			break;
@@ -1245,40 +1326,40 @@ void CYPaintEditView::OnMenulinecolor()
 	CMainFrame* main = (CMainFrame*)AfxGetMainWnd();
 	CYPaintEditDoc* pDoc = GetDocument();
 	CMFCRibbonColorButton* color = (CMFCRibbonColorButton*)main->getRibbon()->FindByID(ID_MENULINECOLOR);
-	
-	lineColor = color->GetColor();
-		if (pDoc->currentObj != NULL){											//객체를 선택했을 때 
-			switch (pDoc->currentObj->getType()){
-			case line:
-			{
-				pDoc->pLine = (YLine*)pDoc->currentObj;
-				pDoc->pLine->setLineColor(lineColor);
-				break;
-			}
-			case polyline:
-			{
-				pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
-				pDoc->pPolyLine->setLineColor(lineColor);
-				break;
-			}
-			case ellipse:
-			{
-				pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
-				pDoc->pEllipse->setLineColor(lineColor);
-				break;
-			}
-			case rectangle:
-			{
-				pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
-				pDoc->pRectangle->setLineColor(lineColor);
-				break;
-			}
-			default:
-				break;
-			}
 
-			Invalidate(FALSE);
+	lineColor = color->GetColor();
+	if (pDoc->currentObj != NULL){											//객체를 선택했을 때 
+		switch (pDoc->currentObj->getType()){
+		case line:
+		{
+			pDoc->pLine = (YLine*)pDoc->currentObj;
+			pDoc->pLine->setLineColor(lineColor);
+			break;
 		}
+		case polyline:
+		{
+			pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
+			pDoc->pPolyLine->setLineColor(lineColor);
+			break;
+		}
+		case ellipse:
+		{
+			pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
+			pDoc->pEllipse->setLineColor(lineColor);
+			break;
+		}
+		case rectangle:
+		{
+			pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
+			pDoc->pRectangle->setLineColor(lineColor);
+			break;
+		}
+		default:
+			break;
+		}
+
+		Invalidate(FALSE);
+	}
 }
 //기능 : 선 패턴
 void CYPaintEditView::OnMenulinepattern()
@@ -1294,27 +1375,27 @@ void CYPaintEditView::OnMenulinepattern()
 		switch (pDoc->currentObj->getType()){
 		case line:
 		{
-					pDoc->pLine = (YLine*)pDoc->currentObj;
-					pDoc->pLine->setLinePattern(linePattern);
-					break;
+			pDoc->pLine = (YLine*)pDoc->currentObj;
+			pDoc->pLine->setLinePattern(linePattern);
+			break;
 		}
 		case polyline:
 		{
-					pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
-					pDoc->pPolyLine->setLinePattern(linePattern);
-					break;
+			pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
+			pDoc->pPolyLine->setLinePattern(linePattern);
+			break;
 		}
 		case ellipse:
 		{
-					pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
-					pDoc->pEllipse->setLinePattern(linePattern);
-					break;
+			pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
+			pDoc->pEllipse->setLinePattern(linePattern);
+			break;
 		}
 		case rectangle:
 		{
-					pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
-					pDoc->pRectangle->setLinePattern(linePattern);
-					break;
+			pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
+			pDoc->pRectangle->setLinePattern(linePattern);
+			break;
 		}
 		default:
 			break;
@@ -1337,15 +1418,15 @@ void CYPaintEditView::OnMenusidecolor()
 		switch (pDoc->currentObj->getType()){
 		case ellipse:
 		{
-						pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
-						pDoc->pEllipse->setSideColor(sideColor);
-						break;
+			pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
+			pDoc->pEllipse->setSideColor(sideColor);
+			break;
 		}
 		case rectangle:
 		{
-						  pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
-						  pDoc->pRectangle->setSideColor(sideColor);
-						  break;
+			pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
+			pDoc->pRectangle->setSideColor(sideColor);
+			break;
 		}
 		default:
 			break;
@@ -1374,13 +1455,13 @@ void CYPaintEditView::OnMenusidepattern()
 		{
 			if (sidePatternflag2) pDoc->pEllipse->setPatternflag(TRUE);							//default일때 ellipse의 flag변수값 조정
 			else pDoc->pEllipse->setPatternflag(FALSE);
-			
+
 			pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
 			pDoc->pEllipse->setSidePattern(sidePattern);
 			break;
 		}
 		case rectangle:
-		{	
+		{
 			if (sidePatternflag2) pDoc->pRectangle->setPatternflag(TRUE);						//default일때 rectangle의 flag변수값 조정
 			else pDoc->pRectangle->setPatternflag(FALSE);
 
@@ -1410,73 +1491,18 @@ void CYPaintEditView::OnUpdateMenusidepattern(CCmdUI *pCmdUI)
 	}
 
 }
-void CYPaintEditView::UpdateMenu(){
-	CMainFrame* main = (CMainFrame*)AfxGetMainWnd();
-	CYPaintEditDoc* pDoc = GetDocument();
-
-	CMFCRibbonEdit* lineThick = (CMFCRibbonEdit*)main->getRibbon()->FindByID(ID_MENULINETHICK);
-	CMFCRibbonComboBox* sidePattern = (CMFCRibbonComboBox*)main->getRibbon()->FindByID(ID_MENUSIDEPATTERN);
-	CMFCRibbonComboBox* linePattern = (CMFCRibbonComboBox*)main->getRibbon()->FindByID(ID_MENULINEPATTERN);
-	
-	if (pDoc->currentObj != NULL){
-		switch (pDoc->currentObj->getType()){
-		case line:
-		{
-			CString str;
-			lineThick->SetEditText(str);
-			linePattern->OnSelectItem(pDoc->pLine->getLinePattern());
-			break;
-		}
-		case polyline:
-		{
-			CString str;
-			str.Format(_T("%d"), pDoc->pPolyLine->getLineThick());
-			lineThick->SetEditText(str);
-			linePattern->OnSelectItem(pDoc->pPolyLine->getLinePattern());
-			break;
-		}
-		case ellipse:
-		{
-			CString str;
-			str.Format(_T("%d"), pDoc->pEllipse->getLineThick());
-			lineThick->SetEditText(str);
-			linePattern->OnSelectItem(pDoc->pEllipse->getLinePattern());
-			sidePattern->OnSelectItem(pDoc->pEllipse->getSidePattern());
-
-			break;
-		}
-		case rectangle:
-		{
-			CString str;
-			str.Format(_T("%d"), pDoc->pRectangle->getLineThick());
-			lineThick->SetEditText(str);
-			linePattern->OnSelectItem(pDoc->pRectangle->getLinePattern());
-			sidePattern->OnSelectItem(pDoc->pRectangle->getSidePattern());
-			break;
-		}
-		case text:
-		{
-			break;
-		}
-		default:
-			break;
-		}
-	}
-}
 
 
 
 
-
-
-// 상단 메뉴 텍스트
+////////////////////////// 상단 메뉴 텍스트///////////////////////////
 void CYPaintEditView::OnMenufontsize()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	CYPaintEditDoc* pDoc = GetDocument();
 	CMainFrame* main = (CMainFrame*)AfxGetMainWnd();
 	CMFCRibbonEdit* fontsize = (CMFCRibbonEdit*)main->getRibbon()->FindByID(ID_MENUFONTSIZE);
-	fontSize = (_ttoi)(fontsize->GetEditText())*10;
+	fontSize = (_ttoi)(fontsize->GetEditText()) * 10;
 
 	if (pDoc->currentObj != NULL && pDoc->currentObj->getType() == text){
 		pDoc->pText = (YText*)pDoc->currentObj;
@@ -1519,13 +1545,10 @@ void CYPaintEditView::OnMenufont()
 	}
 	Invalidate(FALSE);
 }
-void CYPaintEditView::OnMenutextbutton()
-{
-	// TODO: 여기에 명령 처리기 코드를 추가합니다.
-}
+
 void CYPaintEditView::OnMenufontcolor()
 {
-	
+
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	CMainFrame* main = (CMainFrame*)AfxGetMainWnd();
 	CYPaintEditDoc* pDoc = GetDocument();
@@ -1561,15 +1584,23 @@ void CYPaintEditView::OnUpdateMenufont(CCmdUI *pCmdUI)
 {
 	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
 }
-void CYPaintEditView::OnUpdateMenutextbutton(CCmdUI *pCmdUI)
-{
-	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
-}
+
 void CYPaintEditView::OnUpdateMenufontcolor(CCmdUI *pCmdUI)
 {
 	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
 }
 void CYPaintEditView::OnUpdateMenufontbkcolor(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+}
+
+void CYPaintEditView::OnTexteditbutton()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+}
+
+
+void CYPaintEditView::OnUpdateTexteditbutton(CCmdUI *pCmdUI)
 {
 	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
 }
