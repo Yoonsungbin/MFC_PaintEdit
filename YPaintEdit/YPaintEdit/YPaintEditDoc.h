@@ -40,12 +40,12 @@ public:
 	YRectangle* pRectangle;				// 사각형 작업을 위한 포인터
 	YText* pText;						// 텍스트 작업을 위한 포인터
 	
+
 	BOOL drawing ;						// 그리기 상태 확인변수
 	BOOL textEditing;					// 텍스트 편집 상태를 나타내는 변수
 	CString tmp;						// 텍스트를 임시로 저장하는 변수
 	BOOL clickPolyLine;					// PolyLine 선택 유무  true - > 클릭 false -> 초기생성
 	int deletePosition;					// PolyLine 한점 지울 때 지울 위치 저장변수
-
 
 	CPoint Original_Point;				// move를 위한 시작지점
 

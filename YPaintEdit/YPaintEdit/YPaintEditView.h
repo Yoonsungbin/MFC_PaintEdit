@@ -56,6 +56,7 @@ public:
 	int sidePattern = 0;																//HS_BDIAGONAL	
 	BOOL sidePatternflag2=FALSE;
 
+	// 텍스트 초기값 변수 및 메뉴 설정시 사용할 변수
 	CString texts;
 	CString font;
 	COLORREF fontColor;

@@ -37,6 +37,7 @@
 #define IDS_EDIT_MENU                   306
 #define IDR_RIBBON                      307
 #define IDD_DIALOG1                     310
+#define IDD_TEXTEDITDIALOG              311
 #define IDB_PEN                         314
 #define IDB_BITMAP1                     315
 #define IDC_EDIT1                       1000
@@ -92,6 +93,6 @@
 #define _APS_NEXT_RESOURCE_VALUE        316
 #define _APS_NEXT_COMMAND_VALUE         32826
 #define _APS_NEXT_CONTROL_VALUE         1010
-#define _APS_NEXT_SYMED_VALUE           310
+#define _APS_NEXT_SYMED_VALUE           312
 #endif
 #endif

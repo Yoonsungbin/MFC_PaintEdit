@@ -6,12 +6,12 @@
 YText::YText()
 {
 }
-YText::YText(CPoint point){
+YText::YText(CPoint point, CString f, COLORREF fc, COLORREF bkc, int s){
 	sPoint = point;					// 텍스트 박스의 왼쪽,위의 점을 초기화
-	font = _T("바탕");				// 글자체 초기화
-	fontColor = RGB(0, 0, 0);		// 글자색 초기화
-	bkColor = RGB(255, 255, 255);	// 배경색 초기화
-	fontSize = 500;					// 글자크기 초기화
+	font = f;						// 글자체 초기화
+	fontColor = fc;					// 글자색 초기화
+	bkColor = bkc;					// 배경색 초기화
+	fontSize = s;					// 글자크기 초기화
 }
 YText::~YText()
 {
