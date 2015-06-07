@@ -539,13 +539,18 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 						   }
 					   }
 					   else if (pDoc->currentObj == pDoc->pRectangle){
-						   if (pDoc->pRectangle->getMRect()[0].PtInRect(point) || pDoc->pRectangle->getMRect()[1].PtInRect(point)||
-							   pDoc->pRectangle->getMRect()[2].PtInRect(point)|| pDoc->pRectangle->getMRect()[3].PtInRect(point)) {
+						   if (pDoc->pRectangle->getMRect()[0].PtInRect(point) || pDoc->pRectangle->getMRect()[1].PtInRect(point) ||
+							   pDoc->pRectangle->getMRect()[2].PtInRect(point) || pDoc->pRectangle->getMRect()[3].PtInRect(point)) {
+							   pDoc->currentObj->setSelect(TRUE);
+							   break;
+						   }  
+					   }
+					   else if (pDoc->currentObj == pDoc->pGroup){
+						   if (pDoc->pGroup->getMRect()[0].PtInRect(point) || pDoc->pGroup->getMRect()[1].PtInRect(point) ||
+							   pDoc->pGroup->getMRect()[2].PtInRect(point) || pDoc->pGroup->getMRect()[3].PtInRect(point)) {
 							   pDoc->currentObj->setSelect(TRUE);
 							   break;
 						   }
-
-
 					   }
 				   }
 
@@ -664,6 +669,31 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 					   }
 					   case group:
 						   pDoc->pGroup = (YGroup*)pDoc->currentObj;
+						   if (pDoc->pGroup->getMRect()[0].PtInRect(point)){
+							   pDoc->pGroup->setSPoint(point);
+							   pDoc->pGroup->setMoveMode(-1);  //시작점 2
+						   }
+						   else if (pDoc->pGroup->getMRect()[1].PtInRect(point)){
+							   pDoc->pGroup->setEPoint(point);
+							   pDoc->pGroup->setMoveMode(1);  //끝점 4
+							   break;
+						   }
+						   else if (pDoc->pGroup->getMRect()[2].PtInRect(point)){
+							   pDoc->pGroup->setMixPoint(point);
+
+							   pDoc->pGroup->setMoveMode(2);  // 1
+							   break;
+						   }
+						   else if (pDoc->pGroup->getMRect()[3].PtInRect(point)){
+
+							   pDoc->pGroup->setMixPoint(point);
+							   pDoc->pGroup->setMoveMode(3);  // 3
+							   break;
+						   }
+						   else if (pDoc->pGroup->checkRgn(point)) {
+							   pDoc->pGroup->setMoveMode(0); //전체이동
+						   }
+						   break;
 					   default:
 						   break;
 					   }
@@ -794,8 +824,20 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 									break;
 					   }
 					   case group:
-						   pDoc->pGroup->setORect(pDoc->pGroup->getSPoint().x, pDoc->pGroup->getSPoint().y, pDoc->pGroup->getEPoint().x, pDoc->pGroup->getEPoint().y);
-						   pDoc->pGroup->moveAll(t_point.x,t_point.y);
+						   
+						   if (pDoc->pGroup->getSelect()){
+							   if (pDoc->pGroup->getMoveMode() == 0){  //전체이동
+								   pDoc->pGroup->moveAll(t_point.x, t_point.y);
+								   pDoc->pGroup->setORect(pDoc->pGroup->getSPoint().x, pDoc->pGroup->getSPoint().y, pDoc->pGroup->getEPoint().x, pDoc->pGroup->getEPoint().y);
+							   }
+							   else {
+								   pDoc->pGroup->move(t_point.x, t_point.y);
+								   pDoc->pGroup->setORect(pDoc->pGroup->getSPoint().x, pDoc->pGroup->getSPoint().y, pDoc->pGroup->getEPoint().x, pDoc->pGroup->getEPoint().y);
+							   }
+							   pDoc->pGroup->setRgn();
+						   }
+						   
+						   
 						   break;
 					   default:
 						   break;
