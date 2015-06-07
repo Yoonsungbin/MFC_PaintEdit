@@ -68,15 +68,18 @@ public:
 
 	// 팝업 메뉴 //
 	// 팝업 메뉴 : 메뉴들의 비/활성화를 위해 선언
-	BOOL menu_cut;
-	BOOL menu_paste;
-	BOOL menu_copy;
-	BOOL menu_cutcopyflag;			//잘라내기인지 복사하기인지 선택하는 변수 TRUE - cut  FALSE - copy
-	BOOL menu_cutpaste;				//잘라내기일때 한번 붙여넣기하기위한 변수 
-	BOOL menu_Color;
-	BOOL menu_Figiure;
+	BOOL menu_Cut;
+	BOOL menu_Paste;
+	BOOL menu_Copy;
+	BOOL menu_CutCopyflag;			//잘라내기인지 복사하기인지 선택하는 변수 TRUE - cut  FALSE - copy
+	BOOL menu_CutPaste;				//잘라내기일때 한번 붙여넣기하기위한 변수 
+	BOOL menu_LineColor;
+	BOOL menu_SideColor;
+	BOOL menu_Figure;
 	BOOL menu_Delete;
-	
+	BOOL menu_DeletePoint;
+	BOOL menu_Group;
+	BOOL menu_DeleteGroup;
 	YObject* cutObj = NULL;			// 잘라내기, 붙여넣기를 위한 변수 선언
 
 // 재정의입니다.
@@ -162,7 +165,15 @@ public:
 	afx_msg void OnUpdateEditDeletepoint(CCmdUI *pCmdUI);
 	afx_msg void OnEditSidecolor();
 	afx_msg void OnUpdateEditSidecolor(CCmdUI *pCmdUI);
+	afx_msg void OnEditgroup();
+	afx_msg void OnUpdateEditgroup(CCmdUI *pCmdUI);
+	afx_msg void OnEditdeletegroup();
+	afx_msg void OnUpdateEditdeletegroup(CCmdUI *pCmdUI);
+
 	afx_msg void OnMenufontdia();
+
+	
+
 
 };
 

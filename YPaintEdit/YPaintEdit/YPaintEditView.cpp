@@ -94,6 +94,10 @@ BEGIN_MESSAGE_MAP(CYPaintEditView, CView)
 	ON_UPDATE_COMMAND_UI(ID_EDIT_DELETEPOINT, &CYPaintEditView::OnUpdateEditDeletepoint)
 	ON_UPDATE_COMMAND_UI(ID_EDIT_SIDECOLOR, &CYPaintEditView::OnUpdateEditSidecolor)
 	ON_COMMAND(ID_MENUFONTDIA, &CYPaintEditView::OnMenufontdia)
+	ON_COMMAND(ID_EDITGROUP, &CYPaintEditView::OnEditgroup)
+	ON_COMMAND(ID_EDITDELETEGROUP, &CYPaintEditView::OnEditdeletegroup)
+	ON_UPDATE_COMMAND_UI(ID_EDITGROUP, &CYPaintEditView::OnUpdateEditgroup)
+	ON_UPDATE_COMMAND_UI(ID_EDITDELETEGROUP, &CYPaintEditView::OnUpdateEditdeletegroup)
 END_MESSAGE_MAP()
 
 // CYPaintEditView 생성/소멸
@@ -126,14 +130,19 @@ CYPaintEditView::CYPaintEditView()
 
 
 	// 팝업 메뉴 초기화 //
-	/* 초기화 시키기
-	menu_cut;
-	menu_paste;
-	menu_copy;
-	menu_Color;
-	menu_Figiure;
-	menu_Delete;
-	*/
+	 menu_Cut = FALSE;
+	 menu_Paste = FALSE;
+	 menu_Copy = FALSE;
+	 menu_CutCopyflag = FALSE;			
+	 menu_CutPaste = FALSE;				
+	 menu_LineColor = FALSE;
+	 menu_SideColor = FALSE;
+	 menu_Figure = FALSE;
+	 menu_Delete = FALSE;
+	 menu_DeletePoint = FALSE;
+	 menu_Group = FALSE;
+	 menu_DeleteGroup = FALSE;
+
 	cutObj = NULL;
 }
 
@@ -165,7 +174,7 @@ void CYPaintEditView::OnDraw(CDC* /*pDC*/)
 void CYPaintEditView::OnRButtonUp(UINT /* nFlags */, CPoint point)
 {
 	CYPaintEditDoc* pDoc = GetDocument();
-
+	/*
 	// 클릭한 지점에 객체가 없다면 팝업메뉴를 안띄움
 	POSITION pos = pDoc->obj_List.GetHeadPosition();
 	while (pos) {
@@ -185,6 +194,102 @@ void CYPaintEditView::OnRButtonUp(UINT /* nFlags */, CPoint point)
 			break;
 		}
 	}
+	*/
+	if (pDoc->currentObj != NULL){
+		switch (pDoc->currentObj->getType()){
+		case line:
+			menu_Cut = TRUE;
+			menu_Paste = TRUE;
+			menu_Copy = TRUE;
+			menu_LineColor = TRUE;
+			menu_SideColor = FALSE;
+			menu_Figure = TRUE;
+			menu_Delete = TRUE;
+			menu_DeletePoint = FALSE;
+			menu_Group = TRUE;
+			menu_DeleteGroup = FALSE;
+			break;
+		case polyline:
+			menu_Cut = TRUE;
+			menu_Paste = TRUE;
+			menu_Copy = TRUE;
+			menu_LineColor = TRUE;
+			menu_SideColor = FALSE;
+			menu_Figure = TRUE;
+			menu_Delete = TRUE;
+			menu_DeletePoint = TRUE;
+			menu_Group = TRUE;
+			menu_DeleteGroup = FALSE;
+			break;
+		case ellipse:
+			menu_Cut = TRUE;
+			menu_Paste = TRUE;
+			menu_Copy = TRUE;
+			menu_LineColor = TRUE;
+			menu_SideColor = TRUE;
+			menu_Figure = TRUE;
+			menu_Delete = TRUE;
+			menu_DeletePoint = FALSE;
+			menu_Group = TRUE;
+			menu_DeleteGroup = FALSE;
+			break;
+		case rectangle:
+			menu_Cut = TRUE;
+			menu_Paste = TRUE;
+			menu_Copy = TRUE;
+			menu_LineColor = TRUE;
+			menu_SideColor = TRUE;
+			menu_Figure = TRUE;
+			menu_Delete = TRUE;
+			menu_DeletePoint = FALSE;
+			menu_Group = TRUE;
+			menu_DeleteGroup = FALSE;
+			break;
+		case text:
+			menu_Cut = TRUE;
+			menu_Paste = TRUE;
+			menu_Copy = TRUE;
+			menu_LineColor = TRUE;
+			menu_SideColor = FALSE;
+			menu_Figure = TRUE;
+			menu_Delete = TRUE;
+			menu_DeletePoint = FALSE;
+			menu_Group = TRUE;
+			menu_DeleteGroup = FALSE;
+			break;
+		case group:
+			menu_Cut = TRUE;
+			menu_Paste = TRUE;
+			menu_Copy = TRUE;
+			menu_LineColor = TRUE;
+			menu_SideColor = FALSE;
+			menu_Figure = TRUE;
+			menu_Delete = TRUE;
+			menu_DeletePoint = FALSE;
+			menu_Group = TRUE;
+			menu_DeleteGroup = TRUE;
+			break;
+		default:
+			break;
+
+		}
+	}
+	else {
+		menu_Cut = FALSE;
+		menu_Paste = FALSE;
+		menu_Copy = FALSE;
+		menu_CutCopyflag = FALSE;
+		menu_CutPaste = FALSE;
+		menu_LineColor = FALSE;
+		menu_SideColor = FALSE;
+		menu_Figure = FALSE;
+		menu_Delete = FALSE;
+		menu_DeletePoint = FALSE;
+		menu_Group = FALSE;
+		menu_DeleteGroup = FALSE;
+	}
+	ClientToScreen(&point);
+	OnContextMenu(this, point);
 }
 
 void CYPaintEditView::OnContextMenu(CWnd* /* pWnd */, CPoint point)
@@ -417,7 +522,6 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
 	CYPaintEditDoc* pDoc = GetDocument();
 	CClientDC dc(this);
-
 
 	switch (pDoc->yType){
 		// 각각의 케이스문  생성자 초기화 , doc의 각 객체포인터로 연결 ,타입 ,선택값(TRUE),drawing ,i
@@ -1234,7 +1338,23 @@ void CYPaintEditView::OnTexteditbutton()
 			// 글자크기변경 -> 끝점 변경,렉트변경,리젼변경
 			CDC* dc = GetDC();
 			CFont f;
-			f.CreatePointFont(pDoc->pText->getFontSize(), pDoc->pText->getFont());
+			LOGFONT lf;
+			if (pDoc->pText->getBold()) lf.lfWeight = FW_BOLD;
+			else lf.lfWeight = FW_NORMAL;
+			lf.lfWidth = 0;
+			lf.lfHeight = pDoc->pText->getFontSize();						//높이 설정
+			lf.lfStrikeOut = pDoc->pText->getStrikeOut();						//취소선 설정
+			lf.lfUnderline = pDoc->pText->getUnderLine();						//밑줄설정
+			lf.lfItalic = pDoc->pText->getItalic();							//기울임
+			lf.lfEscapement = 0;							//기울기 각도 초기화
+			lf.lfOutPrecision = OUT_CHARACTER_PRECIS;
+			lf.lfClipPrecision = CLIP_CHARACTER_PRECIS;
+			lf.lfPitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
+			lf.lfQuality = DEFAULT_QUALITY;
+			lf.lfCharSet = DEFAULT_CHARSET;
+			wcscpy_s((lf.lfFaceName), _countof(lf.lfFaceName), pDoc->pText->getFont());
+
+			f.CreateFontIndirect(&lf);
 			dc->SelectObject(f);
 			CSize s = dc->GetTextExtent(pDoc->pText->getText(), pDoc->pText->getText().GetLength());
 
@@ -1774,11 +1894,11 @@ void CYPaintEditView::OnUpdateDeletegroupbutton(CCmdUI *pCmdUI)
 void CYPaintEditView::OnEditCut()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
-	 menu_cut = FALSE;
-	 menu_copy = FALSE;
-	 menu_paste = TRUE;
-	 menu_cutcopyflag = TRUE;
-	 menu_cutpaste = TRUE;
+	 menu_Cut = FALSE;
+	 menu_Copy = FALSE;
+	 menu_Paste = TRUE;
+	 menu_CutCopyflag = TRUE;
+	 menu_CutPaste = TRUE;
 	CYPaintEditDoc* pDoc = GetDocument();
 
 	cutObj = NULL;
@@ -1810,11 +1930,11 @@ void CYPaintEditView::OnEditPaste()
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	
 
-	if (cutObj != NULL && menu_cutpaste == TRUE){
-		menu_cut = TRUE;
-		menu_copy = TRUE;
-		menu_paste = TRUE;
-		if (menu_cutcopyflag == TRUE) menu_cutpaste = FALSE;
+	if (cutObj != NULL && menu_CutPaste == TRUE){
+		menu_Cut = TRUE;
+		menu_Copy = TRUE;
+		menu_Paste = TRUE;
+		if (menu_CutCopyflag == TRUE) menu_CutPaste = FALSE;
 		CYPaintEditDoc* pDoc = GetDocument();
 		cutObj->setSelect(FALSE);
 		
@@ -1825,7 +1945,7 @@ void CYPaintEditView::OnEditPaste()
 			pDoc->pLine = new YLine(temp->getSPoint(), temp->getEPoint(), temp->getLineColor(), temp->getLineThick(), temp->getLinePattern());
 			pDoc->pLine->setType(line);
 			pDoc->pLine->setSelect(TRUE);
-			if (menu_cutcopyflag == FALSE) pDoc->pLine->moveAll(20, 20);
+			if (menu_CutCopyflag == FALSE) pDoc->pLine->moveAll(20, 20);
 			pDoc->pLine->setRgn();
 			pDoc->drawing = FALSE;
 			pDoc->obj_List.AddTail(pDoc->pLine);
@@ -1845,7 +1965,7 @@ void CYPaintEditView::OnEditPaste()
 			}
 			pDoc->pPolyLine->setType(polyline);
 			pDoc->pPolyLine->setSelect(TRUE);
-			if (menu_cutcopyflag == FALSE) pDoc->pPolyLine->moveAll(20, 20);
+			if (menu_CutCopyflag == FALSE) pDoc->pPolyLine->moveAll(20, 20);
 			pDoc->pPolyLine->setRgn();
 			pDoc->drawing = FALSE;
 			pDoc->obj_List.AddTail(pDoc->pPolyLine);
@@ -1860,7 +1980,7 @@ void CYPaintEditView::OnEditPaste()
 			pDoc->pEllipse = new YEllipse(temp->getSPoint(), temp->getEPoint(), temp->getLineColor(), temp->getLineThick(), temp->getLinePattern(), temp->getSideColor(), temp->getSidePattern(), temp->getPatternflag());
 			pDoc->pEllipse->setType(ellipse);
 			pDoc->pEllipse->setSelect(TRUE);
-			if (menu_cutcopyflag == FALSE) pDoc->pEllipse->moveAll(20, 20);
+			if (menu_CutCopyflag == FALSE) pDoc->pEllipse->moveAll(20, 20);
 			pDoc->pEllipse->setRgn();
 			pDoc->obj_List.AddTail(pDoc->pEllipse); 
 			pDoc->drawing = FALSE;
@@ -1874,7 +1994,7 @@ void CYPaintEditView::OnEditPaste()
 			pDoc->pRectangle = new YRectangle(temp->getSPoint(), temp->getEPoint(), temp->getLineColor(), temp->getLineThick(), temp->getLinePattern(), temp->getSideColor(), temp->getSidePattern(), temp->getPatternflag());
 			pDoc->pRectangle->setType(rectangle);
 			pDoc->pRectangle->setSelect(TRUE);
-			if (menu_cutcopyflag == FALSE) pDoc->pRectangle->moveAll(20, 20);
+			if (menu_CutCopyflag == FALSE) pDoc->pRectangle->moveAll(20, 20);
 			pDoc->pRectangle->setRgn();
 			pDoc->drawing = FALSE;
 			pDoc->obj_List.AddTail(pDoc->pRectangle);
@@ -1888,7 +2008,7 @@ void CYPaintEditView::OnEditPaste()
 			pDoc->pText = new YText(temp->getSPoint(), temp->getText(), temp->getFontColor(), temp->getBkColor(), temp->getFontSize(),temp->getUnderLine(),temp->getStrikeOut(),temp->getBold(),temp->getItalic());
 			pDoc->pText->setType(text);
 			pDoc->pText->setSelect(TRUE);
-			if (menu_cutcopyflag == FALSE) pDoc->pText->moveAll(20, 20);
+			if (menu_CutCopyflag == FALSE) pDoc->pText->moveAll(20, 20);
 			pDoc->pText->setRgn();
 			pDoc->drawing = FALSE;
 			pDoc->obj_List.AddTail(pDoc->pText);
@@ -1905,11 +2025,11 @@ void CYPaintEditView::OnEditPaste()
 void CYPaintEditView::OnEditCopy()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
-		menu_cut = TRUE;
-		menu_copy = TRUE;
-		menu_paste = TRUE;
-		menu_cutcopyflag = FALSE;
-		menu_cutpaste = TRUE;
+		menu_Cut = TRUE;
+		menu_Copy = TRUE;
+		menu_Paste = TRUE;
+		menu_CutCopyflag = FALSE;
+		menu_CutPaste = TRUE;
 		CYPaintEditDoc* pDoc = GetDocument();
 
 		cutObj = NULL;
@@ -1921,17 +2041,17 @@ void CYPaintEditView::OnEditCopy()
 void CYPaintEditView::OnUpdateEditCut(CCmdUI *pCmdUI)
 {
 	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
-	pCmdUI->Enable(menu_cut);
+	pCmdUI->Enable(menu_Cut);
 }
 void CYPaintEditView::OnUpdateEditPaste(CCmdUI *pCmdUI)
 {
 	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
-	pCmdUI->Enable(menu_paste);
+	pCmdUI->Enable(menu_Paste);
 }
 void CYPaintEditView::OnUpdateEditCopy(CCmdUI *pCmdUI)
 {
 	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
-	pCmdUI->Enable(menu_copy);
+	pCmdUI->Enable(menu_Copy);
 }
 
 
@@ -1983,16 +2103,19 @@ void CYPaintEditView::OnEditLinecolor()
 void CYPaintEditView::OnUpdateEditLinecolor(CCmdUI *pCmdUI)
 {
 	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+	pCmdUI->Enable(menu_LineColor);
 }
 void CYPaintEditView::OnEditFiguresetting()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
-	menu_Figiure = FALSE;
+	menu_Figure = FALSE;
 
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	CYPaintEditDoc* pDoc = GetDocument();
 	YFigureDialog dlg;
 	//객체의 선두꼐 패턴정보를 가져오는 단계 (다이얼로그를 띄우기전에)
+	int result = dlg.DoModal();  //모달띄우기
+	
 	switch (pDoc->currentObj->getType()){
 	case line:
 	{
@@ -2018,8 +2141,8 @@ void CYPaintEditView::OnEditFiguresetting()
 	case rectangle:
 	{
 		pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
-		dlg.lineThick = pDoc->pRectangle->getLineThick();
-		dlg.linePattern = pDoc->pRectangle->getLinePattern();
+		//dlg.lineThick = pDoc->pRectangle->getLineThick();
+		//dlg.linePattern = pDoc->pRectangle->getLinePattern();
 		break;
 	}
 
@@ -2028,7 +2151,7 @@ void CYPaintEditView::OnEditFiguresetting()
 		break;
 	}
 
-	int result = dlg.DoModal();  //모달띄우기
+	
 	if (result == IDOK){
 
 		switch (pDoc->currentObj->getType()){
@@ -2072,7 +2195,7 @@ void CYPaintEditView::OnEditFiguresetting()
 void CYPaintEditView::OnUpdateEditFiguresetting(CCmdUI *pCmdUI)
 {
 	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
-	pCmdUI->Enable(TRUE);  //팝업 비활성 하는 방법
+	pCmdUI->Enable(menu_Figure);  
 }
 void CYPaintEditView::OnEditDelete()
 {
@@ -2099,6 +2222,7 @@ void CYPaintEditView::OnEditDelete()
 void CYPaintEditView::OnUpdateEditDelete(CCmdUI *pCmdUI)
 {
 	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+	pCmdUI->Enable(menu_Delete);
 }
 void CYPaintEditView::OnEditDeletepoint()
 {
@@ -2133,6 +2257,7 @@ void CYPaintEditView::OnEditDeletepoint()
 void CYPaintEditView::OnUpdateEditDeletepoint(CCmdUI *pCmdUI)
 {
 	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+	pCmdUI->Enable(menu_DeletePoint);
 }
 void CYPaintEditView::OnEditSidecolor()
 {
@@ -2167,8 +2292,26 @@ void CYPaintEditView::OnEditSidecolor()
 void CYPaintEditView::OnUpdateEditSidecolor(CCmdUI *pCmdUI)
 {
 	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+	pCmdUI->Enable(menu_SideColor);
 }
-
+void CYPaintEditView::OnEditgroup()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+}
+void CYPaintEditView::OnUpdateEditgroup(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+	pCmdUI->Enable(menu_Group);
+}
+void CYPaintEditView::OnEditdeletegroup()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+}
+void CYPaintEditView::OnUpdateEditdeletegroup(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+	pCmdUI->Enable(menu_DeleteGroup);
+}
 
 
 
@@ -2258,3 +2401,9 @@ void CYPaintEditView::OnMenufontdia()
 		}
 	}
 }
+
+
+
+
+
+

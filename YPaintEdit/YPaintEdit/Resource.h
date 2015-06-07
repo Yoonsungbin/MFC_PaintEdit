@@ -44,6 +44,8 @@
 #define IDC_EDIT1                       1000
 #define IDC_SPIN1                       1006
 #define IDC_COMBO1                      1008
+#define IDC_DIALOGLINEPATTERN           1008
+#define IDC_DIALOGLINETHICK             1010
 #define ID_WRITE_PASTEASHYPERLINK       32770
 #define ID_MENUFONT                     32784
 #define ID_CONTEXT3                     32786
@@ -73,14 +75,16 @@
 #define ID_EDIT_DELETE                  32836
 #define ID_EDIT_DELETEPOINT             32837
 #define ID_EDIT_SIDECOLOR               32838
+#define ID_EDITGROUP                    32844
+#define ID_EDITDELETEGROUP              32845
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        316
-#define _APS_NEXT_COMMAND_VALUE         32842
-#define _APS_NEXT_CONTROL_VALUE         1010
+#define _APS_NEXT_COMMAND_VALUE         32846
+#define _APS_NEXT_CONTROL_VALUE         1011
 #define _APS_NEXT_SYMED_VALUE           312
 #endif
 #endif
