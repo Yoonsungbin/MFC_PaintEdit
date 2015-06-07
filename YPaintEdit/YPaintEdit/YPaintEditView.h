@@ -49,7 +49,8 @@ public:
 	BOOL menu_Delete;
 	BOOL menu_cut;
 	BOOL menu_copy;
-	BOOL menu_paste;
+	BOOL menu_paste ;
+	BOOL menu_cutcopyflag;																//FALSE - copy  &	TRUE - cut
 	//메뉴에서 정하는 값들을 저장할 변수 (보여지는 view객체의 속성값들을 제어함)
 	COLORREF lineColor = RGB(0,0,0);													//검은색
 	int lineThick = 1;																	//두께 : 1	

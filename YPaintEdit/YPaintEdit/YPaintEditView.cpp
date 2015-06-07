@@ -1785,6 +1785,7 @@ void CYPaintEditView::OnEditCut()
 	 menu_cut = FALSE;
 	 menu_copy = FALSE;
 	 menu_paste = TRUE;
+	 menu_cutcopyflag = TRUE;
 
 	CYPaintEditDoc* pDoc = GetDocument();
 
@@ -1817,14 +1818,15 @@ void CYPaintEditView::OnEditCut()
 void CYPaintEditView::OnEditPaste()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
-
 	menu_cut = TRUE;
 	menu_copy = TRUE;
 	menu_paste = TRUE;
+
 	if (cutObj != NULL){
+	
 		CYPaintEditDoc* pDoc = GetDocument();
+		cutObj->setSelect(FALSE);
 		
-		if (cutObj->getRgn() != pDoc->currentObj->getRgn()) cutObj->moveAll(20, 20);					//첫 위치 붙여넣기 이후 계속 이동해서 붙여넣기 하기 위해서
 		switch (cutObj->getType()){
 		case line:
 		{
@@ -1832,9 +1834,12 @@ void CYPaintEditView::OnEditPaste()
 			pDoc->pLine = new YLine(temp->getSPoint(), temp->getEPoint(), temp->getLineColor(), temp->getLineThick(), temp->getLinePattern());
 			pDoc->pLine->setType(line);
 			pDoc->pLine->setSelect(TRUE);
+			if (menu_cutcopyflag == FALSE) pDoc->pLine->moveAll(20, 20);
 			pDoc->pLine->setRgn();
+			pDoc->drawing = FALSE;
 			pDoc->obj_List.AddTail(pDoc->pLine);
-			pDoc->pLine->moveAll(20, 20);
+			cutObj = pDoc->pLine;
+			pDoc->currentObj = cutObj;
 			break;
 		}
 		case polyline:
@@ -1849,9 +1854,12 @@ void CYPaintEditView::OnEditPaste()
 			}
 			pDoc->pPolyLine->setType(polyline);
 			pDoc->pPolyLine->setSelect(TRUE);
+			if (menu_cutcopyflag == FALSE) pDoc->pPolyLine->moveAll(20, 20);
 			pDoc->pPolyLine->setRgn();
+			pDoc->drawing = FALSE;
 			pDoc->obj_List.AddTail(pDoc->pPolyLine);
-			pDoc->pPolyLine->moveAll(20, 20);
+			cutObj = pDoc->pPolyLine;
+			pDoc->currentObj = cutObj;
 			break;
 		}
 		case ellipse:
@@ -1861,8 +1869,12 @@ void CYPaintEditView::OnEditPaste()
 			pDoc->pEllipse = new YEllipse(temp->getSPoint(), temp->getEPoint(), temp->getLineColor(), temp->getLineThick(), temp->getLinePattern(), temp->getSideColor(), temp->getSidePattern(), temp->getPatternflag());
 			pDoc->pEllipse->setType(ellipse);
 			pDoc->pEllipse->setSelect(TRUE);
+			if (menu_cutcopyflag == FALSE) pDoc->pEllipse->moveAll(20, 20);
 			pDoc->pEllipse->setRgn();
-			pDoc->obj_List.AddTail(pDoc->pEllipse);
+			pDoc->obj_List.AddTail(pDoc->pEllipse); 
+			pDoc->drawing = FALSE;
+			cutObj = pDoc->pEllipse;
+			pDoc->currentObj = cutObj;
 			break;
 		}
 		case rectangle:
@@ -1871,8 +1883,12 @@ void CYPaintEditView::OnEditPaste()
 			pDoc->pRectangle = new YRectangle(temp->getSPoint(), temp->getEPoint(), temp->getLineColor(), temp->getLineThick(), temp->getLinePattern(), temp->getSideColor(), temp->getSidePattern(), temp->getPatternflag());
 			pDoc->pRectangle->setType(rectangle);
 			pDoc->pRectangle->setSelect(TRUE);
+			if (menu_cutcopyflag == FALSE) pDoc->pRectangle->moveAll(20, 20);
 			pDoc->pRectangle->setRgn();
+			pDoc->drawing = FALSE;
 			pDoc->obj_List.AddTail(pDoc->pRectangle);
+			cutObj = pDoc->pRectangle;
+			pDoc->currentObj = cutObj;
 			break;
 		}
 		case text:
@@ -1881,15 +1897,17 @@ void CYPaintEditView::OnEditPaste()
 			pDoc->pText = new YText(temp->getSPoint(), temp->getText(), temp->getFontColor(), temp->getBkColor(), temp->getFontSize());
 			pDoc->pText->setType(text);
 			pDoc->pText->setSelect(TRUE);
+			if (menu_cutcopyflag == FALSE) pDoc->pText->moveAll(20, 20);
 			pDoc->pText->setRgn();
+			pDoc->drawing = FALSE;
 			pDoc->obj_List.AddTail(pDoc->pText);
+			cutObj = pDoc->pText;
+			pDoc->currentObj = cutObj;
 			break;
 		}
 		default:
 			break;
 		}
-		cutObj->setSelect(FALSE);
-		if (cutObj->getRgn() == pDoc->currentObj->getRgn()) cutObj->moveAll(20, 20);					//복사하는 도형 그 위치 그대로 한번 출력 한 후 이동
 		Invalidate(FALSE);
 	}
 }
@@ -1901,6 +1919,7 @@ void CYPaintEditView::OnEditCopy()
 		menu_cut = TRUE;
 		menu_copy = TRUE;
 		menu_paste = TRUE;
+		menu_cutcopyflag = FALSE;
 
 		CYPaintEditDoc* pDoc = GetDocument();
 
@@ -1908,7 +1927,6 @@ void CYPaintEditView::OnEditCopy()
 
 		if (pDoc->currentObj != NULL){
 			cutObj = pDoc->currentObj;
-			cutObj->setSelect(FALSE);
 		}
 }
 
