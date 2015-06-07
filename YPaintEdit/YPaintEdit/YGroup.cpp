@@ -1,6 +1,10 @@
 #include "stdafx.h"
 #include "YGroup.h"
-
+#include "YLine.h"
+#include "YPolyLine.h"
+#include "YRectangle.h"
+#include "YEllipse.h"
+#include "YText.h"
 
 YGroup::YGroup()
 {
@@ -36,6 +40,117 @@ YGroup::YGroup(CList<YObject*, YObject*>& list){
 	}
 }
 
+void YGroup::move(int s, int e){
+	if (getMoveMode() == -1){  //시작점 2
+		sPoint.x += s;
+		sPoint.y += e;
+
+		YObject* tmp;
+		POSITION pos = groupList.GetHeadPosition();
+		while (pos){
+			tmp = groupList.GetNext(pos);
+			if (tmp->getType() == line){
+				YLine* pL = (YLine*)tmp;
+				pL->setMoveMode(-1);
+				pL->move(s,e);
+			}
+			else if (tmp->getType() == polyline){
+				YPolyLine* pPL = (YPolyLine*)tmp;
+				pPL->setMoveMode(-1);
+				pPL->move(s, e);
+			}
+			else if (tmp->getType() == ellipse){
+				YEllipse* pE = (YEllipse*)tmp;
+				pE->setMoveMode(-1);
+				pE->move(s, e);
+			}
+			else if (tmp->getType() == rectangle){
+				YRectangle* pR = (YRectangle*)tmp;
+				pR->setMoveMode(-1);
+				pR->move(s, e);
+			}
+		}
+	}
+
+	else if (getMoveMode() == 1)//끝점 4
+	{
+		ePoint.x += s;
+		ePoint.y += e;
+
+		YObject* tmp;
+		POSITION pos = groupList.GetHeadPosition();
+		while (pos){
+			tmp = groupList.GetNext(pos);
+			if (tmp->getType() == line){
+				YLine* pL = (YLine*)tmp;
+				pL->setMoveMode(1);
+				pL->move(s, e);
+			}
+			else if (tmp->getType() == polyline){
+				YPolyLine* pPL = (YPolyLine*)tmp;
+				pPL->setMoveMode(1);
+				pPL->move(s, e);
+			}
+			else if (tmp->getType() == ellipse){
+				YEllipse* pE = (YEllipse*)tmp;
+				pE->setMoveMode(1);
+				pE->move(s, e);
+			}
+			else if (tmp->getType() == rectangle){
+				YRectangle* pR = (YRectangle*)tmp;
+				pR->setMoveMode(1);
+				pR->move(s, e);
+			}
+		}
+	}
+
+
+	else if (getMoveMode() == 2)// 4
+	{
+		ePoint.x += s;
+		sPoint.y += e;
+
+		YObject* tmp;
+		POSITION pos = groupList.GetHeadPosition();
+		while (pos){
+			tmp = groupList.GetNext(pos);
+
+			if (tmp->getType() == ellipse){
+				YEllipse* pE = (YEllipse*)tmp;
+				pE->setMoveMode(3);
+				pE->move(s, e);
+			}
+			else if (tmp->getType() == rectangle){
+				YRectangle* pR = (YRectangle*)tmp;
+				pR->setMoveMode(3);
+				pR->move(s, e);
+			}
+		}
+	}
+
+	else if (getMoveMode() == 3)// 3
+	{
+		sPoint.x += s;
+		ePoint.y += e;
+
+		YObject* tmp;
+		POSITION pos = groupList.GetHeadPosition();
+		while (pos){
+			tmp = groupList.GetNext(pos);
+
+			if (tmp->getType() == ellipse){
+				YEllipse* pE = (YEllipse*)tmp;
+				pE->setMoveMode(2);
+				pE->move(s, e);
+			}
+			else if (tmp->getType() == rectangle){
+				YRectangle* pR = (YRectangle*)tmp;
+				pR->setMoveMode(2);
+				pR->move(s, e);
+			}
+		}
+	}
+}
 
 // Virtual
 void YGroup::moveAll(int s, int e){
@@ -57,13 +172,29 @@ void YGroup::deleteAll(){
 }
 void YGroup::draw(CDC* dc){
 	if (isSelected == TRUE){
-		CPen pen(PS_DOT, 1, RGB(0, 0, 0));
-		dc->SelectObject(pen);
-		//CBrush brush;
-		//brush.CreateStockObject(NULL_BRUSH);
+
+		CPen pen0(PS_DOT, 1, RGB(0, 0, 0));
+		dc->SelectObject(pen0);
 		dc->SelectStockObject(NULL_BRUSH);
 		dc->Rectangle(sPoint.x, sPoint.y, ePoint.x, ePoint.y);
+		
+		//draw circle
+		mRect[0].SetRect(sPoint.x - 10, sPoint.y - 10, sPoint.x + 10, sPoint.y + 10);
+		mRect[1].SetRect(ePoint.x - 10, ePoint.y - 10, ePoint.x + 10, ePoint.y + 10);
+		mRect[2].SetRect(ePoint.x - 10, sPoint.y - 10, ePoint.x + 10, sPoint.y + 10);
+		mRect[3].SetRect(sPoint.x - 10, ePoint.y - 10, sPoint.x + 10, ePoint.y + 10);
+
+		CPen* oldPen;
+		CPen pen(PS_SOLID, 2, RGB(0, 0, 0));
+		oldPen = dc->SelectObject(&pen);
+		dc->SelectStockObject(WHITE_BRUSH);
+		dc->Ellipse(mRect[0]);
+		dc->Ellipse(mRect[1]);
+		dc->Ellipse(mRect[2]);
+		dc->Ellipse(mRect[3]);
+
 	}
+
 	YObject* tmp;
 	POSITION pos = groupList.GetHeadPosition();
 	while (pos){

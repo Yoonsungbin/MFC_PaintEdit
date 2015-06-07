@@ -26,6 +26,15 @@ public:
 	void setEPoint(CPoint point) { ePoint = point; }			// 그룹의 오른쪽,아래의 점을 설정하는 함수
 	CPoint getSPoint() { return sPoint; }						// 그룹의 왼쪽,위의 점을 얻는 함수
 	CPoint getEPoint() { return ePoint; }						// 그룹의 오른쪽,아래의 점을 얻는 함수
+	CRect* getMRect(){ return mRect; }
+	void setMoveMode(int val){ moveMode = val; }
+	int getMoveMode(){ return moveMode; }
+	CPoint getMixPoint(){ return mixPoint; }
+	void setMixPoint(CPoint point){mixPoint = point;}
+
+
+	//
+	void move(int s, int e);
 
 
 	// Variables
@@ -33,4 +42,8 @@ private:
 	CList<YObject*, YObject*> groupList;
 	CPoint sPoint;
 	CPoint ePoint;
+	CPoint mixPoint;
+	CRect mRect[4];
+	int moveMode;
+
 };
