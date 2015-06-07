@@ -73,7 +73,6 @@
 #define ID_EDIT_DELETE                  32836
 #define ID_EDIT_DELETEPOINT             32837
 #define ID_EDIT_SIDECOLOR               32838
-#define ID_MENUFONTSTRIKEOUT            32841
 
 // Next default values for new objects
 // 
