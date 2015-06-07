@@ -776,9 +776,6 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 									break;
 					   }
 					   case group:
-						   pDoc->pGroup->setSPoint(pDoc->pGroup->getSPoint() + t_point);
-						   pDoc->pGroup->setEPoint(pDoc->pGroup->getEPoint() + t_point);
-						   pDoc->pGroup->setRgn();
 						   pDoc->pGroup->setORect(pDoc->pGroup->getSPoint().x, pDoc->pGroup->getSPoint().y, pDoc->pGroup->getEPoint().x, pDoc->pGroup->getEPoint().y);
 						   pDoc->pGroup->moveAll(t_point.x,t_point.y);
 						   break;
@@ -1512,7 +1509,7 @@ void CYPaintEditView::OnDeletegroupbutton()
 		
 		pDoc->currentObj = NULL;
 
-		Invalidate();
+		Invalidate(FALSE);
 	}
 }
 void CYPaintEditView::OnUpdateDeletegroupbutton(CCmdUI *pCmdUI)

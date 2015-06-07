@@ -44,7 +44,13 @@ void YGroup::moveAll(int s, int e){
 	while (pos){
 		tmp = groupList.GetNext(pos);
 		tmp->moveAll(s,e);
+		tmp->setRgn();
 	}
+	sPoint.x += s;
+	sPoint.y += e;
+	ePoint.x += s;
+	ePoint.y += e;
+	setRgn();
 }
 void YGroup::deleteAll(){
 
@@ -53,6 +59,9 @@ void YGroup::draw(CDC* dc){
 	if (isSelected == TRUE){
 		CPen pen(PS_DOT, 1, RGB(0, 0, 0));
 		dc->SelectObject(pen);
+		//CBrush brush;
+		//brush.CreateStockObject(NULL_BRUSH);
+		dc->SelectStockObject(NULL_BRUSH);
 		dc->Rectangle(sPoint.x, sPoint.y, ePoint.x, ePoint.y);
 	}
 	YObject* tmp;
