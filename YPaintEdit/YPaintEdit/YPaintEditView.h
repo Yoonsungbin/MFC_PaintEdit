@@ -51,7 +51,10 @@ public:
 	int fontSize;
 	COLORREF fontColor;
 	COLORREF bkColor;
-
+	BOOL underline = FALSE;
+	BOOL strikeout = FALSE;
+	BOOL bold;
+	BOOL italic;
 	// 리본 메뉴 (도형속성 패널) : 메뉴들의 초기값 설정 및 값들의 임시 저장을 위해 선언 
 	int lineThick = 1;
 	int linePattern = 0;
@@ -68,7 +71,8 @@ public:
 	BOOL menu_cut;
 	BOOL menu_paste;
 	BOOL menu_copy;
-	BOOL menu_cutcopyflag;
+	BOOL menu_cutcopyflag;			//잘라내기인지 복사하기인지 선택하는 변수 TRUE - cut  FALSE - copy
+	BOOL menu_cutpaste;				//잘라내기일때 한번 붙여넣기하기위한 변수 
 	BOOL menu_Color;
 	BOOL menu_Figiure;
 	BOOL menu_Delete;
@@ -100,6 +104,7 @@ protected:
 public:
 	void Paint(CDC* dc);
 	afx_msg void OnPaint();
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
@@ -153,22 +158,18 @@ public:
 	afx_msg void OnUpdateEditCut(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateEditCopy(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateEditPaste(CCmdUI *pCmdUI);
-	afx_msg void RMenuColorButton();
-	afx_msg void RMenuInColorButton();
-	afx_msg void FigureSettingButton();
-	afx_msg void OnDeleteClick();
-	afx_msg void DeletePointButton();
-	afx_msg void UpdateRMenuColorButton(CCmdUI *pCmdUI);
-	afx_msg void UpdateFigureSettingButton(CCmdUI *pCmdUI);
-	afx_msg void UpdateOnDeleteClick(CCmdUI *pCmdUI);
-	afx_msg void UpdateDeletePointButton(CCmdUI *pCmdUI);
+	afx_msg void OnEditLinecolor();
+	afx_msg void OnUpdateEditLinecolor(CCmdUI *pCmdUI);
+	afx_msg void OnEditFiguresetting();
+	afx_msg void OnUpdateEditFiguresetting(CCmdUI *pCmdUI);
+	afx_msg void OnEditDelete();
+	afx_msg void OnUpdateEditDelete(CCmdUI *pCmdUI);
+	afx_msg void OnEditDeletepoint();
+	afx_msg void OnUpdateEditDeletepoint(CCmdUI *pCmdUI);
+	afx_msg void OnEditSidecolor();
+	afx_msg void OnUpdateEditSidecolor(CCmdUI *pCmdUI);
+	afx_msg void OnMenufontdia();
 
-
-	/* 의미 확인하고 정리하자 */
-	afx_msg void OnRectangleButton();
-	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
-	
-	
 };
 
 #ifndef _DEBUG  // YPaintEditView.cpp의 디버그 버전

@@ -36,9 +36,11 @@ IMPLEMENT_DYNCREATE(CYPaintEditView, CView)
 BEGIN_MESSAGE_MAP(CYPaintEditView, CView)
 	ON_WM_CONTEXTMENU()
 	ON_WM_PAINT()
+	ON_WM_ERASEBKGND()
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONUP()
 	ON_WM_MOUSEMOVE()
+	ON_WM_RBUTTONUP()
 	ON_WM_LBUTTONDBLCLK()
 	ON_WM_CHAR()	
 	ON_COMMAND(ID_MENUDEFAULTTBUTTON, &CYPaintEditView::OnMenudefaulttbutton)
@@ -87,20 +89,17 @@ BEGIN_MESSAGE_MAP(CYPaintEditView, CView)
 	ON_UPDATE_COMMAND_UI(ID_EDIT_CUT, &CYPaintEditView::OnUpdateEditCut)
 	ON_UPDATE_COMMAND_UI(ID_EDIT_COPY, &CYPaintEditView::OnUpdateEditCopy)
 	ON_UPDATE_COMMAND_UI(ID_EDIT_PASTE, &CYPaintEditView::OnUpdateEditPaste)
-	ON_WM_RBUTTONUP()
-	ON_COMMAND(ID_32799, &CYPaintEditView::RMenuInColorButton)
-	ON_COMMAND(ID_32797, &CYPaintEditView::OnDeleteClick)
-	ON_COMMAND(ID_32798, &CYPaintEditView::DeletePointButton)
-	ON_UPDATE_COMMAND_UI(ID_32793, &CYPaintEditView::UpdateRMenuColorButton)
-	ON_UPDATE_COMMAND_UI(ID_32794, &CYPaintEditView::UpdateFigureSettingButton)
-	ON_UPDATE_COMMAND_UI(ID_32797, &CYPaintEditView::UpdateOnDeleteClick)
-	ON_UPDATE_COMMAND_UI(ID_32798, &CYPaintEditView::UpdateDeletePointButton)
-
-
-	/* 의미 확인하고 정리하자 */
-	ON_WM_ERASEBKGND()
-	
-	
+	ON_COMMAND(ID_EDIT_LINECOLOR, &CYPaintEditView::OnEditLinecolor)
+	ON_COMMAND(ID_EDIT_FIGURESETTING, &CYPaintEditView::OnEditFiguresetting)
+	ON_COMMAND(ID_EDIT_DELETE, &CYPaintEditView::OnEditDelete)
+	ON_COMMAND(ID_EDIT_DELETEPOINT, &CYPaintEditView::OnEditDeletepoint)
+	ON_COMMAND(ID_EDIT_SIDECOLOR, &CYPaintEditView::OnEditSidecolor)
+	ON_UPDATE_COMMAND_UI(ID_EDIT_LINECOLOR, &CYPaintEditView::OnUpdateEditLinecolor)
+	ON_UPDATE_COMMAND_UI(ID_EDIT_FIGURESETTING, &CYPaintEditView::OnUpdateEditFiguresetting)
+	ON_UPDATE_COMMAND_UI(ID_EDIT_DELETE, &CYPaintEditView::OnUpdateEditDelete)
+	ON_UPDATE_COMMAND_UI(ID_EDIT_DELETEPOINT, &CYPaintEditView::OnUpdateEditDeletepoint)
+	ON_UPDATE_COMMAND_UI(ID_EDIT_SIDECOLOR, &CYPaintEditView::OnUpdateEditSidecolor)
+	ON_COMMAND(ID_MENUFONTDIA, &CYPaintEditView::OnMenufontdia)
 END_MESSAGE_MAP()
 
 // CYPaintEditView 생성/소멸
@@ -317,7 +316,18 @@ void CYPaintEditView::Paint(CDC* dc) // 기능 : 어떤 도형을 그릴지 판단
 	if (pDoc->textEditing){
 		// 폰트 생성 및 적용
 		CFont f;
-		f.CreatePointFont(pDoc->pText->getFontSize(), pDoc->pText->getFont());
+		LOGFONT lf;
+	//	f.CreatePointFont(pDoc->pText->getFontSize(), pDoc->pText->getFont());
+		//f.CreatePointFont(fontSize, font);
+		//굵기설정
+		if (bold) lf.lfWeight = FW_BOLD;
+		else lf.lfWeight = FW_NORMAL;
+		lf.lfHeight = fontSize / 5;						//높이 설정
+		lf.lfStrikeOut = strikeout;						//취소선 설정
+		lf.lfUnderline = underline;						//밑줄설정
+		lf.lfItalic = italic;							//기울임
+		lf.lfEscapement = 0;							//기울기 각도 초기화
+		f.CreateFontIndirect(&lf);
 		dc->SelectObject(f);
 		dc->SetBkColor(pDoc->pText->getBkColor());
 		dc->SetTextColor(pDoc->pText->getFontColor());
@@ -357,7 +367,12 @@ void CYPaintEditView::Paint(CDC* dc) // 기능 : 어떤 도형을 그릴지 판단
 		ShowCaret();
 	}
 }
-
+BOOL CYPaintEditView::OnEraseBkgnd(CDC* pDC)					
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+	//더블버퍼링해결 ( 윈도우 크기 조절 할 때)
+	return TRUE;
+}
 
 
 // 키보드 입력을 받는 함수 // 
@@ -454,7 +469,7 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 	case text:
 	{
 				 if (pDoc->textEditing == FALSE){
-					 pDoc->pText = new YText(point,font,fontColor,bkColor,fontSize);
+					 pDoc->pText = new YText(point,font,fontColor,bkColor,fontSize,underline,strikeout,bold,italic);
 					 pDoc->pText->setOrder(pDoc->allNum++);
 					 pDoc->pText->setType(text);
 					 pDoc->pText->setSelect(TRUE);
@@ -901,7 +916,61 @@ void CYPaintEditView::OnLButtonDblClk(UINT nFlags, CPoint point)
 
 
 // 리본 메뉴 관련 함수들 //
+
 // 도형 패널
+void CYPaintEditView::UpdateMenu(){ //기능 : 객체 클릭 했을때 해당되는 속성으로 메뉴값 최신화
+	CMainFrame* main = (CMainFrame*)AfxGetMainWnd();
+	CYPaintEditDoc* pDoc = GetDocument();
+
+	CMFCRibbonEdit* lineThick = (CMFCRibbonEdit*)main->getRibbon()->FindByID(ID_MENULINETHICK);
+	CMFCRibbonComboBox* sidePattern = (CMFCRibbonComboBox*)main->getRibbon()->FindByID(ID_MENUSIDEPATTERN);
+	CMFCRibbonComboBox* linePattern = (CMFCRibbonComboBox*)main->getRibbon()->FindByID(ID_MENULINEPATTERN);
+
+	if (pDoc->currentObj != NULL){
+		switch (pDoc->currentObj->getType()){
+		case line:
+		{
+			CString str;
+			lineThick->SetEditText(str);
+			linePattern->OnSelectItem(pDoc->pLine->getLinePattern());
+			break;
+		}
+		case polyline:
+		{
+			CString str;
+			str.Format(_T("%d"), pDoc->pPolyLine->getLineThick());
+			lineThick->SetEditText(str);
+			linePattern->OnSelectItem(pDoc->pPolyLine->getLinePattern());
+			break;
+		}
+		case ellipse:
+		{
+			CString str;
+			str.Format(_T("%d"), pDoc->pEllipse->getLineThick());
+			lineThick->SetEditText(str);
+			linePattern->OnSelectItem(pDoc->pEllipse->getLinePattern());
+			sidePattern->OnSelectItem(pDoc->pEllipse->getSidePattern());
+
+			break;
+		}
+		case rectangle:
+		{
+			CString str;
+			str.Format(_T("%d"), pDoc->pRectangle->getLineThick());
+			lineThick->SetEditText(str);
+			linePattern->OnSelectItem(pDoc->pRectangle->getLinePattern());
+			sidePattern->OnSelectItem(pDoc->pRectangle->getSidePattern());
+			break;
+		}
+		case text:
+		{
+			break;
+		}
+		default:
+			break;
+		}
+	}
+}
 void CYPaintEditView::OnMenudefaulttbutton()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
@@ -1542,7 +1611,7 @@ void CYPaintEditView::OnEditCut()
 	 menu_copy = FALSE;
 	 menu_paste = TRUE;
 	 menu_cutcopyflag = TRUE;
-
+	 menu_cutpaste = TRUE;
 	CYPaintEditDoc* pDoc = GetDocument();
 
 	cutObj = NULL;
@@ -1572,12 +1641,13 @@ void CYPaintEditView::OnEditCut()
 void CYPaintEditView::OnEditPaste()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
-	menu_cut = TRUE;
-	menu_copy = TRUE;
-	menu_paste = TRUE;
-
-	if (cutObj != NULL){
 	
+
+	if (cutObj != NULL && menu_cutpaste == TRUE){
+		menu_cut = TRUE;
+		menu_copy = TRUE;
+		menu_paste = TRUE;
+		if (menu_cutcopyflag == TRUE) menu_cutpaste = FALSE;
 		CYPaintEditDoc* pDoc = GetDocument();
 		cutObj->setSelect(FALSE);
 		
@@ -1648,7 +1718,7 @@ void CYPaintEditView::OnEditPaste()
 		case text:
 		{
 			YText* temp = (YText*)cutObj;
-			pDoc->pText = new YText(temp->getSPoint(), temp->getText(), temp->getFontColor(), temp->getBkColor(), temp->getFontSize());
+			pDoc->pText = new YText(temp->getSPoint(), temp->getText(), temp->getFontColor(), temp->getBkColor(), temp->getFontSize(),temp->getUnderLine(),temp->getStrikeOut(),temp->getBold(),temp->getItalic());
 			pDoc->pText->setType(text);
 			pDoc->pText->setSelect(TRUE);
 			if (menu_cutcopyflag == FALSE) pDoc->pText->moveAll(20, 20);
@@ -1672,7 +1742,7 @@ void CYPaintEditView::OnEditCopy()
 		menu_copy = TRUE;
 		menu_paste = TRUE;
 		menu_cutcopyflag = FALSE;
-
+		menu_cutpaste = TRUE;
 		CYPaintEditDoc* pDoc = GetDocument();
 
 		cutObj = NULL;
@@ -1700,7 +1770,7 @@ void CYPaintEditView::OnUpdateEditCopy(CCmdUI *pCmdUI)
 
 
 // 마우스 우클릭 메뉴 함수들 //
-void CYPaintEditView::RMenuColorButton() //기능 : 팝업메뉴 -> 색변경 //마우스 오른쪽버튼 클릭후 -> 색 클릭시
+void CYPaintEditView::OnEditLinecolor()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	CYPaintEditDoc* pDoc = GetDocument();
@@ -1713,28 +1783,28 @@ void CYPaintEditView::RMenuColorButton() //기능 : 팝업메뉴 -> 색변경 //마우스 오
 		switch (pDoc->currentObj->getType()){
 		case line:
 		{
-					 pDoc->pLine = (YLine*)pDoc->currentObj;
-					 pDoc->pLine->setLineColor(lineColor);
-					 break;
+			pDoc->pLine = (YLine*)pDoc->currentObj;
+			pDoc->pLine->setLineColor(lineColor);
+			break;
 		}
 		case polyline:
 		{
-						 pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
-						 pDoc->pPolyLine->setLineColor(lineColor);
-						 break;
+			pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
+			pDoc->pPolyLine->setLineColor(lineColor);
+			break;
 		}
 
 		case ellipse:
 		{
-						pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
-						pDoc->pEllipse->setLineColor(lineColor);
-						break;
+			pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
+			pDoc->pEllipse->setLineColor(lineColor);
+			break;
 		}
 		case rectangle:
 		{
-						  pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
-						  pDoc->pRectangle->setLineColor(lineColor);
-						  break;
+			pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
+			pDoc->pRectangle->setLineColor(lineColor);
+			break;
 		}
 		default:
 			break;
@@ -1743,42 +1813,13 @@ void CYPaintEditView::RMenuColorButton() //기능 : 팝업메뉴 -> 색변경 //마우스 오
 		Invalidate(FALSE);
 	}
 }
-void CYPaintEditView::UpdateRMenuColorButton(CCmdUI *pCmdUI)
+void CYPaintEditView::OnUpdateEditLinecolor(CCmdUI *pCmdUI)
 {
 	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
 }
-void CYPaintEditView::RMenuInColorButton() //기능 : 팝업메뉴 -> 면색변경
+void CYPaintEditView::OnEditFiguresetting()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
-	CYPaintEditDoc* pDoc = GetDocument();
-
-	CColorDialog dlg(RGB(255, 0, 0), CC_FULLOPEN);
-	int result = dlg.DoModal();
-	if (result == IDOK){
-		sideColor = dlg.GetColor();
-
-		switch (pDoc->currentObj->getType()){
-		case ellipse:
-		{
-						pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
-						pDoc->pEllipse->setSideColor(sideColor);
-						break;
-		}
-		case rectangle:
-		{
-						  pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
-						  pDoc->pRectangle->setSideColor(sideColor);
-						  break;
-		}
-		default:
-			break;
-		}
-
-		Invalidate(FALSE);
-	}
-}
-void CYPaintEditView::FigureSettingButton() //기능 : 팝업메뉴 -> 도형서식 //마우스 오른쪽 버튼 클릭후 -> 도형 서식 바꾸기
-{
 	menu_Figiure = FALSE;
 
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
@@ -1788,31 +1829,31 @@ void CYPaintEditView::FigureSettingButton() //기능 : 팝업메뉴 -> 도형서식 //마우
 	switch (pDoc->currentObj->getType()){
 	case line:
 	{
-				 pDoc->pLine = (YLine*)pDoc->currentObj;
-				 dlg.lineThick = pDoc->pLine->getLineThick();
-				 dlg.linePattern = pDoc->pLine->getLinePattern();
-				 break;
+		pDoc->pLine = (YLine*)pDoc->currentObj;
+		dlg.lineThick = pDoc->pLine->getLineThick();
+		dlg.linePattern = pDoc->pLine->getLinePattern();
+		break;
 	}
 	case polyline:
 	{
-					 pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
-					 dlg.lineThick = pDoc->pPolyLine->getLineThick();
-					 dlg.linePattern = pDoc->pPolyLine->getLinePattern();
-					 break;
+		pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
+		dlg.lineThick = pDoc->pPolyLine->getLineThick();
+		dlg.linePattern = pDoc->pPolyLine->getLinePattern();
+		break;
 	}
 	case ellipse:
 	{
-					pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
-					dlg.lineThick = pDoc->pEllipse->getLineThick();
-					dlg.linePattern = pDoc->pEllipse->getLinePattern();
-					break;
+		pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
+		dlg.lineThick = pDoc->pEllipse->getLineThick();
+		dlg.linePattern = pDoc->pEllipse->getLinePattern();
+		break;
 	}
 	case rectangle:
 	{
-					  pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
-					  dlg.lineThick = pDoc->pRectangle->getLineThick();
-					  dlg.linePattern = pDoc->pRectangle->getLinePattern();
-					  break;
+		pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
+		dlg.lineThick = pDoc->pRectangle->getLineThick();
+		dlg.linePattern = pDoc->pRectangle->getLinePattern();
+		break;
 	}
 
 
@@ -1826,31 +1867,31 @@ void CYPaintEditView::FigureSettingButton() //기능 : 팝업메뉴 -> 도형서식 //마우
 		switch (pDoc->currentObj->getType()){
 		case line:
 		{
-					 pDoc->pLine = (YLine*)pDoc->currentObj;
-					 pDoc->pLine->setLineThick(dlg.lineThick);
-					 pDoc->pLine->setLinePattern(dlg.linePattern);
-					 break;
+			pDoc->pLine = (YLine*)pDoc->currentObj;
+			pDoc->pLine->setLineThick(dlg.lineThick);
+			pDoc->pLine->setLinePattern(dlg.linePattern);
+			break;
 		}
 		case polyline:
 		{
-						 pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
-						 pDoc->pPolyLine->setLineThick(dlg.lineThick);
-						 pDoc->pPolyLine->setLinePattern(dlg.linePattern);
-						 break;
+			pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
+			pDoc->pPolyLine->setLineThick(dlg.lineThick);
+			pDoc->pPolyLine->setLinePattern(dlg.linePattern);
+			break;
 		}
 		case ellipse:
 		{
-						pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
-						pDoc->pEllipse->setLineThick(dlg.lineThick);
-						pDoc->pEllipse->setLinePattern(dlg.linePattern);
-						break;
+			pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
+			pDoc->pEllipse->setLineThick(dlg.lineThick);
+			pDoc->pEllipse->setLinePattern(dlg.linePattern);
+			break;
 		}
 		case rectangle:
 		{
-						  pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
-						  pDoc->pRectangle->setLineThick(dlg.lineThick);
-						  pDoc->pRectangle->setLinePattern(dlg.linePattern);
-						  break;
+			pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
+			pDoc->pRectangle->setLineThick(dlg.lineThick);
+			pDoc->pRectangle->setLinePattern(dlg.linePattern);
+			break;
 		}
 
 
@@ -1860,14 +1901,13 @@ void CYPaintEditView::FigureSettingButton() //기능 : 팝업메뉴 -> 도형서식 //마우
 
 		Invalidate(FALSE);
 	}
-
 }
-void CYPaintEditView::UpdateFigureSettingButton(CCmdUI *pCmdUI)
+void CYPaintEditView::OnUpdateEditFiguresetting(CCmdUI *pCmdUI)
 {
 	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
 	pCmdUI->Enable(FALSE);  //팝업 비활성 하는 방법
 }
-void CYPaintEditView::OnDeleteClick() //기능 : 팝업메뉴 -> 삭제
+void CYPaintEditView::OnEditDelete()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	CYPaintEditDoc* pDoc = GetDocument();
@@ -1889,12 +1929,11 @@ void CYPaintEditView::OnDeleteClick() //기능 : 팝업메뉴 -> 삭제
 	pDoc->currentObj = NULL;
 	Invalidate(FALSE);
 }
-void CYPaintEditView::UpdateOnDeleteClick(CCmdUI *pCmdUI)
+void CYPaintEditView::OnUpdateEditDelete(CCmdUI *pCmdUI)
 {
 	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
-
 }
-void CYPaintEditView::DeletePointButton() //기능 : 팝업메뉴 -> 점삭제
+void CYPaintEditView::OnEditDeletepoint()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	CYPaintEditDoc* pDoc = GetDocument();
@@ -1924,7 +1963,41 @@ void CYPaintEditView::DeletePointButton() //기능 : 팝업메뉴 -> 점삭제
 	}
 
 }
-void CYPaintEditView::UpdateDeletePointButton(CCmdUI *pCmdUI)
+void CYPaintEditView::OnUpdateEditDeletepoint(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+}
+void CYPaintEditView::OnEditSidecolor()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+
+	CColorDialog dlg(RGB(255, 0, 0), CC_FULLOPEN);
+	int result = dlg.DoModal();
+	if (result == IDOK){
+		sideColor = dlg.GetColor();
+
+		switch (pDoc->currentObj->getType()){
+		case ellipse:
+		{
+			pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
+			pDoc->pEllipse->setSideColor(sideColor);
+			break;
+		}
+		case rectangle:
+		{
+			pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
+			pDoc->pRectangle->setSideColor(sideColor);
+			break;
+		}
+		default:
+			break;
+		}
+
+		Invalidate(FALSE);
+	}
+}
+void CYPaintEditView::OnUpdateEditSidecolor(CCmdUI *pCmdUI)
 {
 	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
 }
@@ -1932,64 +2005,54 @@ void CYPaintEditView::UpdateDeletePointButton(CCmdUI *pCmdUI)
 
 
 
-
-/* 의미 확인하고 정리하자 */
-void CYPaintEditView::UpdateMenu(){ //기능 : 객체 클릭 했을때 해당되는 속성으로 메뉴값 최신화
-	CMainFrame* main = (CMainFrame*)AfxGetMainWnd();
+void CYPaintEditView::OnMenufontdia()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	CYPaintEditDoc* pDoc = GetDocument();
+	CFontDialog dlg;
 
-	CMFCRibbonEdit* lineThick = (CMFCRibbonEdit*)main->getRibbon()->FindByID(ID_MENULINETHICK);
-	CMFCRibbonComboBox* sidePattern = (CMFCRibbonComboBox*)main->getRibbon()->FindByID(ID_MENUSIDEPATTERN);
-	CMFCRibbonComboBox* linePattern = (CMFCRibbonComboBox*)main->getRibbon()->FindByID(ID_MENULINEPATTERN);
+	int result = dlg.DoModal();
+	
+	if (result == IDOK){
+		LOGFONT lf;
+		int size = dlg.GetSize();;
+		dlg.GetCurrentFont(&lf);
+		COLORREF color = dlg.GetColor();
+		underline = dlg.IsUnderline();
+		bold = dlg.IsBold();
+		italic = dlg.IsItalic();
+		strikeout = dlg.IsStrikeOut();
+		CMainFrame* main = (CMainFrame*)AfxGetMainWnd();
+		CMFCRibbonComboBox* fonts = (CMFCRibbonComboBox*)main->getRibbon()->FindByID(ID_MENUFONT);
+		fonts->SetEditText(lf.lfFaceName);
 
-	if (pDoc->currentObj != NULL){
-		switch (pDoc->currentObj->getType()){
-		case line:
-		{
-					 CString str;
-					 lineThick->SetEditText(str);
-					 linePattern->OnSelectItem(pDoc->pLine->getLinePattern());
-					 break;
-		}
-		case polyline:
-		{
-						 CString str;
-						 str.Format(_T("%d"), pDoc->pPolyLine->getLineThick());
-						 lineThick->SetEditText(str);
-						 linePattern->OnSelectItem(pDoc->pPolyLine->getLinePattern());
-						 break;
-		}
-		case ellipse:
-		{
-						CString str;
-						str.Format(_T("%d"), pDoc->pEllipse->getLineThick());
-						lineThick->SetEditText(str);
-						linePattern->OnSelectItem(pDoc->pEllipse->getLinePattern());
-						sidePattern->OnSelectItem(pDoc->pEllipse->getSidePattern());
+		CMFCRibbonEdit* fontsize = (CMFCRibbonEdit*)main->getRibbon()->FindByID(ID_MENUFONTSIZE);
+		CString str;
+		str.Format(_T("%d"), size);
+		fontsize->SetEditText(str);
 
-						break;
-		}
-		case rectangle:
-		{
-						  CString str;
-						  str.Format(_T("%d"), pDoc->pRectangle->getLineThick());
-						  lineThick->SetEditText(str);
-						  linePattern->OnSelectItem(pDoc->pRectangle->getLinePattern());
-						  sidePattern->OnSelectItem(pDoc->pRectangle->getSidePattern());
-						  break;
-		}
-		case text:
-		{
-					 break;
-		}
-		default:
-			break;
+		CMFCRibbonColorButton* fontcolor = (CMFCRibbonColorButton*)main->getRibbon()->FindByID(ID_MENUFONTCOLOR);
+		fontcolor->SetColor(color);
+
+		font = fonts->GetEditText();
+		fontSize = (_ttoi)(fontsize->GetEditText()) * 10;
+		fontColor = fontcolor->GetColor();
+
+		if (pDoc->yType == choice && pDoc->currentObj != NULL && pDoc->currentObj->getType() == text){
+			pDoc->pText->setFont(font);
+
+			// 글자크기변경 -> 끝점 변경,렉트변경,리젼변경
+			CDC* dc = GetDC();
+			CFont f;
+			f.CreatePointFont(pDoc->pText->getFontSize(), pDoc->pText->getFont());
+			dc->SelectObject(f);
+			CSize s = dc->GetTextExtent(pDoc->pText->getText(), pDoc->pText->getText().GetLength());
+
+			pDoc->pText->setEPoint(CPoint(pDoc->pText->getSPoint().x + s.cx, pDoc->pText->getSPoint().y + s.cy));
+			pDoc->pText->setRect(pDoc->pText->getSPoint(), pDoc->pText->getEPoint());
+			pDoc->pText->setRgn();
+			pDoc->pText->setFontColor(fontColor);
+			Invalidate(FALSE);
 		}
 	}
-}
-BOOL CYPaintEditView::OnEraseBkgnd(CDC* pDC)
-{
-	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
-
-	return TRUE;
 }

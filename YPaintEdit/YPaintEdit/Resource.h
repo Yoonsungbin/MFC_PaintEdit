@@ -2,6 +2,7 @@
 // Microsoft Visual C++에서 생성한 포함 파일입니다.
 // YPaintEdit.rc에서 사용되고 있습니다.
 //
+#define ID_MENUFONTDIA                  1
 #define IDD_ABOUTBOX                    100
 #define IDP_OLE_INIT_FAILED             100
 #define IDB_WRITESMALL                  110
@@ -44,43 +45,17 @@
 #define IDC_SPIN1                       1006
 #define IDC_COMBO1                      1008
 #define ID_WRITE_PASTEASHYPERLINK       32770
-#define ID_32771                        32771
-#define ID_32772                        32772
-#define ID_32773                        32773
-#define ID_32774                        32774
-#define ID_32775                        32775
-#define ID_32776                        32776
-#define ID_32777                        32777
-#define ID_32778                        32778
-#define ID_32779                        32779
-#define ID_32780                        32780
-#define ID_COMBO2                       32784
 #define ID_MENUFONT                     32784
-#define ID_BUTTON3                      32785
 #define ID_CONTEXT3                     32786
-#define ID_BUTTON2                      32788
 #define ID_MENUTEXTBUTTON               32788
-#define ID_DGROUPSBUTTON                32788
-#define ID_BUTTON4                      32789
 #define ID_TEXTEDITBUTTON               32789
-#define ID_BUTTON5                      32790
 #define ID_MENUFONTCOLOR                32790
-#define ID_BUTTON6                      32791
 #define ID_MENUFONTBKCOLOR              32791
-#define ID_GROUPBUTTON                  32791
-#define ID_BUTTON7                      32792
-#define ID_32793                        32793
-#define ID_32794                        32794
-#define ID_32797                        32797
-#define ID_32798                        32798
-#define ID_32799                        32799
 #define ID_MENUFONTTHICK                32800
-#define ID_COMBO3                       32802
 #define ID_MENULINEPATTERN              32804
 #define ID_MENULINECOLOR                32805
 #define ID_MENUSIDEPATTERN              32806
 #define ID_MENUSIDECOLOR                32807
-#define ID_32818                        32818
 #define ID_MENUFONTSIZE                 32819
 #define ID_MENUDEFAULTTBUTTON           32821
 #define ID_MENURECTANGLEBUTTON          32822
@@ -92,13 +67,20 @@
 #define ID_GROUPSIDEPATTERN             32829
 #define ID_GROUPSBUTTON                 32831
 #define ID_DELETEGROUPBUTTON            32832
+#define ID_EDIT_LINECOLOR               32833
+#define ID_EDIT_FIGURE                  32834
+#define ID_EDIT_FIGURESETTING           32835
+#define ID_EDIT_DELETE                  32836
+#define ID_EDIT_DELETEPOINT             32837
+#define ID_EDIT_SIDECOLOR               32838
+#define ID_MENUFONTSTRIKEOUT            32841
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        316
-#define _APS_NEXT_COMMAND_VALUE         32833
+#define _APS_NEXT_COMMAND_VALUE         32842
 #define _APS_NEXT_CONTROL_VALUE         1010
 #define _APS_NEXT_SYMED_VALUE           312
 #endif

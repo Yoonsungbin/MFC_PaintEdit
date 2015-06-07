@@ -6,7 +6,7 @@ public:
 	// Constructors, Destructor
 	YText();													// 기본 생성자
 	YText(CPoint point, CString f, COLORREF fc,					// 초기값을 받는 생성자
-		COLORREF bkc, int s);										
+		COLORREF bkc, int s,BOOL underline,BOOL stri,BOOL bo,BOOL ita);										
 	~YText();													// 기본 소멸자
 	
 
@@ -31,7 +31,10 @@ public:
 	void setFontColor(COLORREF nColor) { fontColor = nColor; }	// 글자색을 설정하는 함수
 	void setBkColor(COLORREF nColor) { bkColor = nColor; }		// 배경색을 설정하는 함수
 	void setFontSize(int nFontSize) { fontSize = nFontSize; }	// 글자크기를 설정하는 함수
-
+	void setUnderLine(BOOL under) { underline = under; }
+	void setStrikeOut(BOOL stri) { strikeout = stri; }
+	void setBold(BOOL bo) { bold = bo; }
+	void setItalic(BOOL ita) { italic = ita; }
 	
 	// Accessor
 	CPoint getSPoint() { return sPoint; }						// 텍스트 박스의 왼쪽,위의 점을 얻는 함수
@@ -42,7 +45,10 @@ public:
 	COLORREF getFontColor() { return fontColor; }				// 글자색을 얻는 함수 
 	COLORREF getBkColor() { return bkColor; }					// 배경색을 얻는 함수
 	int getFontSize() { return fontSize; }						// 글자크기를 얻는 함수
-
+	BOOL getUnderLine() { return underline; }
+	BOOL getStrikeOut() { return strikeout; }
+	BOOL getBold() { return bold; }
+	BOOL getItalic() { return italic; }
 
 	// Variables
 private:
@@ -54,4 +60,9 @@ private:
 	COLORREF fontColor;		// 글자색
 	COLORREF bkColor;		// 배경색
 	int fontSize;			// 글자크기
+	BOOL underline;
+	BOOL strikeout;
+	BOOL bold;
+	BOOL italic;
+
 };

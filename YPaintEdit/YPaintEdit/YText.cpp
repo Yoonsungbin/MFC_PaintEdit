@@ -6,12 +6,16 @@
 YText::YText()
 {
 }
-YText::YText(CPoint point, CString f, COLORREF fc, COLORREF bkc, int s){
+YText::YText(CPoint point, CString f, COLORREF fc, COLORREF bkc, int s, BOOL under, BOOL stri, BOOL bo, BOOL ita){
 	sPoint = point;					// 텍스트 박스의 왼쪽,위의 점을 초기화
 	font = f;						// 글자체 초기화
 	fontColor = fc;					// 글자색 초기화
 	bkColor = bkc;					// 배경색 초기화
 	fontSize = s;					// 글자크기 초기화
+	underline = under;				// 및줄 초기화
+	strikeout = stri;				// 취소선 초기화
+	bold = bo;						// 굵기 초기화
+	italic = ita;					// 기울임 초기화
 }
 YText::~YText()
 {
@@ -31,6 +35,7 @@ void YText::deleteAll(){
 
 }
 void YText::draw(CDC* dc){
+	
 	if (isSelected == TRUE){
 		CPen pen(PS_DOT, 1, RGB(0, 0, 0));
 		dc->SelectObject(pen);
@@ -38,7 +43,19 @@ void YText::draw(CDC* dc){
 	}
 
 	CFont f;
-	f.CreatePointFont(fontSize, font);
+	LOGFONT lf;
+	//f.CreatePointFont(fontSize, font);
+	
+	//굵기설정
+	if (bold) lf.lfWeight = FW_BOLD;
+	else lf.lfWeight = FW_NORMAL;
+	lf.lfHeight = fontSize / 5;						//높이 설정
+	lf.lfStrikeOut = strikeout;						//취소선 설정
+	lf.lfUnderline = underline;						//밑줄설정
+	lf.lfItalic = italic;							//기울임
+	lf.lfEscapement = 0;							//글자 각도 초기화
+	f.CreateFontIndirect(&lf);
+	
 	dc->SelectObject(f);
 	dc->SetBkColor(bkColor);
 	dc->SetTextColor(fontColor);
