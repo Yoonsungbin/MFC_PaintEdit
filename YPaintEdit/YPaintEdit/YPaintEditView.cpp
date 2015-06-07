@@ -77,12 +77,6 @@ BEGIN_MESSAGE_MAP(CYPaintEditView, CView)
 	ON_UPDATE_COMMAND_UI(ID_GROUPSBUTTON, &CYPaintEditView::OnUpdateGroupsbutton)
 	ON_COMMAND(ID_DELETEGROUPBUTTON, &CYPaintEditView::OnDeletegroupbutton)
 	ON_UPDATE_COMMAND_UI(ID_DELETEGROUPBUTTON, &CYPaintEditView::OnUpdateDeletegroupbutton)
-	ON_COMMAND(ID_GROUPLINETHICK, &CYPaintEditView::OnGrouplinethick)
-	ON_UPDATE_COMMAND_UI(ID_GROUPLINETHICK, &CYPaintEditView::OnUpdateGrouplinethick)
-	ON_COMMAND(ID_GROUPLINEPATTERN, &CYPaintEditView::OnGrouplinepattern)
-	ON_UPDATE_COMMAND_UI(ID_GROUPLINEPATTERN, &CYPaintEditView::OnUpdateGrouplinepattern)
-	ON_COMMAND(ID_GROUPSIDEPATTERN, &CYPaintEditView::OnGroupsidepattern)
-	ON_UPDATE_COMMAND_UI(ID_GROUPSIDEPATTERN, &CYPaintEditView::OnUpdateGroupsidepattern)
 	ON_COMMAND(ID_EDIT_CUT, &CYPaintEditView::OnEditCut)
 	ON_COMMAND(ID_EDIT_PASTE, &CYPaintEditView::OnEditPaste)
 	ON_COMMAND(ID_EDIT_COPY, &CYPaintEditView::OnEditCopy)
@@ -1372,6 +1366,34 @@ void CYPaintEditView::OnMenulinethick() //기능 : 선 굵기
 						  pDoc->pRectangle->setLineThick(lineThick);
 						  break;
 		}
+		case group:
+		{
+					   pDoc->pGroup = (YGroup*)pDoc->currentObj;
+					   CList<YObject*, YObject*>* pL = pDoc->pGroup->getList();
+
+					   POSITION pos = (*pL).GetHeadPosition();
+					   while (pos) {
+						   YObject* tmp = (YObject*)(*pL).GetNext(pos);
+						   if (tmp->getType() == line){
+							   pDoc->pLine = (YLine*)tmp;
+							   pDoc->pLine->setLineThick(lineThick);
+						   }
+						   else if (tmp->getType() == polyline){
+							   pDoc->pPolyLine = (YPolyLine*)tmp;
+							   pDoc->pPolyLine->setLineThick(lineThick);
+						   }
+						   else if (tmp->getType() == ellipse){
+							   pDoc->pEllipse = (YEllipse*)tmp;
+							   pDoc->pEllipse->setLineThick(lineThick);
+						   }
+						   else if (tmp->getType() == rectangle){
+							   pDoc->pRectangle = (YRectangle*)tmp;
+							   pDoc->pRectangle->setLineThick(lineThick);
+						   }
+					   }
+
+					   break;
+		}
 		default:
 			break;
 		}
@@ -1426,6 +1448,34 @@ void CYPaintEditView::OnMenulinepattern() //기능 : 선 패턴
 						  pDoc->pRectangle->setLinePattern(linePattern);
 						  break;
 		}
+		case group:
+		{
+					  pDoc->pGroup = (YGroup*)pDoc->currentObj;
+					  CList<YObject*, YObject*>* pL = pDoc->pGroup->getList();
+
+					  POSITION pos = (*pL).GetHeadPosition();
+					  while (pos) {
+						  YObject* tmp = (YObject*)(*pL).GetNext(pos);
+						  if (tmp->getType() == line){
+							  pDoc->pLine = (YLine*)tmp;
+							  pDoc->pLine->setLinePattern(linePattern);
+						  }
+						  else if (tmp->getType() == polyline){
+							  pDoc->pPolyLine = (YPolyLine*)tmp;
+							  pDoc->pPolyLine->setLinePattern(linePattern);
+						  }
+						  else if (tmp->getType() == ellipse){
+							  pDoc->pEllipse = (YEllipse*)tmp;
+							  pDoc->pEllipse->setLinePattern(linePattern);
+						  }
+						  else if (tmp->getType() == rectangle){
+							  pDoc->pRectangle = (YRectangle*)tmp;
+							  pDoc->pRectangle->setLinePattern(linePattern);
+						  }
+					  }
+
+					  break;
+		}
 		default:
 			break;
 		}
@@ -1461,6 +1511,7 @@ void CYPaintEditView::OnMenusidepattern() //기능 : 면 패턴
 		switch (pDoc->currentObj->getType()){
 		case ellipse:
 		{
+
 						if (sidePatternflag2) pDoc->pEllipse->setPatternflag(TRUE);							//default일때 ellipse의 flag변수값 조정
 						else pDoc->pEllipse->setPatternflag(FALSE);
 
@@ -1477,6 +1528,35 @@ void CYPaintEditView::OnMenusidepattern() //기능 : 면 패턴
 						  pDoc->pRectangle->setSidePattern(sidePattern);
 						  break;
 		}
+		
+		case group:
+		{
+					  
+
+					  pDoc->pGroup = (YGroup*)pDoc->currentObj;
+					  CList<YObject*, YObject*>* pL = pDoc->pGroup->getList();
+
+					  POSITION pos = (*pL).GetHeadPosition();
+					  while (pos) {
+						  YObject* tmp = (YObject*)(*pL).GetNext(pos);
+						  if (tmp->getType() == ellipse){
+							  pDoc->pEllipse = (YEllipse*)tmp;
+							  if (sidePatternflag2) pDoc->pEllipse->setPatternflag(TRUE);							//default일때 ellipse의 flag변수값 조정
+							  else pDoc->pEllipse->setPatternflag(FALSE);
+							  
+							  pDoc->pEllipse->setSidePattern(sidePattern);
+						  }
+						  else if (tmp->getType() == rectangle){
+							  pDoc->pRectangle = (YRectangle*)tmp;
+							  if (sidePatternflag2) pDoc->pRectangle->setPatternflag(TRUE);						//default일때 rectangle의 flag변수값 조정
+							  else pDoc->pRectangle->setPatternflag(FALSE);
+							  
+							  pDoc->pRectangle->setSidePattern(sidePattern);
+						  }
+					  }
+
+					  break;
+		}
 		default:
 			break;
 		}
@@ -1489,7 +1569,7 @@ void CYPaintEditView::OnUpdateMenusidepattern(CCmdUI *pCmdUI) //기능 : 면 패턴 U
 	CYPaintEditDoc* pDoc = GetDocument();
 
 	if (pDoc->currentObj != NULL){
-		if (pDoc->currentObj->getType() == ellipse || pDoc->currentObj->getType() == rectangle)pCmdUI->Enable(TRUE);
+		if (pDoc->currentObj->getType() == ellipse || pDoc->currentObj->getType() == rectangle || pDoc->currentObj->getType() == group)pCmdUI->Enable(TRUE);
 		else pCmdUI->Enable(FALSE);
 	}
 	else {
@@ -1534,6 +1614,34 @@ void CYPaintEditView::OnMenulinecolor() //기능 : 선 색
 						  pDoc->pRectangle->setLineColor(lineColor);
 						  break;
 		}
+		case group:
+		{
+					  pDoc->pGroup = (YGroup*)pDoc->currentObj;
+					  CList<YObject*, YObject*>* pL = pDoc->pGroup->getList();
+
+					  POSITION pos = (*pL).GetHeadPosition();
+					  while (pos) {
+						  YObject* tmp = (YObject*)(*pL).GetNext(pos);
+						  if (tmp->getType() == line){
+							  pDoc->pLine = (YLine*)tmp;
+							  pDoc->pLine->setLineColor(lineColor);
+						  }
+						  else if (tmp->getType() == polyline){
+							  pDoc->pPolyLine = (YPolyLine*)tmp;
+							  pDoc->pPolyLine->setLineColor(lineColor);
+						  }
+						  else if (tmp->getType() == ellipse){
+							  pDoc->pEllipse = (YEllipse*)tmp;
+							  pDoc->pEllipse->setLineColor(lineColor);
+						  }
+						  else if (tmp->getType() == rectangle){
+							  pDoc->pRectangle = (YRectangle*)tmp;
+							  pDoc->pRectangle->setLineColor(lineColor);
+						  }
+					  }
+
+					  break;
+		}
 		default:
 			break;
 		}
@@ -1563,6 +1671,26 @@ void CYPaintEditView::OnMenusidecolor() //기능 : 면 색
 						  pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
 						  pDoc->pRectangle->setSideColor(sideColor);
 						  break;
+		}
+		case group:
+		{
+					  pDoc->pGroup = (YGroup*)pDoc->currentObj;
+					  CList<YObject*, YObject*>* pL = pDoc->pGroup->getList();
+
+					  POSITION pos = (*pL).GetHeadPosition();
+					  while (pos) {
+						  YObject* tmp = (YObject*)(*pL).GetNext(pos);
+						  if (tmp->getType() == ellipse){
+							  pDoc->pEllipse = (YEllipse*)tmp;
+							  pDoc->pEllipse->setSideColor(sideColor);
+						  }
+						  else if (tmp->getType() == rectangle){
+							  pDoc->pRectangle = (YRectangle*)tmp;
+							  pDoc->pRectangle->setSideColor(sideColor);
+						  }
+					  }
+
+					  break;
 		}
 		default:
 			break;
@@ -1635,35 +1763,11 @@ void CYPaintEditView::OnUpdateDeletegroupbutton(CCmdUI *pCmdUI)
 	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
 	CYPaintEditDoc* pDoc = GetDocument();
 
-	if (pDoc->yType == choice){
+	if (pDoc->yType == choice && pDoc->currentObj!=NULL && pDoc->currentObj->getType() == group){
 		pCmdUI->Enable(TRUE);
 	}
 	else
 		pCmdUI->Enable(FALSE);
-}
-void CYPaintEditView::OnGrouplinethick()
-{
-	// TODO: 여기에 명령 처리기 코드를 추가합니다.
-}
-void CYPaintEditView::OnUpdateGrouplinethick(CCmdUI *pCmdUI)
-{
-	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
-}
-void CYPaintEditView::OnGrouplinepattern()
-{
-	// TODO: 여기에 명령 처리기 코드를 추가합니다.
-}
-void CYPaintEditView::OnUpdateGrouplinepattern(CCmdUI *pCmdUI)
-{
-	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
-}
-void CYPaintEditView::OnGroupsidepattern()
-{
-	// TODO: 여기에 명령 처리기 코드를 추가합니다.
-}
-void CYPaintEditView::OnUpdateGroupsidepattern(CCmdUI *pCmdUI)
-{
-	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
 }
 
 // 클립보드 패널
