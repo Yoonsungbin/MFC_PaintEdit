@@ -38,8 +38,10 @@ void YText::draw(CDC* dc){
 	
 	if (isSelected == TRUE){
 		CPen pen(PS_DOT, 1, RGB(0, 0, 0));
+		CPen* oldPen = dc->SelectObject(&pen);
 		dc->SelectObject(pen);
 		dc->Rectangle(sPoint.x - 1, sPoint.y - 1, ePoint.x + 1, ePoint.y + 1);
+		dc->SelectObject(&oldPen);
 	}
 
 	CFont f;
@@ -49,17 +51,26 @@ void YText::draw(CDC* dc){
 	//굵기설정
 	if (bold) lf.lfWeight = FW_BOLD;
 	else lf.lfWeight = FW_NORMAL;
-	lf.lfHeight = fontSize / 5;						//높이 설정
+	lf.lfWidth = 0;
+	lf.lfHeight = fontSize;						//높이 설정
 	lf.lfStrikeOut = strikeout;						//취소선 설정
 	lf.lfUnderline = underline;						//밑줄설정
 	lf.lfItalic = italic;							//기울임
 	lf.lfEscapement = 0;							//글자 각도 초기화
+	wcscpy_s((lf.lfFaceName), _countof(lf.lfFaceName), font);
+	lf.lfOutPrecision = OUT_CHARACTER_PRECIS;
+	lf.lfClipPrecision = CLIP_CHARACTER_PRECIS;
+	lf.lfPitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
+	lf.lfQuality = DEFAULT_QUALITY;
+	lf.lfCharSet = DEFAULT_CHARSET;
 	f.CreateFontIndirect(&lf);
+
 	
 	dc->SelectObject(f);
 	dc->SetBkColor(bkColor);
 	dc->SetTextColor(fontColor);
 	dc->DrawText(texts, rect, NULL);
+
 }
 void YText::setRgn(){
 	int left, top, right, bottom;

@@ -120,7 +120,7 @@ CYPaintEditView::CYPaintEditView()
 	font = _T("굴림");
 	fontColor = RGB(0, 0, 0);
 	bkColor = RGB(255, 255, 255);
-	fontSize = 500;
+	fontSize = 10;
 
 	lineThick = 1;
 	linePattern = 0;
@@ -317,16 +317,24 @@ void CYPaintEditView::Paint(CDC* dc) // 기능 : 어떤 도형을 그릴지 판단
 		// 폰트 생성 및 적용
 		CFont f;
 		LOGFONT lf;
-	//	f.CreatePointFont(pDoc->pText->getFontSize(), pDoc->pText->getFont());
+		//	f.CreatePointFont(pDoc->pText->getFontSize(), pDoc->pText->getFont());
 		//f.CreatePointFont(fontSize, font);
 		//굵기설정
-		if (bold) lf.lfWeight = FW_BOLD;
+		if (pDoc->pText->getBold()) lf.lfWeight = FW_BOLD;
 		else lf.lfWeight = FW_NORMAL;
-		lf.lfHeight = fontSize / 5;						//높이 설정
-		lf.lfStrikeOut = strikeout;						//취소선 설정
-		lf.lfUnderline = underline;						//밑줄설정
-		lf.lfItalic = italic;							//기울임
+		lf.lfWidth = 0;
+		lf.lfHeight = pDoc->pText->getFontSize();						//높이 설정
+		lf.lfStrikeOut = pDoc->pText->getStrikeOut();						//취소선 설정
+		lf.lfUnderline = pDoc->pText->getUnderLine();						//밑줄설정
+		lf.lfItalic = pDoc->pText->getItalic();							//기울임
 		lf.lfEscapement = 0;							//기울기 각도 초기화
+		lf.lfOutPrecision = OUT_CHARACTER_PRECIS;
+		lf.lfClipPrecision = CLIP_CHARACTER_PRECIS;
+		lf.lfPitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
+		lf.lfQuality = DEFAULT_QUALITY;
+		lf.lfCharSet = DEFAULT_CHARSET;
+		wcscpy_s((lf.lfFaceName), _countof(lf.lfFaceName), pDoc->pText->getFont());
+		
 		f.CreateFontIndirect(&lf);
 		dc->SelectObject(f);
 		dc->SetBkColor(pDoc->pText->getBkColor());
@@ -350,6 +358,7 @@ void CYPaintEditView::Paint(CDC* dc) // 기능 : 어떤 도형을 그릴지 판단
 		CRect r(pDoc->pText->getSPoint().x - 1, pDoc->pText->getSPoint().y - 1, pDoc->pText->getEPoint().x + 1, pDoc->pText->getEPoint().y + 1);
 		// 출력용 리젼을 위한 펜 및 브러시 생성 및 적용
 		CPen pen(PS_DOT, 1, RGB(0, 0, 0));
+		CPen* oldPen = dc->SelectObject(&pen);
 		dc->SelectObject(pen);
 		CBrush brush(pDoc->pText->getBkColor());
 		dc->SelectObject(brush);
@@ -357,7 +366,7 @@ void CYPaintEditView::Paint(CDC* dc) // 기능 : 어떤 도형을 그릴지 판단
 		// 리젼 및 텍스트 출력
 		dc->Rectangle(r);
 		dc->DrawText(pDoc->pText->getText(), pDoc->pText->getRect(), NULL);
-
+		dc->SelectObject(&oldPen);
 		// 캐럿 생성 및 출력
 		if (pDoc->pText->getText().GetLength() == 0)
 			CreateSolidCaret(5, sInitial.cy);
@@ -2024,33 +2033,46 @@ void CYPaintEditView::OnMenufontdia()
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	CYPaintEditDoc* pDoc = GetDocument();
 	CFontDialog dlg;
-
-	int result = dlg.DoModal();
+	CMainFrame* main = (CMainFrame*)AfxGetMainWnd();
+	CMFCRibbonComboBox* fonts = (CMFCRibbonComboBox*)main->getRibbon()->FindByID(ID_MENUFONT);
+	CMFCRibbonEdit* fontsize = (CMFCRibbonEdit*)main->getRibbon()->FindByID(ID_MENUFONTSIZE);
+	CMFCRibbonColorButton* fontcolor = (CMFCRibbonColorButton*)main->getRibbon()->FindByID(ID_MENUFONTCOLOR);
 	
+	
+	int result = dlg.DoModal();
+//	dlg.SetFont();
 	if (result == IDOK){
 		LOGFONT lf;
-		int size = dlg.GetSize();;
+		//다이얼로그에서 값가져오기
 		dlg.GetCurrentFont(&lf);
-		COLORREF color = dlg.GetColor();
+		//COLORREF color = dlg.GetColor();
 		underline = dlg.IsUnderline();
 		bold = dlg.IsBold();
 		italic = dlg.IsItalic();
 		strikeout = dlg.IsStrikeOut();
-		CMainFrame* main = (CMainFrame*)AfxGetMainWnd();
-		CMFCRibbonComboBox* fonts = (CMFCRibbonComboBox*)main->getRibbon()->FindByID(ID_MENUFONT);
+		font = lf.lfFaceName;
+		fontSize = dlg.GetSize();
+		fontColor = dlg.GetColor();
+		/*
+		//다이얼로그에서 변경된 값 메뉴에 다시 보여주기
 		fonts->SetEditText(lf.lfFaceName);
-
-		CMFCRibbonEdit* fontsize = (CMFCRibbonEdit*)main->getRibbon()->FindByID(ID_MENUFONTSIZE);
 		CString str;
-		str.Format(_T("%d"), size);
+		str.Format(_T("%d"), fontSize);
 		fontsize->SetEditText(str);
-
-		CMFCRibbonColorButton* fontcolor = (CMFCRibbonColorButton*)main->getRibbon()->FindByID(ID_MENUFONTCOLOR);
-		fontcolor->SetColor(color);
-
-		font = fonts->GetEditText();
-		fontSize = (_ttoi)(fontsize->GetEditText()) * 10;
-		fontColor = fontcolor->GetColor();
+		fontcolor->SetColor(fontColor);
+		*/
+		//변경된 값을 가지고와서 텍스트 적용시키기
+		//font = fonts->GetEditText();
+		//fontSize = (_ttoi)(fontsize->GetEditText()) * 10;
+		//fontColor = fontcolor->GetColor();
+		
+		pDoc->pText->setFont(font);
+		pDoc->pText->setFontSize(fontSize);
+		pDoc->pText->setFontColor(fontColor);
+		pDoc->pText->setItalic(italic);
+		pDoc->pText->setBold(bold);
+		pDoc->pText->setUnderLine(underline);
+		pDoc->pText->setStrikeOut(strikeout);
 
 		if (pDoc->yType == choice && pDoc->currentObj != NULL && pDoc->currentObj->getType() == text){
 			pDoc->pText->setFont(font);
@@ -2058,7 +2080,22 @@ void CYPaintEditView::OnMenufontdia()
 			// 글자크기변경 -> 끝점 변경,렉트변경,리젼변경
 			CDC* dc = GetDC();
 			CFont f;
-			f.CreatePointFont(pDoc->pText->getFontSize(), pDoc->pText->getFont());
+			if (bold) lf.lfWeight = FW_BOLD;
+			else lf.lfWeight = FW_NORMAL;
+			lf.lfWidth = 0;
+			lf.lfHeight = fontSize;						//높이 설정
+			lf.lfStrikeOut = strikeout;						//취소선 설정
+			lf.lfUnderline = underline;						//밑줄설정
+			lf.lfItalic = italic;							//기울임
+			lf.lfEscapement = 0;							//글자 각도 초기화
+			lf.lfOutPrecision = OUT_CHARACTER_PRECIS;
+			lf.lfClipPrecision = CLIP_CHARACTER_PRECIS;
+			lf.lfPitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
+			lf.lfQuality = DEFAULT_QUALITY;
+			lf.lfCharSet = DEFAULT_CHARSET;
+			wcscpy_s((lf.lfFaceName), _countof(lf.lfFaceName), font);
+			f.CreateFontIndirect(&lf);
+			//f.CreatePointFont(pDoc->pText->getFontSize(), pDoc->pText->getFont());
 			dc->SelectObject(f);
 			CSize s = dc->GetTextExtent(pDoc->pText->getText(), pDoc->pText->getText().GetLength());
 

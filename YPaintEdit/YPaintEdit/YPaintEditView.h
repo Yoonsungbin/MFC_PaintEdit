@@ -52,8 +52,8 @@ public:
 	COLORREF bkColor;
 	BOOL underline = FALSE;
 	BOOL strikeout = FALSE;
-	BOOL bold;
-	BOOL italic;
+	BOOL bold = FALSE;
+	BOOL italic = FALSE;
 	// 리본 메뉴 (도형속성 패널) : 메뉴들의 초기값 설정 및 값들의 임시 저장을 위해 선언 
 	int lineThick = 1;
 	int linePattern = 0;

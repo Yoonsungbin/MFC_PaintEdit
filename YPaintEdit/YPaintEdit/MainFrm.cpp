@@ -84,7 +84,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	CMFCRibbonComboBox* sidePattern = (CMFCRibbonComboBox*)m_wndRibbonBar.FindByID(ID_MENUSIDEPATTERN);
 	sidePattern->SelectItem(0);
 	CMFCRibbonEdit* fontSize = (CMFCRibbonEdit*)m_wndRibbonBar.FindByID(ID_MENUFONTSIZE);
-	fontSize->SetEditText(_T("50"));
+	fontSize->SetEditText(_T("10"));
 	CMFCRibbonComboBox* font = (CMFCRibbonComboBox*)m_wndRibbonBar.FindByID(ID_MENUFONT);
 	font->SelectItem(0);
 	
