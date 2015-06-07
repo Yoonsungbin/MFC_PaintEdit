@@ -6,7 +6,6 @@ YGroup::YGroup()
 {
 }
 
-
 YGroup::~YGroup()
 {
 }
@@ -35,10 +34,8 @@ YGroup::YGroup(CList<YObject*, YObject*>& list){
 		if (ePoint.x < rec.BottomRight().x) ePoint.x = rec.BottomRight().x;
 		if (ePoint.y < rec.BottomRight().y) ePoint.y = rec.BottomRight().y;
 	}
-
-	// 府怜 积己
-	YGroup::setRgn();
 }
+
 
 // Virtual
 void YGroup::moveAll(int s, int e){
@@ -67,10 +64,10 @@ void YGroup::draw(CDC* dc){
 }
 void YGroup::setRgn(){
 	// 府怜 荤阿屈 积己
-	YObject::setORect(sPoint.x, sPoint.y, ePoint.x, ePoint.y);
+	setORect(sPoint.x, sPoint.y, ePoint.x, ePoint.y);
 	// 府怜 积己
 	rgn.DeleteObject();
-	rgn.CreateRectRgn(sPoint.x-1, sPoint.y-1, ePoint.x+1, ePoint.y+1);
+	rgn.CreateRectRgn(sPoint.x, sPoint.y, ePoint.x, ePoint.y);
 }
 BOOL YGroup::checkRgn(CPoint point)
 {

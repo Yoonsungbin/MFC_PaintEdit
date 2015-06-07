@@ -488,15 +488,22 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 
 					   // 좌표에 해당하는 도형이 있을 경우
 					   if (pDoc->currentObj->checkRgn(point) == TRUE){
-						   if (pDoc->grouping == FALSE){
-							   pDoc->currentObj->setSelect(TRUE);
-							   break;
+						   pDoc->currentObj->setSelect(TRUE);
+						   if (pDoc->grouping == TRUE){
+							   YObject* tmp;
+							   int flag = 0;
+							   POSITION pos = pDoc->current_group.GetHeadPosition();
+							   while (pos) {
+								   tmp = (YObject*)pDoc->current_group.GetNext(pos);
+								   if (tmp->getOrder() == pDoc->currentObj->getOrder()){
+									   flag = 1;
+									   break;
+								   }
+							   }
+							   if (flag == 0)
+								   pDoc->current_group.AddTail(pDoc->currentObj);
 						   }
-						   else{
-							   pDoc->currentObj->setSelect(TRUE);
-							   pDoc->current_group.AddTail(pDoc->currentObj);
-							   break;
-						   }
+						   break;
 					   }
 
 					   // 도형이 선택되어 리젼과 끝점을 그려진 경우, 다시 선택했을때 끝점을 선택해도 선택되게 설정하는 부분
@@ -766,13 +773,14 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 									pDoc->pText->setEPoint(pDoc->pText->getEPoint() + t_point);
 									pDoc->pText->setRect(pDoc->pText->getSPoint(), pDoc->pText->getEPoint());
 									pDoc->pText->setRgn();
+									break;
 					   }
 					   case group:
 						   pDoc->pGroup->setSPoint(pDoc->pGroup->getSPoint() + t_point);
 						   pDoc->pGroup->setEPoint(pDoc->pGroup->getEPoint() + t_point);
+						   pDoc->pGroup->setRgn();
 						   pDoc->pGroup->setORect(pDoc->pGroup->getSPoint().x, pDoc->pGroup->getSPoint().y, pDoc->pGroup->getEPoint().x, pDoc->pGroup->getEPoint().y);
 						   pDoc->pGroup->moveAll(t_point.x,t_point.y);
-						   pDoc->pGroup->setRgn();
 						   break;
 					   default:
 						   break;
@@ -854,22 +862,11 @@ void CYPaintEditView::OnLButtonDblClk(UINT nFlags, CPoint point)
 	}
 
 	if (pDoc->grouping == TRUE){
-		
-		// 그룹내 중복 제거
-		POSITION pos = pDoc->current_group.GetHeadPosition();
-		while (pos) {
-			pDoc->currentObj = (YObject*)pDoc->obj_List.GetNext(pos);
-			if (pDoc->currentObj->checkRgn(point) == TRUE){
-				pDoc->current_group.RemoveTail();
-				pDoc->currentObj = NULL;
-				break;
-			}
-		}
-		
+			
 		// obj_List에서 그룹화된 도형을 꺼내는 부분
 		YObject* search;
 		POSITION tpos;
-		pos = pDoc->current_group.GetHeadPosition();
+		POSITION pos = pDoc->current_group.GetHeadPosition();
 		while (pos) {
 			search = pDoc->current_group.GetNext(pos);
 			POSITION pos2 = pDoc->obj_List.GetHeadPosition();
@@ -885,14 +882,17 @@ void CYPaintEditView::OnLButtonDblClk(UINT nFlags, CPoint point)
 
 		// 그룹 객체 생성 및 obj_List에 연결하는 부분
 		YGroup* tgroup = new YGroup(pDoc->current_group);
+		tgroup->setRgn();
 		tgroup->setType(group);
 		tgroup->setOrder(pDoc->allNum++);
 		tgroup->setSelect(TRUE);
+		pDoc->currentObj = tgroup;
 		pDoc->obj_List.AddTail(tgroup);
 
 		// 그룹화 변수 초기화
 		pDoc->current_group.RemoveAll();
 		pDoc->grouping = FALSE;
+
 		Invalidate();
 	}
 	CView::OnLButtonDblClk(nFlags, point);
@@ -1465,11 +1465,8 @@ void CYPaintEditView::OnGroupsbutton()
 	CYPaintEditDoc* pDoc = GetDocument();
 
 	pDoc->grouping = TRUE;
-	if (pDoc->currentObj != NULL){
-		pDoc->currentObj->setSelect(FALSE);
-		pDoc->currentObj = NULL;
-		Invalidate();
-	}
+	if (pDoc->currentObj != NULL)
+		pDoc->current_group.AddTail(pDoc->currentObj);
 }
 void CYPaintEditView::OnUpdateGroupsbutton(CCmdUI *pCmdUI)
 {
@@ -1480,21 +1477,41 @@ void CYPaintEditView::OnUpdateGroupsbutton(CCmdUI *pCmdUI)
 		pCmdUI->Enable(TRUE);
 	else
 		pCmdUI->Enable(FALSE);
+
+	if (pDoc->grouping == TRUE)
+		pCmdUI->SetCheck(TRUE);
+	else 
+		pCmdUI->SetCheck(FALSE);
 }
 void CYPaintEditView::OnDeletegroupbutton()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	CYPaintEditDoc* pDoc = GetDocument();
+
 	if (pDoc->currentObj->getType() == group){
-		POSITION tpos = pDoc->obj_List.GetHeadPosition();
-		YObject* tmp0;
-		CList<YObject*, YObject*>* tmp = ((YGroup*)pDoc->currentObj)->getList();
-		POSITION pos = tmp->GetHeadPosition();
+		// obj_List에서 그룹의 위치를 찾는 부분
+		YObject* to;
+		POSITION tpos;
+		POSITION pos = pDoc->obj_List.GetHeadPosition();
 		while (pos){
-			tmp0 = tmp->GetNext(pos);
-			pDoc->obj_List.AddTail(tmp0);
+			tpos = pos;
+			to = (YObject*)pDoc->obj_List.GetNext(pos);
+			if (to->getOrder() == pDoc->currentObj->getOrder())
+				break;
 		}
+
+		// 그룹에서 꺼내어 obj_List에 저장하는 부분
+		CList<YObject*, YObject*>* tmp = ((YGroup*)pDoc->currentObj)->getList();
+		pos = tmp->GetHeadPosition();
+		while (pos){
+			pDoc->obj_List.AddTail(tmp->GetNext(pos));
+		}
+
+		// obj_List에서 그룹을 제거하는 부분
 		pDoc->obj_List.RemoveAt(tpos);
+		
+		pDoc->currentObj = NULL;
+
 		Invalidate();
 	}
 }

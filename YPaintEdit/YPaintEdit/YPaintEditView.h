@@ -44,7 +44,6 @@ public:
 	BOOL menu_Ellipse;
 	BOOL menu_Text;
 
-	// 텍스트 초기값 변수 및 메뉴 설정시 사용할 변수
 	// 리본 메뉴 (텍스트속성 패널) : 메뉴들의 초기값 설정 및 값들의 임시 저장을 위해 선언
 	CString font;
 	CString texts;
@@ -61,7 +60,7 @@ public:
 	// 리본 메뉴 (색 패널) : 메뉴들의 초기값 설정 및 값들의 임시 저장을 위해 선언
 	COLORREF lineColor = RGB(0, 0, 0);
 	COLORREF sideColor = RGB(255, 255, 255);
-
+	
 
 	// 팝업 메뉴 //
 	// 팝업 메뉴 : 메뉴들의 비/활성화를 위해 선언
