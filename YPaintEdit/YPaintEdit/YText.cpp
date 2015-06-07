@@ -20,7 +20,12 @@ YText::~YText()
 
 // Virtual
 void YText::moveAll(int s, int e){
-
+	sPoint.x += s;
+	sPoint.y += e;
+	ePoint.x += s;
+	ePoint.y += e;
+	setRect(sPoint, ePoint);
+	setRgn();
 }
 void YText::deleteAll(){
 
@@ -67,7 +72,7 @@ void YText::setRgn(){
 		right = sPoint.x;
 		bottom = sPoint.y;
 	}
-
+	YObject::setORect(left-1, top-1, right+1, bottom+1);
 	// 리젼 생성
 	rgn.DeleteObject();
 	rgn.CreateRectRgn(left, top, right, bottom);

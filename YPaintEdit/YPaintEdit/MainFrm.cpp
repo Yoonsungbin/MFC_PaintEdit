@@ -75,14 +75,14 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// 보관된 값에 따라 비주얼 관리자 및 스타일을 설정합니다.
 	OnApplicationLook(theApp.m_nAppLook);
 
-	//메뉴 리본 초기화
+
+	// 리본 메뉴 초기값 설정 //
 	CMFCRibbonEdit* thick = (CMFCRibbonEdit*)m_wndRibbonBar.FindByID(ID_MENULINETHICK);
 	thick->SetEditText(_T("1"));
 	CMFCRibbonComboBox* linePattern = (CMFCRibbonComboBox*)m_wndRibbonBar.FindByID(ID_MENULINEPATTERN);
 	 linePattern->SelectItem(0);
 	CMFCRibbonComboBox* sidePattern = (CMFCRibbonComboBox*)m_wndRibbonBar.FindByID(ID_MENUSIDEPATTERN);
 	sidePattern->SelectItem(0);
-
 	CMFCRibbonEdit* fontSize = (CMFCRibbonEdit*)m_wndRibbonBar.FindByID(ID_MENUFONTSIZE);
 	fontSize->SetEditText(_T("50"));
 	CMFCRibbonComboBox* font = (CMFCRibbonComboBox*)m_wndRibbonBar.FindByID(ID_MENUFONT);

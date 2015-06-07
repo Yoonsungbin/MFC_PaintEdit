@@ -4,7 +4,7 @@
 
 using namespace Gdiplus;
 
-typedef enum Object_Type{ choice, rectangle, ellipse, line, polyline, text, default } YObject_Type;
+typedef enum Object_Type{ choice, rectangle, ellipse, line, polyline, text, group, default } YObject_Type;
 
 class YObject : public CObject
 {
@@ -14,6 +14,13 @@ public:
 	
 	//YObject(const YObject &s){ *this = s; }							// ???
 	//YObject& operator=(const YObject &s) { return *this; }			// ???
+
+	void setOrder(int num){ order = num; }							// 객체의 고유번호를 설정하는 함수
+	int getOrder(){ return order; }									// 객체의 고유번호를 가져오는 함수
+
+	void setORect(int x1, int y1, int x2, int y2)					// 객체의 리젼 사각형을 설정하는 함수
+		{ rect.SetRect(x1,y1,x2,y2); }	
+	CRect getORect(){ return rect; }								// 객체의 리젼 사각형을 가져오는 함수
 
 	virtual void setType(YObject_Type t){ yType = t; }				// 객체의 타입 설정하는 함수
 	YObject_Type getType(){ return yType; }							// 객체의 타입 가져오는 함수
@@ -32,5 +39,7 @@ public:
 protected:
 	YObject_Type yType;		// 도형의 타입
 	CRgn rgn;				// 도형의 리젼
+	CRect rect;				// 도형의 리젼 사각형
 	BOOL isSelected;		// 도형의 선택 여부
+	int order;				// 도형의 고유번호
 };

@@ -106,6 +106,7 @@
     <ClInclude Include="TextEditDialog.h" />
     <ClInclude Include="YEllipse.h" />
     <ClInclude Include="YFigureDialog.h" />
+    <ClInclude Include="YGroup.h" />
     <ClInclude Include="YLine.h" />
     <ClInclude Include="YObject.h" />
     <ClInclude Include="YOneDimension.h" />
@@ -126,6 +127,7 @@
     <ClCompile Include="TextEditDialog.cpp" />
     <ClCompile Include="YEllipse.cpp" />
     <ClCompile Include="YFigureDialog.cpp" />
+    <ClCompile Include="YGroup.cpp" />
     <ClCompile Include="YLine.cpp" />
     <ClCompile Include="YObject.cpp" />
     <ClCompile Include="YOneDimension.cpp" />
