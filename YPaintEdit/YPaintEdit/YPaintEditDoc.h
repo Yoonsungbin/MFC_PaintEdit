@@ -52,6 +52,7 @@ public:
 	BOOL grouping;								// 그룹화중임을 나타내주는 변수
 	CList<YObject*, YObject*> current_group;	// 현재 그룹 리스트
 	int allNum;									// 총 만든 도형의 개수
+
 // 작업입니다.
 public:
 

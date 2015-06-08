@@ -172,8 +172,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt">
-      <Filter>헤더 파일</Filter>
-    </Text>
+    <Text Include="ReadMe.txt" />
   </ItemGroup>
 </Project>

@@ -132,6 +132,7 @@ public:
 	afx_msg void OnMenutextbutton();
 	afx_msg void OnMenufontcolor();
 	afx_msg void OnMenufontbkcolor();
+	afx_msg void OnMenufontdia();
 	afx_msg void OnUpdateMenufontsize(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateMenufont(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateMenutextbutton(CCmdUI *pCmdUI);
@@ -169,12 +170,6 @@ public:
 	afx_msg void OnUpdateEditgroup(CCmdUI *pCmdUI);
 	afx_msg void OnEditdeletegroup();
 	afx_msg void OnUpdateEditdeletegroup(CCmdUI *pCmdUI);
-
-	afx_msg void OnMenufontdia();
-
-	
-
-
 };
 
 #ifndef _DEBUG  // YPaintEditView.cpp의 디버그 버전
