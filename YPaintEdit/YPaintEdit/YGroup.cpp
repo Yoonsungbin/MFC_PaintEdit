@@ -204,19 +204,6 @@ void YGroup::draw(CDC* dc){
 	}
 }
 void YGroup::setRgn(){
-	sPoint.SetPoint(10000, 10000);
-	ePoint.SetPoint(0, 0);
-	CRect rec;
-	YObject* tmp;
-	POSITION pos = groupList.GetHeadPosition();
-	while (pos){
-		tmp = groupList.GetNext(pos);
-		rec = tmp->getORect();
-		if (sPoint.x > rec.TopLeft().x) sPoint.x = rec.TopLeft().x;
-		if (sPoint.y > rec.TopLeft().y) sPoint.y = rec.TopLeft().y;
-		if (ePoint.x < rec.BottomRight().x) ePoint.x = rec.BottomRight().x;
-		if (ePoint.y < rec.BottomRight().y) ePoint.y = rec.BottomRight().y;
-	}
 	// 府怜 荤阿屈 积己
 	setORect(sPoint.x, sPoint.y, ePoint.x, ePoint.y);
 	// 府怜 积己
@@ -344,3 +331,4 @@ void YGroup::Serialize(CArchive& ar)
 		setRgn();
 	}
 }
+

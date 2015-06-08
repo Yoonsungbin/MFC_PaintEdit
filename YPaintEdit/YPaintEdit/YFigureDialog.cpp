@@ -15,8 +15,6 @@ YFigureDialog::YFigureDialog(CWnd* pParent /*=NULL*/)
 	: CDialog(YFigureDialog::IDD, pParent)
 	, lineThick(0)
 	, linePattern(0)
-	
-	, sidePattern(0)
 {
 
 }
@@ -32,8 +30,6 @@ void YFigureDialog::DoDataExchange(CDataExchange* pDX)
 	DDX_CBIndex(pDX, IDC_DIALOGLINEPATTERN, linePattern);
 	DDX_Control(pDX, IDC_DIALOGLINEPATTERN, patternIndex);
 	DDX_Control(pDX, IDC_SPIN1, thick);
-	DDX_Control(pDX, IDC_DIALOGSidePattern, SidePatternIndex);
-	DDX_CBIndex(pDX, IDC_DIALOGSidePattern, sidePattern);
 }
 
 
@@ -47,12 +43,7 @@ END_MESSAGE_MAP()
 BOOL YFigureDialog::OnInitDialog()
 {
 	CDialog::OnInitDialog();
-	
-	if (flag == FALSE)
-	{
-		SidePatternIndex.EnableWindow(FALSE);
 
-	}
 	// TODO:  여기에 추가 초기화 작업을 추가합니다.
 	thick.SetRange(1, 20);  // 초기값 설정
 	return TRUE;  // return TRUE unless you set the focus to a control

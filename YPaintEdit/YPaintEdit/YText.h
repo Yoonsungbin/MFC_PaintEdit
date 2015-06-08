@@ -9,7 +9,7 @@ public:
 	YText(CPoint point, CString f, COLORREF fc,					// 초기값을 받는 생성자
 		COLORREF bkc, int s,BOOL underline,BOOL stri,BOOL bo,BOOL ita);										
 	~YText();													// 기본 소멸자
-	
+	YText(YText* p);
 
 	// Virtual
 	void setType(YObject_Type t) { yType = t; }					// 객체의 타입을 텍스트 타입으로 설정하는 함수
@@ -20,7 +20,7 @@ public:
 	virtual void setRgn();										// 리젼을 생성하는 함수
 	BOOL checkRgn(CPoint point);								// 좌표가 리젼안에 존재하는지 확인하는 함수
 	void setSelect(BOOL select) { isSelected = select; }		// 객체가 선택되었음을 나타내는 함수
-	virtual void Serialize(CArchive& ar);
+	
 
 	// Mutator
 	void setSPoint(CPoint point) { sPoint = point; }			// 텍스트 박스의 왼쪽,위의 점을 설정하는 함수
@@ -36,8 +36,6 @@ public:
 	void setStrikeOut(BOOL stri) { strikeout = stri; }
 	void setBold(BOOL bo) { bold = bo; }
 	void setItalic(BOOL ita) { italic = ita; }
-	
-
 	// Accessor
 	CPoint getSPoint() { return sPoint; }						// 텍스트 박스의 왼쪽,위의 점을 얻는 함수
 	CPoint getEPoint() { return ePoint; }						// 텍스트 박스의 오른쪽,아래의 점을 얻는 함수
@@ -51,8 +49,7 @@ public:
 	BOOL getStrikeOut() { return strikeout; }
 	BOOL getBold() { return bold; }
 	BOOL getItalic() { return italic; }
-
-	
+	virtual void Serialize(CArchive& ar);
 	// Variables
 private:
 	CPoint sPoint;			// 텍스트 박스의 왼쪽,위의 점
@@ -67,4 +64,5 @@ private:
 	BOOL strikeout;
 	BOOL bold;
 	BOOL italic;
+
 };

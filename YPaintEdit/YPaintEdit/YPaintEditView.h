@@ -82,6 +82,15 @@ public:
 	BOOL menu_DeleteGroup;
 	YObject* cutObj = NULL;			// 잘라내기, 붙여넣기를 위한 변수 선언
 
+
+
+	BOOL lineMove = FALSE;
+	BOOL polylineMove = FALSE;
+	BOOL ellipseMove = FALSE;
+	BOOL rectangleMove = FALSE;
+	BOOL textMove = FALSE;
+	BOOL groupMove = FALSE;
+
 // 재정의입니다.
 public:
 	virtual void OnDraw(CDC* pDC);  // 이 뷰를 그리기 위해 재정의되었습니다.
@@ -132,7 +141,6 @@ public:
 	afx_msg void OnMenutextbutton();
 	afx_msg void OnMenufontcolor();
 	afx_msg void OnMenufontbkcolor();
-	afx_msg void OnMenufontdia();
 	afx_msg void OnUpdateMenufontsize(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateMenufont(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateMenutextbutton(CCmdUI *pCmdUI);
@@ -170,6 +178,10 @@ public:
 	afx_msg void OnUpdateEditgroup(CCmdUI *pCmdUI);
 	afx_msg void OnEditdeletegroup();
 	afx_msg void OnUpdateEditdeletegroup(CCmdUI *pCmdUI);
+
+	afx_msg void OnMenufontdia();
+
+	afx_msg void OnBack();
 };
 
 #ifndef _DEBUG  // YPaintEditView.cpp의 디버그 버전

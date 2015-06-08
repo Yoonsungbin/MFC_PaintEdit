@@ -39,7 +39,6 @@ public:
 	BOOL getSelect() const { return isSelected; }					//선택된지아는 BOOL변수 가져오는함수
 
 	virtual void Serialize(CArchive& ar);
-
 protected:
 	YObject_Type yType;		// 도형의 타입
 	CRgn rgn;				// 도형의 리젼

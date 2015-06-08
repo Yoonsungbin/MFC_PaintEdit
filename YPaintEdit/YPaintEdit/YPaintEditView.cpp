@@ -98,6 +98,7 @@ BEGIN_MESSAGE_MAP(CYPaintEditView, CView)
 	ON_COMMAND(ID_EDITDELETEGROUP, &CYPaintEditView::OnEditdeletegroup)
 	ON_UPDATE_COMMAND_UI(ID_EDITGROUP, &CYPaintEditView::OnUpdateEditgroup)
 	ON_UPDATE_COMMAND_UI(ID_EDITDELETEGROUP, &CYPaintEditView::OnUpdateEditdeletegroup)
+	ON_COMMAND(ID_BACK, &CYPaintEditView::OnBack)
 END_MESSAGE_MAP()
 
 // CYPaintEditView 생성/소멸
@@ -438,7 +439,7 @@ void CYPaintEditView::Paint(CDC* dc) // 기능 : 어떤 도형을 그릴지 판단
 		// 폰트를 반영한 문자열(텍스트)의 길이 생성 및 저장
 		CSize s = dc->GetTextExtent(pDoc->pText->getText(), pDoc->pText->getText().GetLength());
 		if (lf.lfWeight == FW_BOLD){
-			s.cx += 40;
+			s.cx += 50;
 		}
 		// 초기 텍스트 박스 모형을 위한 코드
 		CString cInitial = _T("t");
@@ -498,6 +499,8 @@ void CYPaintEditView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) // Text
 			pDoc->pText->setRgn();
 			pDoc->pText->setSelect(FALSE);
 			pDoc->obj_List.AddTail(pDoc->pText);
+			YText* text = new YText(pDoc->pText);
+			pDoc->allList.AddTail(text);
 			pDoc->pText = NULL;
 			pDoc->textEditing = FALSE;
 			pDoc->tmp.Empty();
@@ -511,6 +514,7 @@ void CYPaintEditView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) // Text
 	}
 	CView::OnChar(nChar, nRepCnt, nFlags);
 }
+
 
 
 // 마우스 클릭, 이벤트 처리 함수들 //
@@ -548,6 +552,8 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 					 else{   //시작점생성후 클릭할때 마다
 						 pDoc->drawing = TRUE;
 						 pDoc->pPolyLine->addPoint(point);
+						 YPolyLine* polyline = new YPolyLine(pDoc->pPolyLine);
+						 pDoc->allList.AddTail(polyline);
 					 }
 					 break;
 	}
@@ -579,16 +585,13 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 					 pDoc->textEditing = TRUE;
 				 }
 				 else {
-					 if (pDoc->pText->getText().GetLength() != 0){
-						 pDoc->pText->setRgn();
-						 pDoc->pText->setSelect(FALSE);
-						 pDoc->obj_List.AddTail(pDoc->pText);
-					 }
-						 pDoc->pText = NULL;
-						 pDoc->textEditing = FALSE;
-						 pDoc->tmp.Empty();
-						 HideCaret();
-					 
+					 pDoc->pText->setRgn();
+					 pDoc->pText->setSelect(FALSE);
+					 pDoc->obj_List.AddTail(pDoc->pText);
+					 pDoc->pText = NULL;
+					 pDoc->textEditing = FALSE;
+					 pDoc->tmp.Empty();
+					 HideCaret();
 				 }
 				 break;
 	}
@@ -825,6 +828,7 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 		switch (pDoc->yType){
 		case line:
 		{
+						
 					 pDoc->pLine->setEPoint(point);
 					 break;
 		}
@@ -859,6 +863,7 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 					   {
 									//pDoc->pLine = (YLine*)pDoc->currentObj;
 									//선택되었을때 이동 변수에따라 다른 move실행
+						   lineMove = TRUE;
 									if (pDoc->pLine->getSelect()){
 										if (pDoc->pLine->getMoveMode() == 0){  //전체이동
 											pDoc->pLine->moveAll(t_point.x, t_point.y);
@@ -873,7 +878,7 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 					   }
 					   case polyline:
 					   {
-										//pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
+						   polylineMove = TRUE;
 										if (pDoc->pPolyLine->getMoveMode() == 0){
 											if (pDoc->pPolyLine->getSelect()){
 												pDoc->pPolyLine->moveAll(t_point.x, t_point.y);
@@ -888,6 +893,7 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 					   }
 					   case ellipse:
 					   {
+						   ellipseMove = TRUE;
 									   //pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
 									   //선택되었을때 이동 변수에따라 다른 move실행
 									   if (pDoc->pEllipse->getSelect()){
@@ -904,6 +910,7 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 					   }
 					   case rectangle:
 					   {
+						   rectangleMove = TRUE;
 										 //pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
 										 //선택되었을때 이동 변수에따라 다른 move실행
 										 if (pDoc->pRectangle->getSelect()){
@@ -920,6 +927,7 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 					   }
 					   case text:
 					   {
+						   textMove = TRUE;
 									pDoc->pText->setSPoint(pDoc->pText->getSPoint() + t_point);
 									pDoc->pText->setEPoint(pDoc->pText->getEPoint() + t_point);
 									pDoc->pText->setRect(pDoc->pText->getSPoint(), pDoc->pText->getEPoint());
@@ -927,7 +935,7 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 									break;
 					   }
 					   case group:
-						   
+						   groupMove = TRUE;
 						   if (pDoc->pGroup->getSelect()){
 							   if (pDoc->pGroup->getMoveMode() == 0){  //전체이동
 								   pDoc->pGroup->moveAll(t_point.x, t_point.y);
@@ -965,6 +973,8 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 				 pDoc->pLine->setRgn();
 				 pDoc->pLine->setSelect(FALSE);
 				 pDoc->obj_List.AddTail(pDoc->pLine);
+				 YLine* line = new YLine(pDoc->pLine);
+				 pDoc->allList.AddTail(line);
 				 pDoc->pLine = NULL;
 				 pDoc->drawing = FALSE;
 				 break;
@@ -978,6 +988,8 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 					pDoc->pEllipse->setRgn();
 					pDoc->pEllipse->setSelect(FALSE);
 					pDoc->obj_List.AddTail(pDoc->pEllipse);
+					YEllipse* ellipse = new YEllipse(pDoc->pEllipse);
+					pDoc->allList.AddTail(ellipse);
 					pDoc->drawing = FALSE;
 					ReleaseCapture();
 					break;
@@ -987,6 +999,8 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 					  pDoc->pRectangle->setRgn();
 					  pDoc->pRectangle->setSelect(FALSE);
 					  pDoc->obj_List.AddTail(pDoc->pRectangle);
+					  YRectangle* rectangle = new YRectangle(pDoc->pRectangle);
+					  pDoc->allList.AddTail(rectangle);
 					  pDoc->drawing = FALSE;
 					  ReleaseCapture();
 					  break;
@@ -997,7 +1011,56 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 	}
 	case choice:
 	{
-				   break;
+		if (pDoc->currentObj != NULL){
+			switch (pDoc->currentObj->getType()){
+			case line:
+			{
+				if (lineMove){
+					YLine* line = new YLine(pDoc->pLine);
+					pDoc->allList.AddTail(line);
+					lineMove = FALSE;
+				}
+				break;
+				
+			}
+			case polyline:
+			{
+				if (polylineMove){
+					YPolyLine* polyline = new YPolyLine(pDoc->pPolyLine);
+					pDoc->allList.AddTail(polyline);
+					polylineMove = FALSE;
+				}
+				break;
+			}
+			case ellipse:
+			{
+				if (ellipseMove){
+					YEllipse* ellipse = new YEllipse(pDoc->pEllipse);
+					pDoc->allList.AddTail(ellipse);
+					ellipseMove = FALSE;
+				}
+			}
+			case rectangle:
+			{
+				if (rectangleMove){
+					YRectangle* rectangle = new YRectangle(pDoc->pRectangle);
+					pDoc->allList.AddTail(rectangle);
+					rectangleMove = FALSE;
+				}
+				break;
+			}
+			case text:
+			{
+				if (textMove){
+					YText* text = new YText(pDoc->pText);
+					pDoc->allList.AddTail(text);
+					textMove = FALSE;
+				}
+				break;
+			}
+
+			}
+		}
 	}
 	default:
 		break;
@@ -1059,7 +1122,9 @@ void CYPaintEditView::OnLButtonDblClk(UINT nFlags, CPoint point)
 }
 
 
+
 // 리본 메뉴 관련 함수들 //
+
 // 도형 패널
 void CYPaintEditView::UpdateMenu(){ //기능 : 객체 클릭 했을때 해당되는 속성으로 메뉴값 최신화
 	CMainFrame* main = (CMainFrame*)AfxGetMainWnd();
@@ -1312,74 +1377,16 @@ void CYPaintEditView::OnMenufontsize()
 		dc->SelectObject(f);
 		CSize s = dc->GetTextExtent(pDoc->pText->getText(), pDoc->pText->getText().GetLength());
 		if (lf.lfWeight == FW_BOLD){
-			s.cx += 40;
+			s.cx += 50;
 		}
 		pDoc->pText->setEPoint(CPoint(pDoc->pText->getSPoint().x + s.cx, pDoc->pText->getSPoint().y + s.cy));
 		pDoc->pText->setRect(pDoc->pText->getSPoint(), pDoc->pText->getEPoint());
 		pDoc->pText->setRgn();
-
+		YText* text = new YText(pDoc->pText);
+		pDoc->allList.AddTail(text);
 		ReleaseDC(dc);
 		Invalidate(FALSE);
-	}
-	else if (pDoc->yType == choice && pDoc->currentObj != NULL && pDoc->currentObj->getType() == group){
-
-		pDoc->pGroup = (YGroup*)pDoc->currentObj;
-		CList<YObject*, YObject*>* pL = pDoc->pGroup->getList();
-
-		POSITION pos = (*pL).GetHeadPosition();
-		while (pos) {
-			YObject* tmp = (YObject*)(*pL).GetNext(pos);
-			if (tmp->getType() == text){
-				pDoc->pText = (YText*)tmp;
-				pDoc->pText->setFontSize(fontSize);
-
-				// 글자크기변경 -> 끝점 변경,렉트변경,리젼변경
-				CDC* dc = GetDC();
-				CFont f;
-				LOGFONT lf;
-				if (pDoc->pText->getBold()) lf.lfWeight = FW_BOLD;
-				else lf.lfWeight = FW_NORMAL;
-				lf.lfWidth = 0;
-				lf.lfHeight = pDoc->pText->getFontSize();						//높이 설정
-				lf.lfStrikeOut = pDoc->pText->getStrikeOut();						//취소선 설정
-				lf.lfUnderline = pDoc->pText->getUnderLine();						//밑줄설정
-				lf.lfItalic = pDoc->pText->getItalic();							//기울임
-				lf.lfEscapement = 0;							//기울기 각도 초기화
-				lf.lfOutPrecision = OUT_CHARACTER_PRECIS;
-				lf.lfClipPrecision = CLIP_CHARACTER_PRECIS;
-				lf.lfPitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
-				lf.lfQuality = DEFAULT_QUALITY;
-				lf.lfCharSet = DEFAULT_CHARSET;
-				wcscpy_s((lf.lfFaceName), _countof(lf.lfFaceName), pDoc->pText->getFont());
-
-				f.CreateFontIndirect(&lf);
-				dc->SelectObject(f);
-				CSize s = dc->GetTextExtent(pDoc->pText->getText(), pDoc->pText->getText().GetLength());
-				if (lf.lfWeight == FW_BOLD){
-					s.cx += 40;
-				}
-				pDoc->pText->setEPoint(CPoint(pDoc->pText->getSPoint().x + s.cx, pDoc->pText->getSPoint().y + s.cy));
-				pDoc->pText->setRect(pDoc->pText->getSPoint(), pDoc->pText->getEPoint());
-				pDoc->pText->setRgn();
-
-				pDoc->pGroup->setRgn();
-
-				ReleaseDC(dc);
-				Invalidate(FALSE);
-			}
-			else if (tmp->getType() == group){
-				YObject* tmp2;
-				tmp2 = pDoc->currentObj;
-				pDoc->currentObj = tmp;
-				OnMenufontsize();
-				pDoc->currentObj = tmp2;
-				pDoc->currentObj->setRgn();
-				Invalidate(FALSE);
-			}
-		}
-		pDoc->currentObj->setRgn();
-		Invalidate(FALSE);
-	}
+	}	
 }
 void CYPaintEditView::OnMenufont()
 {
@@ -1415,65 +1422,15 @@ void CYPaintEditView::OnMenufont()
 		f.CreateFontIndirect(&lf);
 		dc->SelectObject(f);
 		CSize s = dc->GetTextExtent(pDoc->pText->getText(), pDoc->pText->getText().GetLength());
-
+		if (lf.lfWeight == FW_BOLD){
+			s.cx += 50;
+		}
 		pDoc->pText->setEPoint(CPoint(pDoc->pText->getSPoint().x + s.cx, pDoc->pText->getSPoint().y + s.cy));
 		pDoc->pText->setRect(pDoc->pText->getSPoint(), pDoc->pText->getEPoint());
 		pDoc->pText->setRgn();
+		YText* text = new YText(pDoc->pText);
+		pDoc->allList.AddTail(text);
 		ReleaseDC(dc);
-		Invalidate(FALSE);
-	}
-	else if (pDoc->yType == choice && pDoc->currentObj != NULL && pDoc->currentObj->getType() == group){
-
-		pDoc->pGroup = (YGroup*)pDoc->currentObj;
-		CList<YObject*, YObject*>* pL = pDoc->pGroup->getList();
-
-		POSITION pos = (*pL).GetHeadPosition();
-		while (pos) {
-			YObject* tmp = (YObject*)(*pL).GetNext(pos);
-			if (tmp->getType() == text){
-				pDoc->pText = (YText*)tmp;
-				pDoc->pText->setFont(font);
-
-				// 글자크기변경 -> 끝점 변경,렉트변경,리젼변경
-				CDC* dc = GetDC();
-				CFont f;
-				LOGFONT lf;
-				if (pDoc->pText->getBold()) lf.lfWeight = FW_BOLD;
-				else lf.lfWeight = FW_NORMAL;
-				lf.lfWidth = 0;
-				lf.lfHeight = pDoc->pText->getFontSize();						//높이 설정
-				lf.lfStrikeOut = pDoc->pText->getStrikeOut();						//취소선 설정
-				lf.lfUnderline = pDoc->pText->getUnderLine();						//밑줄설정
-				lf.lfItalic = pDoc->pText->getItalic();							//기울임
-				lf.lfEscapement = 0;							//기울기 각도 초기화
-				lf.lfOutPrecision = OUT_CHARACTER_PRECIS;
-				lf.lfClipPrecision = CLIP_CHARACTER_PRECIS;
-				lf.lfPitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
-				lf.lfQuality = DEFAULT_QUALITY;
-				lf.lfCharSet = DEFAULT_CHARSET;
-				wcscpy_s((lf.lfFaceName), _countof(lf.lfFaceName), pDoc->pText->getFont());
-
-				f.CreateFontIndirect(&lf);
-				dc->SelectObject(f);
-				CSize s = dc->GetTextExtent(pDoc->pText->getText(), pDoc->pText->getText().GetLength());
-
-				pDoc->pText->setEPoint(CPoint(pDoc->pText->getSPoint().x + s.cx, pDoc->pText->getSPoint().y + s.cy));
-				pDoc->pText->setRect(pDoc->pText->getSPoint(), pDoc->pText->getEPoint());
-				pDoc->pText->setRgn();
-				ReleaseDC(dc);
-				Invalidate(FALSE);
-			}
-			else if (tmp->getType() == group){
-				YObject* tmp2;
-				tmp2 = pDoc->currentObj;
-				pDoc->currentObj = tmp;
-				OnMenufont();
-				pDoc->currentObj = tmp2;
-				pDoc->currentObj->setRgn();
-				Invalidate(FALSE);
-			}
-		}
-		pDoc->currentObj->setRgn();
 		Invalidate(FALSE);
 	}
 }
@@ -1514,68 +1471,14 @@ void CYPaintEditView::OnTexteditbutton()
 			dc->SelectObject(f);
 			CSize s = dc->GetTextExtent(pDoc->pText->getText(), pDoc->pText->getText().GetLength());
 			if (lf.lfWeight == FW_BOLD){
-				s.cx += 40;
+				s.cx += 50;
 			}
 			pDoc->pText->setEPoint(CPoint(pDoc->pText->getSPoint().x + s.cx, pDoc->pText->getSPoint().y + s.cy));
 			pDoc->pText->setRect(pDoc->pText->getSPoint(), pDoc->pText->getEPoint());
 			pDoc->pText->setRgn();
+			YText* text = new YText(pDoc->pText);
+			pDoc->allList.AddTail(text);
 			ReleaseDC(dc);
-			Invalidate(FALSE);
-		}
-		else if (pDoc->yType == choice && pDoc->currentObj != NULL && pDoc->currentObj->getType() == group){
-
-			pDoc->pGroup = (YGroup*)pDoc->currentObj;
-			CList<YObject*, YObject*>* pL = pDoc->pGroup->getList();
-
-			POSITION pos = (*pL).GetHeadPosition();
-			while (pos) {
-				YObject* tmp = (YObject*)(*pL).GetNext(pos);
-				if (tmp->getType() == text){
-					pDoc->pText = (YText*)tmp;
-					pDoc->pText->setText(texts);
-
-					// 글자크기변경 -> 끝점 변경,렉트변경,리젼변경
-					CDC* dc = GetDC();
-					CFont f;
-					LOGFONT lf;
-					if (pDoc->pText->getBold()) lf.lfWeight = FW_BOLD;
-					else lf.lfWeight = FW_NORMAL;
-					lf.lfWidth = 0;
-					lf.lfHeight = pDoc->pText->getFontSize();						//높이 설정
-					lf.lfStrikeOut = pDoc->pText->getStrikeOut();						//취소선 설정
-					lf.lfUnderline = pDoc->pText->getUnderLine();						//밑줄설정
-					lf.lfItalic = pDoc->pText->getItalic();							//기울임
-					lf.lfEscapement = 0;							//기울기 각도 초기화
-					lf.lfOutPrecision = OUT_CHARACTER_PRECIS;
-					lf.lfClipPrecision = CLIP_CHARACTER_PRECIS;
-					lf.lfPitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
-					lf.lfQuality = DEFAULT_QUALITY;
-					lf.lfCharSet = DEFAULT_CHARSET;
-					wcscpy_s((lf.lfFaceName), _countof(lf.lfFaceName), pDoc->pText->getFont());
-
-					f.CreateFontIndirect(&lf);
-					dc->SelectObject(f);
-					CSize s = dc->GetTextExtent(pDoc->pText->getText(), pDoc->pText->getText().GetLength());
-					if (lf.lfWeight == FW_BOLD){
-						s.cx += 40;
-					}
-					pDoc->pText->setEPoint(CPoint(pDoc->pText->getSPoint().x + s.cx, pDoc->pText->getSPoint().y + s.cy));
-					pDoc->pText->setRect(pDoc->pText->getSPoint(), pDoc->pText->getEPoint());
-					pDoc->pText->setRgn();
-					ReleaseDC(dc);
-					Invalidate(FALSE);
-				}
-				else if (tmp->getType() == group){
-					YObject* tmp2;
-					tmp2 = pDoc->currentObj;
-					pDoc->currentObj = tmp;
-					OnTexteditbutton();
-					pDoc->currentObj = tmp2;
-					pDoc->currentObj->setRgn();
-					Invalidate(FALSE);
-				}
-			}
-			pDoc->currentObj->setRgn();
 			Invalidate(FALSE);
 		}
 	}
@@ -1591,28 +1494,8 @@ void CYPaintEditView::OnMenufontcolor()
 
 	if (pDoc->yType == choice && pDoc->currentObj != NULL && pDoc->currentObj->getType() == text){
 		pDoc->pText->setFontColor(fontColor);
-		Invalidate(FALSE);
-	}
-	else if (pDoc->yType == choice && pDoc->currentObj != NULL && pDoc->currentObj->getType() == group){
-		pDoc->pGroup = (YGroup*)pDoc->currentObj;
-		CList<YObject*, YObject*>* pL = pDoc->pGroup->getList();
-
-		POSITION pos = (*pL).GetHeadPosition();
-		while (pos) {
-			YObject* tmp = (YObject*)(*pL).GetNext(pos);
-			if (tmp->getType() == text){
-				pDoc->pText = (YText*)tmp;
-				pDoc->pText->setFontColor(fontColor);
-			}
-			else if (tmp->getType() == group){
-				YObject* tmp2;
-				tmp2 = pDoc->currentObj;
-				pDoc->currentObj = tmp;
-				OnMenufontcolor();
-				Invalidate(FALSE);
-				pDoc->currentObj = tmp2;
-			}
-		}
+		YText* text = new YText(pDoc->pText);
+		pDoc->allList.AddTail(text);
 		Invalidate(FALSE);
 	}
 }
@@ -1627,116 +1510,9 @@ void CYPaintEditView::OnMenufontbkcolor()
 
 	if (pDoc->yType == choice && pDoc->currentObj != NULL && pDoc->currentObj->getType() == text){
 		pDoc->pText->setBkColor(bkColor);
+		YText* text = new YText(pDoc->pText);
+		pDoc->allList.AddTail(text);
 		Invalidate(FALSE);
-	}
-	else if (pDoc->yType == choice && pDoc->currentObj != NULL && pDoc->currentObj->getType() == group){
-		pDoc->pGroup = (YGroup*)pDoc->currentObj;
-		CList<YObject*, YObject*>* pL = pDoc->pGroup->getList();
-
-		POSITION pos = (*pL).GetHeadPosition();
-		while (pos) {
-			YObject* tmp = (YObject*)(*pL).GetNext(pos);
-			if (tmp->getType() == text){
-				pDoc->pText = (YText*)tmp;
-				pDoc->pText->setBkColor(bkColor);
-			}
-			else if (tmp->getType() == group){
-				YObject* tmp2;
-				tmp2 = pDoc->currentObj;
-				pDoc->currentObj = tmp;
-				OnMenufontbkcolor();
-				Invalidate(FALSE);
-				pDoc->currentObj = tmp2;
-			}
-		}
-		Invalidate(FALSE);
-	}
-}
-void CYPaintEditView::OnMenufontdia()
-{
-	// TODO: 여기에 명령 처리기 코드를 추가합니다.
-	CYPaintEditDoc* pDoc = GetDocument();
-
-	LOGFONT lf;
-	int dialogFontSize;
-	if (pDoc->currentObj != NULL && pDoc->currentObj->getType() == text){
-
-		if (pDoc->pText->getBold()) lf.lfWeight = FW_BOLD;
-		else lf.lfWeight = FW_NORMAL;
-
-		if (pDoc->pText->getFontSize() >= 300) dialogFontSize = pDoc->pText->getFontSize() / 3.8 + 1;
-		else dialogFontSize = pDoc->pText->getFontSize() / 3.8;
-
-		lf.lfHeight = dialogFontSize;						//높이 설정
-		lf.lfStrikeOut = pDoc->pText->getStrikeOut();						//취소선 설정
-		lf.lfUnderline = pDoc->pText->getUnderLine();						//밑줄설정
-		lf.lfItalic = pDoc->pText->getItalic();							//기울임
-		lf.lfWidth = 0;
-		lf.lfEscapement = 0;							//기울기 각도 초기화
-		lf.lfOutPrecision = OUT_CHARACTER_PRECIS;
-		lf.lfClipPrecision = CLIP_CHARACTER_PRECIS;
-		lf.lfPitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
-		lf.lfQuality = DEFAULT_QUALITY;
-		lf.lfCharSet = DEFAULT_CHARSET;
-		wcscpy_s((lf.lfFaceName), _countof(lf.lfFaceName), pDoc->pText->getFont());
-
-		CFontDialog dlg(&lf);
-
-		int result = dlg.DoModal();
-		if (result == IDOK){
-
-			LOGFONT lf;
-			//다이얼로그에서 값가져오기
-			dlg.GetCurrentFont(&lf);
-			underline = dlg.IsUnderline();
-			bold = dlg.IsBold();
-			italic = dlg.IsItalic();
-			strikeout = dlg.IsStrikeOut();
-			font = lf.lfFaceName;
-			fontSize = dlg.GetSize();
-			fontColor = dlg.GetColor();
-
-			pDoc->pText->setFont(font);
-			pDoc->pText->setFontSize(fontSize);
-			pDoc->pText->setFontColor(fontColor);
-			pDoc->pText->setItalic(italic);
-			pDoc->pText->setBold(bold);
-			pDoc->pText->setUnderLine(underline);
-			pDoc->pText->setStrikeOut(strikeout);
-
-			if (pDoc->yType == choice && pDoc->currentObj != NULL && pDoc->currentObj->getType() == text){
-				pDoc->pText->setFont(font);
-
-				// 글자크기변경 -> 끝점 변경,렉트변경,리젼변경
-				CDC* dc = GetDC();
-				CFont f;
-				if (bold) lf.lfWeight = FW_BOLD;
-				else lf.lfWeight = FW_NORMAL;
-				lf.lfWidth = 0;
-				lf.lfHeight = fontSize;						//높이 설정
-				lf.lfStrikeOut = strikeout;						//취소선 설정
-				lf.lfUnderline = underline;						//밑줄설정
-				lf.lfItalic = italic;							//기울임
-				lf.lfEscapement = 0;							//글자 각도 초기화
-				lf.lfOutPrecision = OUT_CHARACTER_PRECIS;
-				lf.lfClipPrecision = CLIP_CHARACTER_PRECIS;
-				lf.lfPitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
-				lf.lfQuality = DEFAULT_QUALITY;
-				lf.lfCharSet = DEFAULT_CHARSET;
-				wcscpy_s((lf.lfFaceName), _countof(lf.lfFaceName), font);
-				f.CreateFontIndirect(&lf);
-				dc->SelectObject(f);
-
-				CSize s = dc->GetTextExtent(pDoc->pText->getText(), pDoc->pText->getText().GetLength());
-
-				pDoc->pText->setEPoint(CPoint(pDoc->pText->getSPoint().x + s.cx, pDoc->pText->getSPoint().y + s.cy));
-				pDoc->pText->setRect(pDoc->pText->getSPoint(), pDoc->pText->getEPoint());
-				pDoc->pText->setRgn();
-				pDoc->pText->setFontColor(fontColor);
-				ReleaseDC(dc);
-				Invalidate(FALSE);
-			}
-		}
 	}
 }
 void CYPaintEditView::OnUpdateMenufontsize(CCmdUI *pCmdUI)
@@ -1811,24 +1587,32 @@ void CYPaintEditView::OnMenulinethick() //기능 : 선 굵기
 		{
 					 pDoc->pLine = (YLine*)pDoc->currentObj;
 					 pDoc->pLine->setLineThick(lineThick);
+					 YLine* line = new YLine(pDoc->pLine);
+					 pDoc->allList.AddTail(line);
 					 break;
 		}
 		case polyline:
 		{
 						 pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
 						 pDoc->pPolyLine->setLineThick(lineThick);
+						 YPolyLine* polyline = new YPolyLine(pDoc->pPolyLine);
+						 pDoc->allList.AddTail(polyline);
 						 break;
 		}
 		case ellipse:
 		{
 						pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
 						pDoc->pEllipse->setLineThick(lineThick);
+						YEllipse* ellipse = new YEllipse(pDoc->pEllipse);
+						pDoc->allList.AddTail(ellipse);
 						break;
 		}
 		case rectangle:
 		{
 						  pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
 						  pDoc->pRectangle->setLineThick(lineThick);
+						  YRectangle* rectangle = new YRectangle(pDoc->pRectangle);
+						  pDoc->allList.AddTail(rectangle);
 						  break;
 		}
 		case group:
@@ -1854,14 +1638,6 @@ void CYPaintEditView::OnMenulinethick() //기능 : 선 굵기
 						   else if (tmp->getType() == rectangle){
 							   pDoc->pRectangle = (YRectangle*)tmp;
 							   pDoc->pRectangle->setLineThick(lineThick);
-						   }
-						   else if (tmp->getType() == group){
-							   YObject* tmp2;
-							   tmp2 = pDoc->currentObj;
-							   pDoc->currentObj = tmp;
-							   OnMenulinethick();
-							   Invalidate(FALSE);
-							   pDoc->currentObj = tmp2;
 						   }
 					   }
 
@@ -1901,24 +1677,32 @@ void CYPaintEditView::OnMenulinepattern() //기능 : 선 패턴
 		{
 					 pDoc->pLine = (YLine*)pDoc->currentObj;
 					 pDoc->pLine->setLinePattern(linePattern);
+					 YLine* line = new YLine(pDoc->pLine);
+					 pDoc->allList.AddTail(line);
 					 break;
 		}
 		case polyline:
 		{
 						 pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
 						 pDoc->pPolyLine->setLinePattern(linePattern);
+						 YPolyLine* polyline = new YPolyLine(pDoc->pPolyLine);
+						 pDoc->allList.AddTail(polyline);
 						 break;
 		}
 		case ellipse:
 		{
 						pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
 						pDoc->pEllipse->setLinePattern(linePattern);
+						YEllipse* ellipse = new YEllipse(pDoc->pEllipse);
+						pDoc->allList.AddTail(ellipse);
 						break;
 		}
 		case rectangle:
 		{
 						  pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
 						  pDoc->pRectangle->setLinePattern(linePattern);
+						  YRectangle* rectangle = new YRectangle(pDoc->pRectangle);
+						  pDoc->allList.AddTail(rectangle);
 						  break;
 		}
 		case group:
@@ -1944,14 +1728,6 @@ void CYPaintEditView::OnMenulinepattern() //기능 : 선 패턴
 						  else if (tmp->getType() == rectangle){
 							  pDoc->pRectangle = (YRectangle*)tmp;
 							  pDoc->pRectangle->setLinePattern(linePattern);
-						  }
-						  else if (tmp->getType() == group){
-							  YObject* tmp2;
-							  tmp2 = pDoc->currentObj;
-							  pDoc->currentObj = tmp;
-							  OnMenulinepattern();
-							  Invalidate(FALSE);
-							  pDoc->currentObj = tmp2;
 						  }
 					  }
 
@@ -1998,6 +1774,8 @@ void CYPaintEditView::OnMenusidepattern() //기능 : 면 패턴
 
 						pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
 						pDoc->pEllipse->setSidePattern(sidePattern);
+						YEllipse* ellipse = new YEllipse(pDoc->pEllipse);
+						pDoc->allList.AddTail(ellipse);
 						break;
 		}
 		case rectangle:
@@ -2007,6 +1785,8 @@ void CYPaintEditView::OnMenusidepattern() //기능 : 면 패턴
 
 						  pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
 						  pDoc->pRectangle->setSidePattern(sidePattern);
+						  YRectangle* rectangle = new YRectangle(pDoc->pRectangle);
+						  pDoc->allList.AddTail(rectangle);
 						  break;
 		}
 		
@@ -2033,14 +1813,6 @@ void CYPaintEditView::OnMenusidepattern() //기능 : 면 패턴
 							  else pDoc->pRectangle->setPatternflag(FALSE);
 							  
 							  pDoc->pRectangle->setSidePattern(sidePattern);
-						  }
-						  else if (tmp->getType() == group){
-							  YObject* tmp2;
-							  tmp2 = pDoc->currentObj;
-							  pDoc->currentObj = tmp;
-							  OnMenusidepattern();
-							  Invalidate(FALSE);
-							  pDoc->currentObj = tmp2;
 						  }
 					  }
 
@@ -2083,24 +1855,32 @@ void CYPaintEditView::OnMenulinecolor() //기능 : 선 색
 		{
 					 pDoc->pLine = (YLine*)pDoc->currentObj;
 					 pDoc->pLine->setLineColor(lineColor);
+					 YLine* line = new YLine(pDoc->pLine);
+					 pDoc->allList.AddTail(line);
 					 break;
 		}
 		case polyline:
 		{
 						 pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
 						 pDoc->pPolyLine->setLineColor(lineColor);
+						 YPolyLine* polyline = new YPolyLine(pDoc->pPolyLine);
+						 pDoc->allList.AddTail(polyline);
 						 break;
 		}
 		case ellipse:
 		{
 						pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
 						pDoc->pEllipse->setLineColor(lineColor);
+						YEllipse* ellipse = new YEllipse(pDoc->pEllipse);
+						pDoc->allList.AddTail(ellipse);
 						break;
 		}
 		case rectangle:
 		{
 						  pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
 						  pDoc->pRectangle->setLineColor(lineColor);
+						  YRectangle* rectangle = new YRectangle(pDoc->pRectangle);
+						  pDoc->allList.AddTail(rectangle);
 						  break;
 		}
 		case group:
@@ -2126,14 +1906,6 @@ void CYPaintEditView::OnMenulinecolor() //기능 : 선 색
 						  else if (tmp->getType() == rectangle){
 							  pDoc->pRectangle = (YRectangle*)tmp;
 							  pDoc->pRectangle->setLineColor(lineColor);
-						  }
-						  else if (tmp->getType() == group){
-							  YObject* tmp2;
-							  tmp2 = pDoc->currentObj;
-							  pDoc->currentObj = tmp;
-							  OnMenulinecolor();
-							  Invalidate(FALSE);
-							  pDoc->currentObj = tmp2;
 						  }
 					  }
 
@@ -2161,12 +1933,16 @@ void CYPaintEditView::OnMenusidecolor() //기능 : 면 색
 		{
 						pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
 						pDoc->pEllipse->setSideColor(sideColor);
+						YEllipse* ellipse = new YEllipse(pDoc->pEllipse);
+						pDoc->allList.AddTail(ellipse);
 						break;
 		}
 		case rectangle:
 		{
 						  pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
 						  pDoc->pRectangle->setSideColor(sideColor);
+						  YRectangle* rectangle = new YRectangle(pDoc->pRectangle);
+						  pDoc->allList.AddTail(rectangle);
 						  break;
 		}
 		case group:
@@ -2184,14 +1960,6 @@ void CYPaintEditView::OnMenusidecolor() //기능 : 면 색
 						  else if (tmp->getType() == rectangle){
 							  pDoc->pRectangle = (YRectangle*)tmp;
 							  pDoc->pRectangle->setSideColor(sideColor);
-						  }
-						  else if (tmp->getType() == group){
-							  YObject* tmp2;
-							  tmp2 = pDoc->currentObj;
-							  pDoc->currentObj = tmp;
-							  OnMenusidecolor();
-							  Invalidate(FALSE);
-							  pDoc->currentObj = tmp2;
 						  }
 					  }
 
@@ -2347,6 +2115,8 @@ void CYPaintEditView::OnEditPaste()
 			while (pos){
 				CPoint point = temp->getPolyList()->GetNext(pos);
 				pDoc->pPolyLine->addPoint(point);
+				YPolyLine* polyline = new YPolyLine(pDoc->pPolyLine);
+				pDoc->allList.AddTail(polyline);
 			}
 			pDoc->pPolyLine->setType(polyline);
 			pDoc->pPolyLine->setSelect(TRUE);
@@ -2465,6 +2235,7 @@ void CYPaintEditView::OnUpdateEditCopy(CCmdUI *pCmdUI)
 }
 
 
+
 // 마우스 우클릭 메뉴 함수들 //
 void CYPaintEditView::OnEditLinecolor()
 {
@@ -2481,12 +2252,16 @@ void CYPaintEditView::OnEditLinecolor()
 		{
 			pDoc->pLine = (YLine*)pDoc->currentObj;
 			pDoc->pLine->setLineColor(lineColor);
+			YLine* line = new YLine(pDoc->pLine);
+			pDoc->allList.AddTail(line);
 			break;
 		}
 		case polyline:
 		{
 			pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
 			pDoc->pPolyLine->setLineColor(lineColor);
+			YPolyLine* polyline = new YPolyLine(pDoc->pPolyLine);
+			pDoc->allList.AddTail(polyline);
 			break;
 		}
 
@@ -2494,12 +2269,16 @@ void CYPaintEditView::OnEditLinecolor()
 		{
 			pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
 			pDoc->pEllipse->setLineColor(lineColor);
+			YEllipse* ellipse = new YEllipse(pDoc->pEllipse);
+			pDoc->allList.AddTail(ellipse);
 			break;
 		}
 		case rectangle:
 		{
 			pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
 			pDoc->pRectangle->setLineColor(lineColor);
+			YRectangle* rectangle = new YRectangle(pDoc->pRectangle);
+			pDoc->allList.AddTail(rectangle);
 			break;
 		}
 		default:
@@ -2531,7 +2310,6 @@ void CYPaintEditView::OnEditFiguresetting()
 		pDoc->pLine = (YLine*)pDoc->currentObj;
 		dlg.lineThick = pDoc->pLine->getLineThick();
 		dlg.linePattern = pDoc->pLine->getLinePattern();
-		dlg.flag = FALSE;
 		break;
 	}
 	case polyline:
@@ -2539,7 +2317,6 @@ void CYPaintEditView::OnEditFiguresetting()
 		pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
 		dlg.lineThick = pDoc->pPolyLine->getLineThick();
 		dlg.linePattern = pDoc->pPolyLine->getLinePattern();
-		dlg.flag = FALSE;
 		break;
 	}
 	case ellipse:
@@ -2547,17 +2324,13 @@ void CYPaintEditView::OnEditFiguresetting()
 		pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
 		dlg.lineThick = pDoc->pEllipse->getLineThick();
 		dlg.linePattern = pDoc->pEllipse->getLinePattern();
-		dlg.sidePattern = pDoc->pEllipse->getSidePattern();
-		dlg.flag = TRUE;
 		break;
 	}
 	case rectangle:
 	{
 		pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
-		dlg.lineThick = pDoc->pRectangle->getLineThick();
-		dlg.linePattern = pDoc->pRectangle->getLinePattern();
-		dlg.sidePattern = pDoc->pEllipse->getSidePattern();
-		dlg.flag = TRUE;
+		//dlg.lineThick = pDoc->pRectangle->getLineThick();
+		//dlg.linePattern = pDoc->pRectangle->getLinePattern();
 		break;
 	}
 
@@ -2589,15 +2362,13 @@ void CYPaintEditView::OnEditFiguresetting()
 			pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
 			pDoc->pEllipse->setLineThick(dlg.lineThick);
 			pDoc->pEllipse->setLinePattern(dlg.linePattern);
-			pDoc->pEllipse->setSidePattern(dlg.sidePattern);
 			break;
 		}
 		case rectangle:
 		{
 			pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
 			pDoc->pRectangle->setLineThick(dlg.lineThick);
-			pDoc->pRectangle->setLinePattern(dlg.sidePattern);
-			pDoc->pRectangle->setSidePattern(dlg.sidePattern);
+			pDoc->pRectangle->setLinePattern(dlg.linePattern);
 			break;
 		}
 
@@ -2729,4 +2500,164 @@ void CYPaintEditView::OnUpdateEditdeletegroup(CCmdUI *pCmdUI)
 {
 	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
 	pCmdUI->Enable(menu_DeleteGroup);
+}
+
+
+
+void CYPaintEditView::OnMenufontdia()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+
+	LOGFONT lf;
+	int dialogFontSize;
+	if (pDoc->currentObj != NULL && pDoc->currentObj->getType() == text){
+
+		if (pDoc->pText->getBold()) lf.lfWeight = FW_BOLD;
+		else lf.lfWeight = FW_NORMAL;
+
+		if (pDoc->pText->getFontSize() >= 300) dialogFontSize = pDoc->pText->getFontSize() / 3.8 + 1;
+		else dialogFontSize = pDoc->pText->getFontSize() / 3.8;
+
+		lf.lfHeight = dialogFontSize;						//높이 설정
+		lf.lfStrikeOut = pDoc->pText->getStrikeOut();						//취소선 설정
+		lf.lfUnderline = pDoc->pText->getUnderLine();						//밑줄설정
+		lf.lfItalic = pDoc->pText->getItalic();							//기울임
+		lf.lfWidth = 0;
+		lf.lfEscapement = 0;							//기울기 각도 초기화
+		lf.lfOutPrecision = OUT_CHARACTER_PRECIS;
+		lf.lfClipPrecision = CLIP_CHARACTER_PRECIS;
+		lf.lfPitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
+		lf.lfQuality = DEFAULT_QUALITY;
+		lf.lfCharSet = DEFAULT_CHARSET;
+		wcscpy_s((lf.lfFaceName), _countof(lf.lfFaceName), pDoc->pText->getFont());
+
+		CFontDialog dlg(&lf);
+
+		int result = dlg.DoModal();
+		if (result == IDOK){
+
+			LOGFONT lf;
+			//다이얼로그에서 값가져오기
+			dlg.GetCurrentFont(&lf);
+			underline = dlg.IsUnderline();
+			bold = dlg.IsBold();
+			italic = dlg.IsItalic();
+			strikeout = dlg.IsStrikeOut();
+			font = lf.lfFaceName;
+			fontSize = dlg.GetSize();
+			fontColor = dlg.GetColor();
+
+			pDoc->pText->setFont(font);
+			pDoc->pText->setFontSize(fontSize);
+			pDoc->pText->setFontColor(fontColor);
+			pDoc->pText->setItalic(italic);
+			pDoc->pText->setBold(bold);
+			pDoc->pText->setUnderLine(underline);
+			pDoc->pText->setStrikeOut(strikeout);
+
+			if (pDoc->yType == choice && pDoc->currentObj != NULL && pDoc->currentObj->getType() == text){
+				pDoc->pText->setFont(font);
+
+				// 글자크기변경 -> 끝점 변경,렉트변경,리젼변경
+				CDC* dc = GetDC();
+				CFont f;
+				if (bold) lf.lfWeight = FW_BOLD;
+				else lf.lfWeight = FW_NORMAL;
+				lf.lfWidth = 0;
+				lf.lfHeight = fontSize;						//높이 설정
+				lf.lfStrikeOut = strikeout;						//취소선 설정
+				lf.lfUnderline = underline;						//밑줄설정
+				lf.lfItalic = italic;							//기울임
+				lf.lfEscapement = 0;							//글자 각도 초기화
+				lf.lfOutPrecision = OUT_CHARACTER_PRECIS;
+				lf.lfClipPrecision = CLIP_CHARACTER_PRECIS;
+				lf.lfPitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
+				lf.lfQuality = DEFAULT_QUALITY;
+				lf.lfCharSet = DEFAULT_CHARSET;
+				wcscpy_s((lf.lfFaceName), _countof(lf.lfFaceName), font);
+				f.CreateFontIndirect(&lf);
+				dc->SelectObject(f);
+
+				CSize s = dc->GetTextExtent(pDoc->pText->getText(), pDoc->pText->getText().GetLength());
+				if (lf.lfWeight == FW_BOLD){
+					s.cx += 50;
+				}
+				pDoc->pText->setEPoint(CPoint(pDoc->pText->getSPoint().x + s.cx, pDoc->pText->getSPoint().y + s.cy));
+				pDoc->pText->setRect(pDoc->pText->getSPoint(), pDoc->pText->getEPoint());
+				pDoc->pText->setRgn();
+
+				pDoc->pText->setFontColor(fontColor);
+				YText* text = new YText(pDoc->pText);
+				pDoc->allList.AddTail(text);
+				ReleaseDC(dc);
+				Invalidate(FALSE);
+			}
+		}
+	}
+}
+
+
+
+
+
+
+
+void CYPaintEditView::OnBack()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+
+	POSITION pos = pDoc->allList.GetTailPosition();
+	YObject* temp;
+	YObject* lastObject;
+	YObject* original;
+	BOOL find;
+	if (pos != NULL && pDoc->allList.GetSize() > 1){
+		temp = (YObject*)pDoc->allList.GetTail();		//마지막꺼 지우고
+		pDoc->allList.RemoveTail();
+
+		POSITION rpos = pDoc->allList.GetTailPosition();		//마지막꺼 지우고 다시탐색
+		while (rpos) {
+			lastObject = (YObject*)pDoc->allList.GetPrev(rpos);
+			if (temp->getOrder() == lastObject->getOrder()){
+				find = TRUE;										//같은 order의 객체가 있으면
+				break;
+			}
+			find = FALSE;
+		}
+		if (find){
+			POSITION opos = pDoc->obj_List.GetTailPosition();
+			while (opos) {
+				POSITION t;
+				t = opos;
+				original = (YObject*)pDoc->obj_List.GetPrev(opos);
+				if (lastObject->getOrder() == original->getOrder()){
+					pDoc->obj_List.SetAt(t, lastObject);
+					break;
+				}
+			}
+		}
+		else {  // 똑같은게 없다
+			POSITION opos = pDoc->obj_List.GetTailPosition();
+			while (opos) {
+				POSITION t;
+				t = opos;
+				original = (YObject*)pDoc->obj_List.GetPrev(opos);
+				if (temp->getOrder() == original->getOrder()){
+					pDoc->obj_List.RemoveAt(t);
+					break;
+				}
+			}
+		}
+	}
+	else {
+		pDoc->allList.RemoveAll();
+		pDoc->obj_List.RemoveAll();
+	}
+
+
+
+
+	Invalidate(FALSE);
 }

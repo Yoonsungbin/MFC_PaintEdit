@@ -17,6 +17,19 @@ YLine::YLine(CPoint start, CPoint end, int color, int thick,int pattern)
 	setLineColor(color);
 	setLineThick(thick);
 	setLinePattern(pattern);
+	
+}
+YLine::YLine(YLine* p){
+	sPoint = p->getSPoint();
+	ePoint = p->getEPoint();
+	setLineColor(p->getLineColor());
+	setLineThick(p->getLineThick());
+	setLinePattern(p->getLinePattern());
+	setMoveMode(p->getMoveMode());
+	setOrder(p->getOrder());
+	setSelect(p->getSelect());
+	setType(p->getType());
+	setRgn();
 }
 IMPLEMENT_SERIAL(YLine,CObject,1)
 

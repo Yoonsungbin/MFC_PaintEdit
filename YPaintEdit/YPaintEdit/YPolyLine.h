@@ -7,7 +7,7 @@ public:
 	YPolyLine();
 	YPolyLine(int color, int thick, int pattern);
 	~YPolyLine();
-
+	YPolyLine(YPolyLine *p);
 	virtual void moveAll(int s, int e);
 	virtual void deleteAll();
 	virtual void draw(CDC* pDC);
@@ -26,7 +26,6 @@ public:
 	void addPoint(CPoint point);
 
 	CList<CPoint, CPoint&>* getPolyList(){ return &polyList; }
-
 	void setDrawPolyLine(BOOL a){ drawingPolyLine = a; }
 	BOOL getDrawPolyLine(){ return drawingPolyLine; }
 

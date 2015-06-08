@@ -18,7 +18,25 @@ YPolyLine::YPolyLine(int color, int thick, int pattern)
 YPolyLine::~YPolyLine()
 {
 }
+YPolyLine::YPolyLine(YPolyLine* p){
+	ePoint = p->getEPoint();
+	setLineColor(p->getLineColor());
+	setLineThick(p->getLineThick());
+	setLinePattern(p->getLinePattern());
+	setIndex(p->getIndex());
+	
+	setOrder(p->getOrder());
+	setSelect(p->getSelect());
+	setType(p->getType());
+	setRgn();
 
+	POSITION pos = p->getPolyList()->GetHeadPosition();
+	polyList.RemoveAll();
+	while (pos){
+		CPoint point = p->getPolyList()->GetNext(pos);
+		polyList.AddTail(point);
+	}
+}
 IMPLEMENT_SERIAL(YPolyLine, CObject, 1)
 
 void YPolyLine::moveAll(int s, int e){
@@ -44,6 +62,7 @@ void YPolyLine::moveAll(int s, int e){
 void YPolyLine::deleteAll(){
 
 }
+
 void YPolyLine::draw(CDC* pDC){
 	
 	CPen pen(getLinePattern(), getLineThick(), getLineColor());
@@ -148,6 +167,7 @@ BOOL YPolyLine::checkRgn(CPoint point){
 	}
 	return FALSE;
 }
+
 void YPolyLine::addPoint(CPoint point){
 	polyList.AddTail(point);
 }

@@ -20,35 +20,20 @@ YText::YText(CPoint point, CString f, COLORREF fc, COLORREF bkc, int s, BOOL und
 YText::~YText()
 {
 }
-
-IMPLEMENT_SERIAL(YText, CObject, 1)
-// Virtual
-void YText::moveAll(int s, int e){
-	sPoint.x += s;
-	sPoint.y += e;
-	ePoint.x += s;
-	ePoint.y += e;
-	setRect(sPoint, ePoint);
-	setRgn();
-}
-void YText::deleteAll(){
-
-}
-void YText::draw(CDC* dc){
-	
-	if (isSelected == TRUE){
-		CPen pen(PS_DOT, 1, RGB(0, 0, 0));
-		CPen* oldPen = dc->SelectObject(&pen);
-		dc->SelectObject(pen);
-		dc->Rectangle(sPoint.x - 1, sPoint.y - 1, ePoint.x + 1, ePoint.y + 1);
-		dc->SelectObject(&oldPen);
-	}
-
-	CFont f;
+YText::YText(YText* p){
+	sPoint = p->getSPoint();					// 텍스트 박스의 왼쪽,위의 점을 초기화
+	ePoint = p->getEPoint();
+	font = p->getFont();						// 글자체 초기화
+	fontColor = p->getFontColor();					// 글자색 초기화
+	bkColor = p->getBkColor();					// 배경색 초기화
+	fontSize = p->getFontSize();					// 글자크기 초기화
+	underline = p->getUnderLine();				// 및줄 초기화
+	strikeout = p->getStrikeOut();				// 취소선 초기화
+	bold = p->getBold();						// 굵기 초기화
+	italic = p->getItalic();
+	texts = p->getText();
 	LOGFONT lf;
-	//f.CreatePointFont(fontSize, font);
-	
-	//굵기설정
+	CFont f;
 	if (bold) lf.lfWeight = FW_BOLD;
 	else lf.lfWeight = FW_NORMAL;
 	lf.lfWidth = 0;
@@ -65,8 +50,59 @@ void YText::draw(CDC* dc){
 	lf.lfCharSet = DEFAULT_CHARSET;
 	f.CreateFontIndirect(&lf);
 
+	setOrder(p->getOrder());
+	setSelect(p->getSelect());
+	setType(p->getType());
+	setRgn();
+}
+
+IMPLEMENT_SERIAL(YText, CObject, 1)
+// Virtual
+void YText::moveAll(int s, int e){
+	sPoint.x += s;
+	sPoint.y += e;
+	ePoint.x += s;
+	ePoint.y += e;
+	setRect(sPoint, ePoint);
+	setRgn();
+}
+void YText::deleteAll(){
+
+}
+void YText::draw(CDC* dc){
+	if (isSelected == TRUE){
+		CPen pen(PS_DOT, 1, RGB(0, 0, 0));
+		CPen* oldPen = dc->SelectObject(&pen);
+		dc->SelectObject(pen);
+		dc->Rectangle(sPoint.x - 1, sPoint.y - 1, ePoint.x + 1, ePoint.y + 1);
+		dc->SelectObject(&oldPen);
+	}
+
+	CFont f;
+	LOGFONT lf;
+	//f.CreatePointFont(fontSize, font);
+
+	//굵기설정
+	if (bold) lf.lfWeight = FW_BOLD;
+	else lf.lfWeight = FW_NORMAL;
+	lf.lfWidth = 0;
+	lf.lfHeight = fontSize;						//높이 설정
+	lf.lfStrikeOut = strikeout;						//취소선 설정
+	lf.lfUnderline = underline;						//밑줄설정
+	lf.lfItalic = italic;							//기울임
+	lf.lfEscapement = 0;							//글자 각도 초기화
+	wcscpy_s((lf.lfFaceName), _countof(lf.lfFaceName), font);
+	lf.lfOutPrecision = OUT_CHARACTER_PRECIS;
+	lf.lfClipPrecision = CLIP_CHARACTER_PRECIS;
+	lf.lfPitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
+	lf.lfQuality = DEFAULT_QUALITY;
+	lf.lfCharSet = DEFAULT_CHARSET;
+	f.CreateFontIndirect(&lf);
+	if (lf.lfWeight == FW_BOLD){
+		rect.bottom += 50;
+	}
 	dc->SelectObject(&f);
-	
+
 	dc->SetBkColor(bkColor);
 	dc->SetBkMode(TRANSPARENT);
 	dc->SetTextColor(fontColor);

@@ -24,11 +24,7 @@ protected:
 public:
 	int lineThick;
 	int linePattern;
-	BOOL flag;
-
 	CComboBox patternIndex;
 	CSpinButtonCtrl thick;
 	virtual BOOL OnInitDialog();
-	CComboBox SidePatternIndex;
-	int sidePattern;
 };

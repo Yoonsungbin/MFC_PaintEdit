@@ -7,7 +7,7 @@ public:
 	YRectangle();
 	YRectangle(CPoint start, CPoint end, int color, int thick, int pattern, int inColor, int sidepattern, BOOL patternFlag);
 	~YRectangle();
-
+	YRectangle(YRectangle* p);
 
 	void moveAll(int s, int e);
 	void deleteAll();

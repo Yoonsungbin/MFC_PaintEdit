@@ -19,7 +19,6 @@ public:
 	virtual void setRgn();										// 리젼을 생성하는 함수
 	BOOL checkRgn(CPoint point);								// 좌표가 리젼안에 존재하는지 확인하는 함수
 	void setSelect(BOOL select) { isSelected = select; }		// 객체가 선택되었음을 나타내는 함수
-	virtual void Serialize(CArchive& ar);
 
 
 	// Mutator, Accessor
@@ -34,10 +33,9 @@ public:
 	CPoint getMixPoint(){ return mixPoint; }
 	void setMixPoint(CPoint point){mixPoint = point;}
 
-
 	void move(int s, int e);
 
-	
+	virtual void Serialize(CArchive& ar);
 	// Variables
 private:
 	CList<YObject*, YObject*> groupList;
@@ -46,4 +44,5 @@ private:
 	CPoint mixPoint;
 	CRect mRect[4];
 	int moveMode;
+
 };

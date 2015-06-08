@@ -26,7 +26,22 @@ YRectangle::YRectangle(CPoint start, CPoint end, int color, int thick, int patte
 	setPatternflag(paflag);
 }
 
-
+YRectangle::YRectangle(YRectangle *p){
+	sPoint = p->getSPoint();
+	ePoint = p->getEPoint();
+	setLineColor(p->getLineColor());
+	setLineThick(p->getLineThick());
+	setLinePattern(p->getLinePattern());
+	setSideColor(p->getSideColor());
+	setSidePattern(p->getSidePattern());
+	setPatternflag(p->getPatternflag());
+	setMoveMode(p->getMoveMode());
+	setMixPoint(p->getMixPoint());
+	setOrder(p->getOrder());
+	setSelect(p->getSelect());
+	setType(p->getType());
+	setRgn();
+}
 void YRectangle::moveAll(int s, int e)
 {
 	sPoint.x += s;

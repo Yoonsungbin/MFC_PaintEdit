@@ -8,7 +8,8 @@ public:
 	YEllipse();
 	YEllipse(CPoint start, CPoint end, int color, int thick, int pattern, int inColor,int sidepattern,BOOL patternFlag);
 	~YEllipse();
-
+	
+	YEllipse(YEllipse *p);
 
 	//void setType(YObject_Type t){ yType = t; }
 	void moveAll(int s, int e);
