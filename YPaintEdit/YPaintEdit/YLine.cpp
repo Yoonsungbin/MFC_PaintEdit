@@ -134,10 +134,11 @@ BOOL YLine::checkRgn(CPoint point)
 	return FALSE;
 }
 
-
+/*
 void YLine::Serialize(CArchive& ar)
 {
-	CObject::Serialize(ar);
+	YObject::Serialize(ar);
+	YOneDimension::Serialize(ar);
 	if (ar.IsStoring())
 	{
 		// TODO: 여기에 저장 코드를 추가합니다.
@@ -155,19 +156,31 @@ void YLine::Serialize(CArchive& ar)
 		int order;
 
 
-		ar >> sPoint >> ePoint;
-		ar >> mRect[0] >>mRect[1];
-		ar >> moveMode;
-		ar >> lineThick >> lineColor >> linePattern >> yType  >> rect >> isSelected >> order;
-
-		YLine* line = new YLine(sPoint, ePoint, lineColor, lineThick, linePattern);
-		line->yType = (YObject_Type)yType;
-		line->isSelected = isSelected;
-		line->order = order;
-		line->setRgn();
-
+		ar >> sPoint >> ePoint>> mRect[0] >>mRect[1]>> moveMode >>lineThick >> lineColor >> linePattern >> yType  >> rect >> isSelected >> order;
 		
+		setLineColor(lineColor);
+		setLineThick(lineThick);
+		setLinePattern(linePattern);
+		setSelect(isSelected);
+		setType((YObject_Type)yType);
+		setRgn();
 	}
 }
 
-
+*/
+void YLine::Serialize(CArchive& ar)
+{
+	YObject::Serialize(ar);
+	YOneDimension::Serialize(ar);
+	if (ar.IsStoring())
+	{
+		// TODO: 여기에 저장 코드를 추가합니다.
+		ar << sPoint << ePoint;
+	}
+	else
+	{
+		// TODO: 여기에 로딩 코드를 추가합니다.
+		ar >> sPoint >> ePoint;
+		setRgn();
+	}
+}

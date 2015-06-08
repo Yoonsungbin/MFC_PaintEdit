@@ -1,7 +1,6 @@
 #pragma once
 #include "YOneDimension.h"
-class YLine :
-	public YOneDimension
+class YLine :public YOneDimension
 {
 	DECLARE_SERIAL(YLine);
 public:

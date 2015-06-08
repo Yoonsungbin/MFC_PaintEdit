@@ -2,6 +2,7 @@
 #include "YObject.h"
 class YGroup : public YObject
 {
+	DECLARE_SERIAL(YGroup);
 public:
 	// Constructors, Destructor
 	YGroup();
@@ -32,11 +33,9 @@ public:
 	CPoint getMixPoint(){ return mixPoint; }
 	void setMixPoint(CPoint point){mixPoint = point;}
 
-
-	//
 	void move(int s, int e);
 
-
+	virtual void Serialize(CArchive& ar);
 	// Variables
 private:
 	CList<YObject*, YObject*> groupList;

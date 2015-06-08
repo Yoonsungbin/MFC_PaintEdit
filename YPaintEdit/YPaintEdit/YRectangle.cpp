@@ -12,6 +12,7 @@ YRectangle::~YRectangle()
 	
 }
 
+IMPLEMENT_SERIAL(YRectangle, CObject, 1)
 
 YRectangle::YRectangle(CPoint start, CPoint end, int color, int thick, int pattern, int inColor, int sidepattern, BOOL paflag)
 {
@@ -158,9 +159,6 @@ void YRectangle::setRgn(){
 	rgn.CreateRectRgn(left, top, right, bottom);
 }
 
-
-
-
 //리젼안에 있는지 검사하는함수
 BOOL YRectangle::checkRgn(CPoint point)
 {
@@ -170,3 +168,22 @@ BOOL YRectangle::checkRgn(CPoint point)
 	}
 	return FALSE;
 }
+
+
+void YRectangle::Serialize(CArchive& ar)
+{
+	YObject::Serialize(ar);
+	YTwoDimension::Serialize(ar);
+	if (ar.IsStoring())
+	{
+		// TODO: 여기에 저장 코드를 추가합니다.
+		ar << sPoint << ePoint << mixPoint;
+	}
+	else
+	{
+		// TODO: 여기에 로딩 코드를 추가합니다.
+		ar >> sPoint >> ePoint >> mixPoint;
+		setRgn();
+	}
+}
+

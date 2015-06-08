@@ -3,6 +3,7 @@
 
 class YEllipse :public YTwoDimension
 {
+	DECLARE_SERIAL(YEllipse);
 public:
 	YEllipse();
 	YEllipse(CPoint start, CPoint end, int color, int thick, int pattern, int inColor,int sidepattern,BOOL patternFlag);
@@ -35,17 +36,12 @@ public:
 	}
 	////////////////////////////////////////////////////////////////////////////////////
 	CPoint getEPoint(){ return ePoint; }
-
 	CRect* getMRect(){ return mRect; }
-
-
 	void setSelect(BOOL select) { isSelected = select; }
 	void setMoveMode(int val){ moveMode = val; }
 	int getMoveMode(){ return moveMode; }
 
-
-
-	//void drawCircle(CDC *pDC);// 리전 으로 선택시 원 생기게 할라고!!
+	virtual void Serialize(CArchive& ar);
 
 private:
 	CRect rect;

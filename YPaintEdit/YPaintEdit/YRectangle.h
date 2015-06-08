@@ -1,8 +1,8 @@
 #pragma once
 #include "YTwoDimension.h"
-class YRectangle :
-	public YTwoDimension
+class YRectangle :public YTwoDimension
 {
+	DECLARE_SERIAL(YRectangle);
 public:
 	YRectangle();
 	YRectangle(CPoint start, CPoint end, int color, int thick, int pattern, int inColor, int sidepattern, BOOL patternFlag);
@@ -40,9 +40,7 @@ public:
 	void setMoveMode(int val){ moveMode = val; }
 	int getMoveMode(){ return moveMode; }
 
-
-
-
+	virtual void Serialize(CArchive& ar);
 private:
 	CRect rect;
 	CPoint sPoint;

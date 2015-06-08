@@ -11,7 +11,7 @@ YEllipse::~YEllipse()
 {
 }
 
-
+IMPLEMENT_SERIAL(YEllipse, CObject, 1)
 
 YEllipse::YEllipse(CPoint start, CPoint end, int color, int thick, int pattern, int inColor, int sidepattern,BOOL paflag)
 {
@@ -180,4 +180,22 @@ BOOL YEllipse::checkRgn(CPoint point)
 	return FALSE;
 
 }
+
+void YEllipse::Serialize(CArchive& ar)
+{
+	YObject::Serialize(ar);
+	YTwoDimension::Serialize(ar);
+	if (ar.IsStoring())
+	{
+		// TODO: 여기에 저장 코드를 추가합니다.
+		ar << sPoint << ePoint << mixPoint;
+	}
+	else
+	{
+		// TODO: 여기에 로딩 코드를 추가합니다.
+		ar >> sPoint >> ePoint >> mixPoint;
+		setRgn();
+	}
+}
+
 

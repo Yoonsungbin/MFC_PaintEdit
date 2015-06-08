@@ -1,8 +1,8 @@
 #pragma once
 #include "YOneDimension.h"
-class YPolyLine :
-	public YOneDimension
+class YPolyLine :public YOneDimension
 {
+	DECLARE_SERIAL(YPolyLine);
 public:
 	YPolyLine();
 	YPolyLine(int color, int thick, int pattern);
@@ -35,6 +35,7 @@ public:
 
 	void setMoveMode(int a){ moveMode = a; }
 	int getMoveMode(){ return moveMode; }
+	virtual void Serialize(CArchive& ar);
 private:
 	CList<CPoint, CPoint&> polyList;
 	CRect mRect[100];

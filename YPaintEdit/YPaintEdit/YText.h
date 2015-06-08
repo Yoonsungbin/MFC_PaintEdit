@@ -2,6 +2,7 @@
 #include "YObject.h"
 class YText : public YObject
 {
+	DECLARE_SERIAL(YText);
 public:
 	// Constructors, Destructor
 	YText();													// 기본 생성자
@@ -50,6 +51,7 @@ public:
 	BOOL getBold() { return bold; }
 	BOOL getItalic() { return italic; }
 
+	virtual void Serialize(CArchive& ar);
 	// Variables
 private:
 	CPoint sPoint;			// 텍스트 박스의 왼쪽,위의 점

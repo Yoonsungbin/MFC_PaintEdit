@@ -82,11 +82,45 @@ void CYPaintEditDoc::Serialize(CArchive& ar)
 		ar << count;
 		while (pos){
 			YObject* temp = (YObject*)obj_List.GetNext(pos);
+			temp->setSelect(FALSE);
+			ar << temp->getType();
 			switch (temp->getType()){
 			case line:
+			{
 				YLine* line = (YLine*)temp;
 				line->Serialize(ar);
 				break;
+			}
+			case polyline:
+			{
+				YPolyLine* polyline = (YPolyLine*)temp;
+				polyline->Serialize(ar);
+				break;
+			}
+			case ellipse:
+			{
+				YEllipse* ellipse = (YEllipse*)temp;
+				ellipse->Serialize(ar);
+				break;
+			}
+			case rectangle:
+			{
+				YRectangle* rectangle = (YRectangle*)temp;
+				rectangle->Serialize(ar);
+				break;
+			}
+			case text:
+			{
+				YText* text = (YText*)temp;
+				text->Serialize(ar);
+				break;
+			}
+			case group:
+			{
+				YGroup* group = (YGroup*)temp;
+				group->Serialize(ar);
+				break;
+			}
 			}
 		}
 	}
@@ -94,19 +128,57 @@ void CYPaintEditDoc::Serialize(CArchive& ar)
 	{
 		// TODO: 여기에 로딩 코드를 추가합니다.
 		int count;
+		int type;
 		ar >> count;
-		
-
-		POSITION pos = obj_List.GetHeadPosition();
+	
+		obj_List.RemoveAll();
+		currentObj = NULL;
 		for (int i = 0; i < count; i++){
-
-			YObject* temp = (YObject*)obj_List.GetNext(pos);
-			switch (temp->getType()){
-			case line:
-				YLine* line = (YLine*)temp;
-				line->Serialize(ar);
-				obj_List.AddTail(line);
-				break;
+			ar >> type;
+			
+			switch (type){
+				case line:
+				{
+					YLine* line = new YLine();
+					line->Serialize(ar);
+					obj_List.AddTail(line);
+					break;
+				}
+				case polyline:
+				{
+					YPolyLine* polyline = new YPolyLine();
+					polyline->Serialize(ar);
+					obj_List.AddTail(polyline);
+					break;
+				}
+				case ellipse:
+				{
+					YEllipse* ellipse = new YEllipse();
+					ellipse->Serialize(ar);
+					obj_List.AddTail(ellipse);
+					break;
+				}
+				case rectangle:
+				{
+					YRectangle* rectangle = new YRectangle();
+					rectangle->Serialize(ar);
+					obj_List.AddTail(rectangle);
+					break;
+				}
+				case text:
+				{
+					YText* text = new YText();
+					text->Serialize(ar);
+					obj_List.AddTail(text);
+					break;
+				}
+				case group:
+				{
+					YGroup* group = new YGroup();
+					group->Serialize(ar);
+					obj_List.AddTail(group);
+					break;
+				}
 			}
 			
 		}

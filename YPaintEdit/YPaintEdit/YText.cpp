@@ -21,7 +21,7 @@ YText::~YText()
 {
 }
 
-
+IMPLEMENT_SERIAL(YText, CObject, 1)
 // Virtual
 void YText::moveAll(int s, int e){
 	sPoint.x += s;
@@ -113,4 +113,21 @@ BOOL YText::checkRgn(CPoint point)
 		return TRUE;
 
 	return FALSE;
+}
+
+
+void YText::Serialize(CArchive& ar)
+{
+	YObject::Serialize(ar);
+	if (ar.IsStoring())
+	{
+		// TODO: 여기에 저장 코드를 추가합니다.
+		ar << sPoint << ePoint << rect << texts << font << fontColor << bkColor << fontSize << underline << strikeout << bold << italic;
+	}
+	else
+	{
+		// TODO: 여기에 로딩 코드를 추가합니다.
+		ar >> sPoint >> ePoint >> rect >> texts >> font >> fontColor >> bkColor >> fontSize >> underline >> strikeout >> bold >> italic;
+		setRgn();
+	}
 }

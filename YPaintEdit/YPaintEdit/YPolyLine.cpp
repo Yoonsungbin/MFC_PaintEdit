@@ -18,6 +18,9 @@ YPolyLine::YPolyLine(int color, int thick, int pattern)
 YPolyLine::~YPolyLine()
 {
 }
+
+IMPLEMENT_SERIAL(YPolyLine, CObject, 1)
+
 void YPolyLine::moveAll(int s, int e){
 	CList<CPoint, CPoint&> temp;
 	POSITION pos1 = polyList.GetHeadPosition();
@@ -149,3 +152,35 @@ void YPolyLine::addPoint(CPoint point){
 	polyList.AddTail(point);
 }
 
+void YPolyLine::Serialize(CArchive& ar)
+{
+	YObject::Serialize(ar);
+	YOneDimension::Serialize(ar);
+
+	if (ar.IsStoring())
+	{
+		// TODO: 여기에 저장 코드를 추가합니다.
+		ar << polyList.GetSize();
+
+		POSITION pos = polyList.GetHeadPosition();
+		while (pos){
+			CPoint point = polyList.GetNext(pos);
+			ar << point;
+		}
+		ar << ePoint << drawingPolyLine;
+	}
+	else
+	{
+		// TODO: 여기에 로딩 코드를 추가합니다.
+		int count;
+		ar >> count;
+		polyList.RemoveAll();
+		for (int i = 0; i < count; i++){
+			CPoint point;
+			ar >> point;
+			polyList.AddTail(point);
+		}
+		ar >> ePoint >> drawingPolyLine;
+		setRgn();
+	}
+}

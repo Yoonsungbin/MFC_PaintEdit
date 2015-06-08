@@ -40,6 +40,7 @@ YGroup::YGroup(CList<YObject*, YObject*>& list){
 	}
 }
 
+IMPLEMENT_SERIAL(YGroup, CObject, 1)
 void YGroup::move(int s, int e){
 	if (getMoveMode() == -1){  //시작점 2
 		sPoint.x += s;
@@ -216,3 +217,118 @@ BOOL YGroup::checkRgn(CPoint point)
 
 	return FALSE;
 }
+
+
+void YGroup::Serialize(CArchive& ar)
+{
+	YObject::Serialize(ar);
+	if (ar.IsStoring())
+	{
+		// TODO: 여기에 저장 코드를 추가합니다.
+		ar << groupList.GetSize();
+		POSITION pos = groupList.GetHeadPosition();
+		while (pos) {
+			YObject* temp = groupList.GetNext(pos);
+			ar << temp->getType();
+			switch (temp->getType()){
+				case line:
+				{
+					YLine* line = (YLine*)temp;
+					line->Serialize(ar);
+					break;
+				}
+				case polyline:
+				{
+					YPolyLine* polyline = (YPolyLine*)temp;
+					polyline->Serialize(ar);
+					break;
+				}
+				case ellipse:
+				{
+					YEllipse* ellipse = (YEllipse*)temp;
+					ellipse->Serialize(ar);
+					break;
+				}
+				case rectangle:
+				{
+					YRectangle* rectangle = (YRectangle*)temp;
+					rectangle->Serialize(ar);
+					break;
+				}
+				case text:
+				{
+					YText* text = (YText*)temp;
+					text->Serialize(ar);
+					break;
+				}
+				case group:
+				{
+					YGroup* group = (YGroup*)temp;
+					group->Serialize(ar);
+					break;
+				}
+			}
+		}
+		ar << sPoint << ePoint << mixPoint;
+	}
+	else
+	{
+		// TODO: 여기에 로딩 코드를 추가합니다.
+		int count;
+		int type;
+		ar >> count;
+		groupList.RemoveAll();
+		for (int i = 0; i < count; i++){
+			ar >> type;
+
+			switch (type){
+			case line:
+			{
+				YLine* line = new YLine();
+				line->Serialize(ar);
+				groupList.AddTail(line);
+				break;
+			}
+			case polyline:
+			{
+				YPolyLine* polyline = new YPolyLine();
+				polyline->Serialize(ar);
+				groupList.AddTail(polyline);
+				break;
+			}
+			case ellipse:
+			{
+				YEllipse* ellipse = new YEllipse();
+				ellipse->Serialize(ar);
+				groupList.AddTail(ellipse);
+				break;
+			}
+			case rectangle:
+			{
+				YRectangle* rectangle = new YRectangle();
+				rectangle->Serialize(ar);
+				groupList.AddTail(rectangle);
+				break;
+			}
+			case text:
+			{
+				YText* text = new YText();
+				text->Serialize(ar);
+				groupList.AddTail(text);
+				break;
+			}
+			case group:
+			{
+				YGroup* group = new YGroup();
+				group->Serialize(ar);
+				groupList.AddTail(group);
+				break;
+			}
+			}
+
+		}
+		ar >> sPoint >> ePoint >> mixPoint;
+		setRgn();
+	}
+}
+

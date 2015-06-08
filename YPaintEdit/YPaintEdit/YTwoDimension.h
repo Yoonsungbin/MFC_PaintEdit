@@ -2,6 +2,7 @@
 #include "YObject.h"
 class YTwoDimension :public YObject
 {
+	DECLARE_SERIAL(YTwoDimension);
 public:
 	YTwoDimension();
 	~YTwoDimension();
@@ -25,18 +26,13 @@ public:
 	void setPatternflag(BOOL ch){ Patternflag = ch; }//패턴플래그
 	BOOL getPatternflag() const{ return Patternflag; }
 
-
-
+	virtual void Serialize(CArchive& ar);
 private:
 	COLORREF lineColor;//선 색깔
 	int lineThick;//선 두께
 	int linePattern;//선 패턴
-
-
 	COLORREF sideColor; //내부 색깔
 	int sidePattern;
-
-
 	BOOL Patternflag;
 };
 
