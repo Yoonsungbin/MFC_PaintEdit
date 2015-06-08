@@ -77,14 +77,39 @@ void CYPaintEditDoc::Serialize(CArchive& ar)
 	if (ar.IsStoring())
 	{
 		// TODO: 여기에 저장 코드를 추가합니다.
-		
-		obj_List.Serialize(ar);
+		POSITION pos = obj_List.GetHeadPosition();
+		int count = obj_List.GetSize();
+		ar << count;
+		while (pos){
+			YObject* temp = (YObject*)obj_List.GetNext(pos);
+			switch (temp->getType()){
+			case line:
+				YLine* line = (YLine*)temp;
+				line->Serialize(ar);
+				break;
+			}
+		}
 	}
 	else
 	{
 		// TODO: 여기에 로딩 코드를 추가합니다.
+		int count;
+		ar >> count;
 		
-		obj_List.Serialize(ar);
+
+		POSITION pos = obj_List.GetHeadPosition();
+		for (int i = 0; i < count; i++){
+
+			YObject* temp = (YObject*)obj_List.GetNext(pos);
+			switch (temp->getType()){
+			case line:
+				YLine* line = (YLine*)temp;
+				line->Serialize(ar);
+				obj_List.AddTail(line);
+				break;
+			}
+			
+		}
 	}
 }
 

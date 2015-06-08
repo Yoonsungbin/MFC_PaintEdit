@@ -65,10 +65,12 @@ void YText::draw(CDC* dc){
 	lf.lfCharSet = DEFAULT_CHARSET;
 	f.CreateFontIndirect(&lf);
 
+	dc->SelectObject(&f);
 	
-	dc->SelectObject(f);
 	dc->SetBkColor(bkColor);
+	dc->SetBkMode(TRANSPARENT);
 	dc->SetTextColor(fontColor);
+	dc->FillSolidRect(rect, bkColor);					// 텍스트박스 크기 색칠
 	dc->DrawText(texts, rect, NULL);
 
 }

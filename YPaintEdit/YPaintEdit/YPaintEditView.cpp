@@ -130,9 +130,9 @@ CYPaintEditView::CYPaintEditView()
 
 
 	// 팝업 메뉴 초기화 //
-	 menu_Cut = FALSE;
-	 menu_Paste = FALSE;
-	 menu_Copy = FALSE;
+	 menu_Cut = TRUE;
+	 menu_Paste = TRUE;
+	 menu_Copy = TRUE;
 	 menu_CutCopyflag = FALSE;			
 	 menu_CutPaste = FALSE;				
 	 menu_LineColor = FALSE;
@@ -353,7 +353,6 @@ void CYPaintEditView::OnPaint() // 기능 : cdc객체 생성해서 메모리dc에 저장해서 �
 	dcmem.DeleteDC();
 	bitmap.DeleteObject();
 
-	UpdateMenu();
 }
 void CYPaintEditView::Paint(CDC* dc) // 기능 : 어떤 도형을 그릴지 판단
 {
@@ -432,15 +431,15 @@ void CYPaintEditView::Paint(CDC* dc) // 기능 : 어떤 도형을 그릴지 판단
 		lf.lfQuality = DEFAULT_QUALITY;
 		lf.lfCharSet = DEFAULT_CHARSET;
 		wcscpy_s((lf.lfFaceName), _countof(lf.lfFaceName), pDoc->pText->getFont());
-		
 		f.CreateFontIndirect(&lf);
-		dc->SelectObject(f);
+		dc->SelectObject(&f);
 		dc->SetBkColor(pDoc->pText->getBkColor());
 		dc->SetTextColor(pDoc->pText->getFontColor());
-
 		// 폰트를 반영한 문자열(텍스트)의 길이 생성 및 저장
 		CSize s = dc->GetTextExtent(pDoc->pText->getText(), pDoc->pText->getText().GetLength());
-
+		if (lf.lfWeight == FW_BOLD){
+			s.cx += 40;
+		}
 		// 초기 텍스트 박스 모형을 위한 코드
 		CString cInitial = _T("t");
 		CSize sInitial = dc->GetTextExtent(cInitial, cInitial.GetLength());
@@ -456,15 +455,14 @@ void CYPaintEditView::Paint(CDC* dc) // 기능 : 어떤 도형을 그릴지 판단
 		CRect r(pDoc->pText->getSPoint().x - 1, pDoc->pText->getSPoint().y - 1, pDoc->pText->getEPoint().x + 1, pDoc->pText->getEPoint().y + 1);
 		// 출력용 리젼을 위한 펜 및 브러시 생성 및 적용
 		CPen pen(PS_DOT, 1, RGB(0, 0, 0));
-		CPen* oldPen = dc->SelectObject(&pen);
-		dc->SelectObject(pen);
+		dc->SelectObject(&pen);
 		CBrush brush(pDoc->pText->getBkColor());
-		dc->SelectObject(brush);
+		dc->SelectObject(&brush);
 
 		// 리젼 및 텍스트 출력
 		dc->Rectangle(r);
 		dc->DrawText(pDoc->pText->getText(), pDoc->pText->getRect(), NULL);
-		dc->SelectObject(&oldPen);
+
 		// 캐럿 생성 및 출력
 		if (pDoc->pText->getText().GetLength() == 0)
 			CreateSolidCaret(5, sInitial.cy);
@@ -1313,11 +1311,13 @@ void CYPaintEditView::OnMenufontsize()
 		f.CreateFontIndirect(&lf);
 		dc->SelectObject(f);
 		CSize s = dc->GetTextExtent(pDoc->pText->getText(), pDoc->pText->getText().GetLength());
-
+		if (lf.lfWeight == FW_BOLD){
+			s.cx += 40;
+		}
 		pDoc->pText->setEPoint(CPoint(pDoc->pText->getSPoint().x + s.cx, pDoc->pText->getSPoint().y + s.cy));
 		pDoc->pText->setRect(pDoc->pText->getSPoint(), pDoc->pText->getEPoint());
 		pDoc->pText->setRgn();
-
+		ReleaseDC(dc);
 		Invalidate(FALSE);
 	}	
 }
@@ -1359,7 +1359,7 @@ void CYPaintEditView::OnMenufont()
 		pDoc->pText->setEPoint(CPoint(pDoc->pText->getSPoint().x + s.cx, pDoc->pText->getSPoint().y + s.cy));
 		pDoc->pText->setRect(pDoc->pText->getSPoint(), pDoc->pText->getEPoint());
 		pDoc->pText->setRgn();
-
+		ReleaseDC(dc);
 		Invalidate(FALSE);
 	}
 }
@@ -1399,11 +1399,13 @@ void CYPaintEditView::OnTexteditbutton()
 			f.CreateFontIndirect(&lf);
 			dc->SelectObject(f);
 			CSize s = dc->GetTextExtent(pDoc->pText->getText(), pDoc->pText->getText().GetLength());
-
+			if (lf.lfWeight == FW_BOLD){
+				s.cx += 40;
+			}
 			pDoc->pText->setEPoint(CPoint(pDoc->pText->getSPoint().x + s.cx, pDoc->pText->getSPoint().y + s.cy));
 			pDoc->pText->setRect(pDoc->pText->getSPoint(), pDoc->pText->getEPoint());
 			pDoc->pText->setRgn();
-
+			ReleaseDC(dc);
 			Invalidate(FALSE);
 		}
 	}
@@ -2047,12 +2049,37 @@ void CYPaintEditView::OnEditPaste()
 		case text:
 		{
 			YText* temp = (YText*)cutObj;
-			pDoc->pText = new YText(temp->getSPoint(), temp->getText(), temp->getFontColor(), temp->getBkColor(), temp->getFontSize(),temp->getUnderLine(),temp->getStrikeOut(),temp->getBold(),temp->getItalic());
+			pDoc->pText = new YText(temp->getSPoint(), temp->getFont(), temp->getFontColor(), temp->getBkColor(), temp->getFontSize(),temp->getUnderLine(),temp->getStrikeOut(),temp->getBold(),temp->getItalic());
+			pDoc->pText->setText(temp->getText());
 			pDoc->pText->setType(text);
 			pDoc->pText->setSelect(TRUE);
-			if (menu_CutCopyflag == FALSE) pDoc->pText->moveAll(20, 20);
+			pDoc->pText->setEPoint(temp->getEPoint());
+
+			CFont f;
+			LOGFONT lf;
+			
+			if (pDoc->pText->getBold()) lf.lfWeight = FW_BOLD;
+			else lf.lfWeight = FW_NORMAL;
+			lf.lfWidth = 0;
+			lf.lfHeight = pDoc->pText->getFontSize();						//높이 설정
+			lf.lfStrikeOut = pDoc->pText->getStrikeOut();						//취소선 설정
+			lf.lfUnderline = pDoc->pText->getUnderLine();						//밑줄설정
+			lf.lfItalic = pDoc->pText->getItalic();							//기울임
+			lf.lfEscapement = 0;							//기울기 각도 초기화
+			lf.lfOutPrecision = OUT_CHARACTER_PRECIS;
+			lf.lfClipPrecision = CLIP_CHARACTER_PRECIS;
+			lf.lfPitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
+			lf.lfQuality = DEFAULT_QUALITY;
+			lf.lfCharSet = DEFAULT_CHARSET;
+			wcscpy_s((lf.lfFaceName), _countof(lf.lfFaceName), pDoc->pText->getFont());
+			f.CreateFontIndirect(&lf);
+
+			pDoc->pText->setRect(pDoc->pText->getSPoint(), pDoc->pText->getEPoint());
 			pDoc->pText->setRgn();
-			pDoc->drawing = FALSE;
+			pDoc->pText->setFontColor(fontColor);
+
+			if (menu_CutCopyflag == FALSE) pDoc->pText->moveAll(20, 20);
+			pDoc->textEditing = FALSE;
 			pDoc->obj_List.AddTail(pDoc->pText);
 			cutObj = pDoc->pText;
 			pDoc->currentObj = cutObj;
@@ -2156,7 +2183,7 @@ void CYPaintEditView::OnEditFiguresetting()
 	CYPaintEditDoc* pDoc = GetDocument();
 	YFigureDialog dlg;
 	//객체의 선두꼐 패턴정보를 가져오는 단계 (다이얼로그를 띄우기전에)
-	int result = dlg.DoModal();  //모달띄우기
+	
 	
 	switch (pDoc->currentObj->getType()){
 	case line:
@@ -2192,7 +2219,7 @@ void CYPaintEditView::OnEditFiguresetting()
 	default:
 		break;
 	}
-
+	int result = dlg.DoModal();  //모달띄우기
 	
 	if (result == IDOK){
 
@@ -2232,6 +2259,7 @@ void CYPaintEditView::OnEditFiguresetting()
 		}
 
 		Invalidate(FALSE);
+		UpdateMenu();
 	}
 }
 void CYPaintEditView::OnUpdateEditFiguresetting(CCmdUI *pCmdUI)
@@ -2438,6 +2466,7 @@ void CYPaintEditView::OnMenufontdia()
 				pDoc->pText->setRect(pDoc->pText->getSPoint(), pDoc->pText->getEPoint());
 				pDoc->pText->setRgn();
 				pDoc->pText->setFontColor(fontColor);
+				ReleaseDC(dc);
 				Invalidate(FALSE);
 			}
 		}

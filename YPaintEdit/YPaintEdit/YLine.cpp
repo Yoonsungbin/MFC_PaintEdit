@@ -18,6 +18,7 @@ YLine::YLine(CPoint start, CPoint end, int color, int thick,int pattern)
 	setLineThick(thick);
 	setLinePattern(pattern);
 }
+IMPLEMENT_SERIAL(YLine,CObject,1)
 
 void YLine::moveAll(int s, int e){
 
@@ -34,8 +35,8 @@ void YLine::deleteAll(){
 void YLine::draw(CDC* pDC){ 
 
 	CPen pen(getLinePattern(),getLineThick() ,getLineColor() );
-	CPen* oldPen = pDC->SelectObject(&pen);
-
+//	CPen* oldPen = pDC->SelectObject(&pen);
+	pDC->SelectObject(&pen);
 	/*
 	Graphics graphics(*pDC);
 	
@@ -49,16 +50,17 @@ void YLine::draw(CDC* pDC){
 
 	pDC->MoveTo(sPoint);
 	pDC->LineTo(ePoint);
-	pDC->SelectObject(&oldPen);
+	//pDC->SelectObject(&oldPen);
 
 	if (getSelect()){ 
 		//테두리 리젼 그리기
 		CRect rect;
 		CPen* oldPen;
 		rect.SetRect(sPoint, ePoint);
-		pDC->SelectObject(&oldPen);
-		CPen pen1(PS_DOT, 1, BLACK_PEN);
+	
+		CPen pen1(PS_DOT, 1, RGB(0,0,0));
 		oldPen = pDC->SelectObject(&pen1);
+		pDC->SelectObject(&pen1);
 		pDC->SelectStockObject(NULL_BRUSH);
 		pDC->Rectangle(rect);  //rect 그리기
 		pDC->SelectObject(&oldPen);
@@ -68,6 +70,7 @@ void YLine::draw(CDC* pDC){
 		mRect[1].SetRect(ePoint.x - 10, ePoint.y - 10, ePoint.x + 10, ePoint.y + 10);
 		CPen pen(PS_SOLID, 2, RGB(0, 0, 0));
 		oldPen = pDC->SelectObject(&pen);
+		pDC->SelectObject(&pen);
 		pDC->SelectStockObject(WHITE_BRUSH);
 		pDC->Ellipse(mRect[0]);
 		pDC->Ellipse(mRect[1]);
@@ -130,3 +133,41 @@ BOOL YLine::checkRgn(CPoint point)
 
 	return FALSE;
 }
+
+
+void YLine::Serialize(CArchive& ar)
+{
+	CObject::Serialize(ar);
+	if (ar.IsStoring())
+	{
+		// TODO: 여기에 저장 코드를 추가합니다.
+		ar << sPoint << ePoint << mRect[0] << mRect[1] << moveMode << getLineThick()<<getLineColor() << getLinePattern() << getType()  << getORect() << getSelect() << getOrder();
+	}
+	else
+	{
+		// TODO: 여기에 로딩 코드를 추가합니다.
+		int lineThick;
+		int lineColor;
+		int linePattern;
+		int yType;		// 도형의 타입
+		CRect rect;				// 도형의 리젼 사각형
+		BOOL isSelected;		// 도형의 선택 여부
+		int order;
+
+
+		ar >> sPoint >> ePoint;
+		ar >> mRect[0] >>mRect[1];
+		ar >> moveMode;
+		ar >> lineThick >> lineColor >> linePattern >> yType  >> rect >> isSelected >> order;
+
+		YLine* line = new YLine(sPoint, ePoint, lineColor, lineThick, linePattern);
+		line->yType = (YObject_Type)yType;
+		line->isSelected = isSelected;
+		line->order = order;
+		line->setRgn();
+
+		
+	}
+}
+
+

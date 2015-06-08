@@ -3,6 +3,7 @@
 class YLine :
 	public YOneDimension
 {
+	DECLARE_SERIAL(YLine);
 public:
 	YLine();
 	YLine(CPoint start, CPoint end,int color,int thick, int pattern);    //시작점 , 끝점 , 색 , 두께 , 패턴
@@ -31,6 +32,8 @@ public:
 
 	 void setMoveMode(int val){ moveMode = val; }
 	 int getMoveMode(){ return moveMode; }
+
+	 virtual void Serialize(CArchive& ar);
 
 private:
 	CPoint sPoint;
