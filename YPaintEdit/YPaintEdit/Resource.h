@@ -45,6 +45,7 @@
 #define IDC_SPIN1                       1006
 #define IDC_COMBO1                      1008
 #define IDC_DIALOGLINEPATTERN           1008
+#define IDC_DIALOGSidePattern           1009
 #define IDC_DIALOGLINETHICK             1010
 #define ID_WRITE_PASTEASHYPERLINK       32770
 #define ID_MENUFONT                     32784
