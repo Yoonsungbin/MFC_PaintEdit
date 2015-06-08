@@ -2531,6 +2531,7 @@ void CYPaintEditView::OnEditFiguresetting()
 		pDoc->pLine = (YLine*)pDoc->currentObj;
 		dlg.lineThick = pDoc->pLine->getLineThick();
 		dlg.linePattern = pDoc->pLine->getLinePattern();
+		dlg.flag = FALSE;
 		break;
 	}
 	case polyline:
@@ -2538,6 +2539,7 @@ void CYPaintEditView::OnEditFiguresetting()
 		pDoc->pPolyLine = (YPolyLine*)pDoc->currentObj;
 		dlg.lineThick = pDoc->pPolyLine->getLineThick();
 		dlg.linePattern = pDoc->pPolyLine->getLinePattern();
+		dlg.flag = FALSE;
 		break;
 	}
 	case ellipse:
@@ -2545,13 +2547,17 @@ void CYPaintEditView::OnEditFiguresetting()
 		pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
 		dlg.lineThick = pDoc->pEllipse->getLineThick();
 		dlg.linePattern = pDoc->pEllipse->getLinePattern();
+		dlg.sidePattern = pDoc->pEllipse->getSidePattern();
+		dlg.flag = TRUE;
 		break;
 	}
 	case rectangle:
 	{
 		pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
-		//dlg.lineThick = pDoc->pRectangle->getLineThick();
-		//dlg.linePattern = pDoc->pRectangle->getLinePattern();
+		dlg.lineThick = pDoc->pRectangle->getLineThick();
+		dlg.linePattern = pDoc->pRectangle->getLinePattern();
+		dlg.sidePattern = pDoc->pEllipse->getSidePattern();
+		dlg.flag = TRUE;
 		break;
 	}
 
@@ -2583,13 +2589,15 @@ void CYPaintEditView::OnEditFiguresetting()
 			pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
 			pDoc->pEllipse->setLineThick(dlg.lineThick);
 			pDoc->pEllipse->setLinePattern(dlg.linePattern);
+			pDoc->pEllipse->setSidePattern(dlg.sidePattern);
 			break;
 		}
 		case rectangle:
 		{
 			pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
 			pDoc->pRectangle->setLineThick(dlg.lineThick);
-			pDoc->pRectangle->setLinePattern(dlg.linePattern);
+			pDoc->pRectangle->setLinePattern(dlg.sidePattern);
+			pDoc->pRectangle->setSidePattern(dlg.sidePattern);
 			break;
 		}
 
