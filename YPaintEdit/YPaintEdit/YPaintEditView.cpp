@@ -1309,57 +1309,58 @@ void CYPaintEditView::OnLButtonDblClk(UINT nFlags, CPoint point)
 		Invalidate(FALSE);
 	}
 
-	if (pDoc->grouping == TRUE){
+		if (pDoc->grouping == TRUE){
 
-		// obj_List에서 그룹화된 도형을 꺼내는 부분
-		YObject* search;
-		POSITION tpos;
-		POSITION pos = pDoc->current_group.GetHeadPosition();
-		while (pos) {
-			search = pDoc->current_group.GetNext(pos);
-			POSITION pos2 = pDoc->obj_List.GetHeadPosition();
-			while (pos2) {
-				tpos = pos2;
-				pDoc->currentObj = (YObject*)pDoc->obj_List.GetNext(pos2);
-				if (pDoc->currentObj->getOrder() == search->getOrder()){
-					pDoc->obj_List.RemoveAt(tpos);
-					break;
+			// obj_List에서 그룹화된 도형을 꺼내는 부분
+			YObject* search;
+			POSITION tpos;
+			POSITION pos = pDoc->current_group.GetHeadPosition();
+			while (pos) {
+				search = pDoc->current_group.GetNext(pos);
+				POSITION pos2 = pDoc->obj_List.GetHeadPosition();
+				while (pos2) {
+					tpos = pos2;
+					pDoc->currentObj = (YObject*)pDoc->obj_List.GetNext(pos2);
+					if (pDoc->currentObj->getOrder() == search->getOrder()){
+						pDoc->obj_List.RemoveAt(tpos);
+						break;
+					}
 				}
 			}
+
+			// 그룹 객체 생성 및 obj_List에 연결하는 부분
+			YGroup* tgroup = new YGroup(pDoc->current_group);
+			tgroup->setRgn();
+			tgroup->setType(group);
+			tgroup->setOrder(pDoc->allNum++);
+			tgroup->setSelect(TRUE);
+			pDoc->currentObj = tgroup;
+			pDoc->obj_List.AddTail(tgroup);
+
+			// 그룹화 변수 초기화
+			pDoc->current_group.RemoveAll();
+			pDoc->grouping = FALSE;
+
+			Invalidate();
 		}
+		if (pDoc->resizing){
+			pDoc->resizing = FALSE;
 
-		// 그룹 객체 생성 및 obj_List에 연결하는 부분
-		YGroup* tgroup = new YGroup(pDoc->current_group);
-		tgroup->setRgn();
-		tgroup->setType(group);
-		tgroup->setOrder(pDoc->allNum++);
-		tgroup->setSelect(TRUE);
-		pDoc->currentObj = tgroup;
-		pDoc->obj_List.AddTail(tgroup);
+			YObject* tmp;
+			POSITION pos = pDoc->current_group.GetHeadPosition();
+			while (pos) {
+				tmp = (YObject*)pDoc->obj_List.GetNext(pos);
+				tmp->setSelect(FALSE);
+				tmp->setRgn();
+			}
 
-		// 그룹화 변수 초기화
-		pDoc->current_group.RemoveAll();
-		pDoc->grouping = FALSE;
+			pDoc->pGroup->setSelect(TRUE);
+			pDoc->pGroup->setRgn();
+			pDoc->pGroup->dsetResizing();
 
-		Invalidate();
-	}
-	if (pDoc->resizing){
-		pDoc->resizing = FALSE;
-
-		YObject* tmp;
-		POSITION pos = pDoc->current_group.GetHeadPosition();
-		while (pos) {
-			tmp = (YObject*)pDoc->obj_List.GetNext(pos);
-			tmp->setSelect(FALSE);
-			tmp->setRgn();
+			pDoc->current_group.RemoveAll();
 		}
-
-		pDoc->pGroup->setSelect(TRUE);
-		pDoc->pGroup->setRgn();
-		pDoc->pGroup->dsetResizing();
-
-		pDoc->current_group.RemoveAll();
-	}
+	
 	CView::OnLButtonDblClk(nFlags, point);
 }
 
