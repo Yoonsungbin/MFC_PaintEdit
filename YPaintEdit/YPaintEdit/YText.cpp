@@ -99,9 +99,6 @@ void YText::draw(CDC* dc){
 	lf.lfQuality = DEFAULT_QUALITY;
 	lf.lfCharSet = DEFAULT_CHARSET;
 	f.CreateFontIndirect(&lf);
-	if (lf.lfWeight == FW_BOLD){
-		rect.bottom += 50;
-	}
 	dc->SelectObject(&f);
 
 	dc->SetBkColor(bkColor);

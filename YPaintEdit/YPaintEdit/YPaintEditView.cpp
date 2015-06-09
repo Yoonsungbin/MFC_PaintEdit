@@ -233,7 +233,7 @@ void CYPaintEditView::OnRButtonUp(UINT /* nFlags */, CPoint point)
 						for (int i = 0; i < pDoc->pPolyLine->getPolyList()->GetSize(); i++){
 							if (pDoc->pPolyLine->getMRect()[i].PtInRect(point)){
 								pDoc->deletePosition = i;															//삭제할 위치 저장
-								break;
+			break;
 							}
 						}
 					}
@@ -593,9 +593,11 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 					 pDoc->textEditing = TRUE;
 				 }
 				 else {
+					 if (pDoc->pText->getText().GetLength() != 0){
 					 pDoc->pText->setRgn();
 					 pDoc->pText->setSelect(FALSE);
 					 pDoc->obj_List.AddTail(pDoc->pText);
+					 }
 					 pDoc->pText = NULL;
 					 pDoc->textEditing = FALSE;
 					 pDoc->tmp.Empty();
@@ -1434,7 +1436,67 @@ void CYPaintEditView::OnMenufontsize()
 		pDoc->temp_AllList.AddTail(text);
 		ReleaseDC(dc);
 		Invalidate(FALSE);
+	}
+	else if (pDoc->yType == choice && pDoc->currentObj != NULL && pDoc->currentObj->getType() == group){
+
+		pDoc->pGroup = (YGroup*)pDoc->currentObj;
+		CList<YObject*, YObject*>* pL = pDoc->pGroup->getList();
+
+		POSITION pos = (*pL).GetHeadPosition();
+		while (pos) {
+			YObject* tmp = (YObject*)(*pL).GetNext(pos);
+			if (tmp->getType() == text){
+				pDoc->pText = (YText*)tmp;
+				pDoc->pText->setFontSize(fontSize);
+
+				// 글자크기변경 -> 끝점 변경,렉트변경,리젼변경
+				CDC* dc = GetDC();
+				CFont f;
+				LOGFONT lf;
+				if (pDoc->pText->getBold()) lf.lfWeight = FW_BOLD;
+				else lf.lfWeight = FW_NORMAL;
+				lf.lfWidth = 0;
+				lf.lfHeight = pDoc->pText->getFontSize();                        //높이 설정
+				lf.lfStrikeOut = pDoc->pText->getStrikeOut();                        //취소선 설정
+				lf.lfUnderline = pDoc->pText->getUnderLine();                        //밑줄설정
+				lf.lfItalic = pDoc->pText->getItalic();                            //기울임
+				lf.lfEscapement = 0;                            //기울기 각도 초기화
+				lf.lfOutPrecision = OUT_CHARACTER_PRECIS;
+				lf.lfClipPrecision = CLIP_CHARACTER_PRECIS;
+				lf.lfPitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
+				lf.lfQuality = DEFAULT_QUALITY;
+				lf.lfCharSet = DEFAULT_CHARSET;
+				wcscpy_s((lf.lfFaceName), _countof(lf.lfFaceName), pDoc->pText->getFont());
+
+				f.CreateFontIndirect(&lf);
+				dc->SelectObject(f);
+				CSize s = dc->GetTextExtent(pDoc->pText->getText(), pDoc->pText->getText().GetLength());
+				if (lf.lfWeight == FW_BOLD){
+					s.cx += 40;
+				}
+				pDoc->pText->setEPoint(CPoint(pDoc->pText->getSPoint().x + s.cx, pDoc->pText->getSPoint().y + s.cy));
+				pDoc->pText->setRect(pDoc->pText->getSPoint(), pDoc->pText->getEPoint());
+				pDoc->pText->setRgn();
+
+				pDoc->pGroup->setRgn();
+
+				ReleaseDC(dc);
+		Invalidate(FALSE);
 	}	
+			else if (tmp->getType() == group){
+				YObject* tmp2;
+				tmp2 = pDoc->currentObj;
+				pDoc->currentObj = tmp;
+				OnMenufontsize();
+				pDoc->currentObj = tmp2;
+				pDoc->currentObj->setRgn();
+				Invalidate(FALSE);
+			}
+}
+		pDoc->currentObj->setRgn();
+		Invalidate(FALSE);
+	}
+
 }
 void CYPaintEditView::OnMenufont()
 {
@@ -1482,6 +1544,61 @@ void CYPaintEditView::OnMenufont()
 		ReleaseDC(dc);
 		Invalidate(FALSE);
 	}
+	else if (pDoc->yType == choice && pDoc->currentObj != NULL && pDoc->currentObj->getType() == group){
+
+		pDoc->pGroup = (YGroup*)pDoc->currentObj;
+		CList<YObject*, YObject*>* pL = pDoc->pGroup->getList();
+
+		POSITION pos = (*pL).GetHeadPosition();
+		while (pos) {
+			YObject* tmp = (YObject*)(*pL).GetNext(pos);
+			if (tmp->getType() == text){
+				pDoc->pText = (YText*)tmp;
+				pDoc->pText->setFont(font);
+
+				// 글자크기변경 -> 끝점 변경,렉트변경,리젼변경
+				CDC* dc = GetDC();
+				CFont f;
+				LOGFONT lf;
+				if (pDoc->pText->getBold()) lf.lfWeight = FW_BOLD;
+				else lf.lfWeight = FW_NORMAL;
+				lf.lfWidth = 0;
+				lf.lfHeight = pDoc->pText->getFontSize();                        //높이 설정
+				lf.lfStrikeOut = pDoc->pText->getStrikeOut();                        //취소선 설정
+				lf.lfUnderline = pDoc->pText->getUnderLine();                        //밑줄설정
+				lf.lfItalic = pDoc->pText->getItalic();                            //기울임
+				lf.lfEscapement = 0;                            //기울기 각도 초기화
+				lf.lfOutPrecision = OUT_CHARACTER_PRECIS;
+				lf.lfClipPrecision = CLIP_CHARACTER_PRECIS;
+				lf.lfPitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
+				lf.lfQuality = DEFAULT_QUALITY;
+				lf.lfCharSet = DEFAULT_CHARSET;
+				wcscpy_s((lf.lfFaceName), _countof(lf.lfFaceName), pDoc->pText->getFont());
+
+				f.CreateFontIndirect(&lf);
+				dc->SelectObject(f);
+				CSize s = dc->GetTextExtent(pDoc->pText->getText(), pDoc->pText->getText().GetLength());
+
+				pDoc->pText->setEPoint(CPoint(pDoc->pText->getSPoint().x + s.cx, pDoc->pText->getSPoint().y + s.cy));
+				pDoc->pText->setRect(pDoc->pText->getSPoint(), pDoc->pText->getEPoint());
+				pDoc->pText->setRgn();
+				ReleaseDC(dc);
+				Invalidate(FALSE);
+			}
+			else if (tmp->getType() == group){
+				YObject* tmp2;
+				tmp2 = pDoc->currentObj;
+				pDoc->currentObj = tmp;
+				OnMenufont();
+				pDoc->currentObj = tmp2;
+				pDoc->currentObj->setRgn();
+				Invalidate(FALSE);
+}
+		}
+		pDoc->currentObj->setRgn();
+		Invalidate(FALSE);
+	}
+
 }
 void CYPaintEditView::OnTexteditbutton()
 {
@@ -1549,6 +1666,29 @@ void CYPaintEditView::OnMenufontcolor()
 		pDoc->temp_AllList.AddTail(text);
 		Invalidate(FALSE);
 	}
+	else if (pDoc->yType == choice && pDoc->currentObj != NULL && pDoc->currentObj->getType() == group){
+		pDoc->pGroup = (YGroup*)pDoc->currentObj;
+		CList<YObject*, YObject*>* pL = pDoc->pGroup->getList();
+
+		POSITION pos = (*pL).GetHeadPosition();
+		while (pos) {
+			YObject* tmp = (YObject*)(*pL).GetNext(pos);
+			if (tmp->getType() == text){
+				pDoc->pText = (YText*)tmp;
+				pDoc->pText->setFontColor(fontColor);
+}
+			else if (tmp->getType() == group){
+				YObject* tmp2;
+				tmp2 = pDoc->currentObj;
+				pDoc->currentObj = tmp;
+				OnMenufontcolor();
+				Invalidate(FALSE);
+				pDoc->currentObj = tmp2;
+			}
+		}
+		Invalidate(FALSE);
+	}
+
 }
 void CYPaintEditView::OnMenufontbkcolor()
 {
@@ -1566,6 +1706,29 @@ void CYPaintEditView::OnMenufontbkcolor()
 		pDoc->temp_AllList.AddTail(text);
 		Invalidate(FALSE);
 	}
+	else if (pDoc->yType == choice && pDoc->currentObj != NULL && pDoc->currentObj->getType() == group){
+		pDoc->pGroup = (YGroup*)pDoc->currentObj;
+		CList<YObject*, YObject*>* pL = pDoc->pGroup->getList();
+
+		POSITION pos = (*pL).GetHeadPosition();
+		while (pos) {
+			YObject* tmp = (YObject*)(*pL).GetNext(pos);
+			if (tmp->getType() == text){
+				pDoc->pText = (YText*)tmp;
+				pDoc->pText->setBkColor(bkColor);
+			}
+			else if (tmp->getType() == group){
+				YObject* tmp2;
+				tmp2 = pDoc->currentObj;
+				pDoc->currentObj = tmp;
+				OnMenufontbkcolor();
+				Invalidate(FALSE);
+				pDoc->currentObj = tmp2;
+			}
+		}
+		Invalidate(FALSE);
+	}
+
 }
 void CYPaintEditView::OnMenufontdia()
 {
@@ -1665,13 +1828,13 @@ void CYPaintEditView::OnUpdateMenufontsize(CCmdUI *pCmdUI)
 	CYPaintEditDoc* pDoc = GetDocument();
 
 	if (pDoc->currentObj != NULL){
-		if (pDoc->currentObj->getType() == text) pCmdUI->Enable(TRUE);
+		if (pDoc->currentObj->getType() == text || pDoc->currentObj->getType() == group) pCmdUI->Enable(TRUE);
 		else pCmdUI->Enable(FALSE);
 	}
 	else {
 		if (pDoc->yType == text || pDoc->yType == choice) pCmdUI->Enable(TRUE);
 		else pCmdUI->Enable(FALSE);
-	}
+}
 
 }
 void CYPaintEditView::OnUpdateMenufont(CCmdUI *pCmdUI)
@@ -1680,13 +1843,13 @@ void CYPaintEditView::OnUpdateMenufont(CCmdUI *pCmdUI)
 	CYPaintEditDoc* pDoc = GetDocument();
 
 	if (pDoc->currentObj != NULL){
-		if (pDoc->currentObj->getType() == text) pCmdUI->Enable(TRUE);
+		if (pDoc->currentObj->getType() == text||pDoc->currentObj->getType() == group) pCmdUI->Enable(TRUE);
 		else pCmdUI->Enable(FALSE);
 	}
 	else {
 		if (pDoc->yType == text || pDoc->yType == choice) pCmdUI->Enable(TRUE);
 		else pCmdUI->Enable(FALSE);
-	}
+}
 }
 void CYPaintEditView::OnUpdateTexteditbutton(CCmdUI *pCmdUI)
 {
@@ -1694,7 +1857,7 @@ void CYPaintEditView::OnUpdateTexteditbutton(CCmdUI *pCmdUI)
 	CYPaintEditDoc* pDoc = GetDocument();
 
 	if (pDoc->currentObj != NULL){
-		if (pDoc->currentObj->getType() == text) pCmdUI->Enable(TRUE);
+		if (pDoc->currentObj->getType() == text ) pCmdUI->Enable(TRUE);
 		else pCmdUI->Enable(FALSE);
 	}
 	else {
@@ -1708,7 +1871,7 @@ void CYPaintEditView::OnUpdateMenufontcolor(CCmdUI *pCmdUI)
 	CYPaintEditDoc* pDoc = GetDocument();
 
 	if (pDoc->currentObj != NULL){
-		if (pDoc->currentObj->getType() == text) pCmdUI->Enable(TRUE);
+		if (pDoc->currentObj->getType() == text || pDoc->currentObj->getType() == group) pCmdUI->Enable(TRUE);
 		else pCmdUI->Enable(FALSE);
 	}
 	else {
@@ -1722,7 +1885,7 @@ void CYPaintEditView::OnUpdateMenufontbkcolor(CCmdUI *pCmdUI)
 	CYPaintEditDoc* pDoc = GetDocument();
 
 	if (pDoc->currentObj != NULL){
-		if (pDoc->currentObj->getType() == text) pCmdUI->Enable(TRUE);
+		if (pDoc->currentObj->getType() == text || pDoc->currentObj->getType() == group) pCmdUI->Enable(TRUE);
 		else pCmdUI->Enable(FALSE);
 	}
 	else {
@@ -1736,7 +1899,7 @@ void CYPaintEditView::OnUpdateMenufontdia(CCmdUI *pCmdUI)
 	CYPaintEditDoc* pDoc = GetDocument();
 
 	if (pDoc->currentObj != NULL){
-		if (pDoc->currentObj->getType() == text) pCmdUI->Enable(TRUE);
+		if (pDoc->currentObj->getType() == text  ) pCmdUI->Enable(TRUE);
 		else pCmdUI->Enable(FALSE);
 	}
 	else {
@@ -1816,6 +1979,15 @@ void CYPaintEditView::OnMenulinethick() //기능 : 선 굵기
 							   pDoc->pRectangle = (YRectangle*)tmp;
 							   pDoc->pRectangle->setLineThick(lineThick);
 						   }
+						   else if (tmp->getType() == group){
+							   YObject* tmp2;
+							   tmp2 = pDoc->currentObj;
+							   pDoc->currentObj = tmp;
+							   OnMenulinethick();
+							   Invalidate(FALSE);
+							   pDoc->currentObj = tmp2;
+						   }
+
 					   }
 					   YGroup* group = new YGroup(pDoc->pGroup);
 					   pDoc->allList.AddTail(group);
@@ -1914,6 +2086,15 @@ void CYPaintEditView::OnMenulinepattern() //기능 : 선 패턴
 							  pDoc->pRectangle = (YRectangle*)tmp;
 							  pDoc->pRectangle->setLinePattern(linePattern);
 						  }
+						  else if (tmp->getType() == group){
+							  YObject* tmp2;
+							  tmp2 = pDoc->currentObj;
+							  pDoc->currentObj = tmp;
+							  OnMenulinepattern();
+							  Invalidate(FALSE);
+							  pDoc->currentObj = tmp2;
+						  }
+
 					  }
 
 					  break;
@@ -2003,6 +2184,15 @@ void CYPaintEditView::OnMenusidepattern() //기능 : 면 패턴
 							  
 							  pDoc->pRectangle->setSidePattern(sidePattern);
 						  }
+						  else if (tmp->getType() == group){
+							  YObject* tmp2;
+							  tmp2 = pDoc->currentObj;
+							  pDoc->currentObj = tmp;
+							  OnMenusidepattern();
+							  Invalidate(FALSE);
+							  pDoc->currentObj = tmp2;
+						  }
+
 					  }
 
 					  break;
@@ -2100,6 +2290,15 @@ void CYPaintEditView::OnMenulinecolor() //기능 : 선 색
 							  pDoc->pRectangle = (YRectangle*)tmp;
 							  pDoc->pRectangle->setLineColor(lineColor);
 						  }
+						  else if (tmp->getType() == group){
+							  YObject* tmp2;
+							  tmp2 = pDoc->currentObj;
+							  pDoc->currentObj = tmp;
+							  OnMenulinecolor();
+							  Invalidate(FALSE);
+							  pDoc->currentObj = tmp2;
+						  }
+
 					  }
 
 					  break;
@@ -2156,6 +2355,15 @@ void CYPaintEditView::OnMenusidecolor() //기능 : 면 색
 							  pDoc->pRectangle = (YRectangle*)tmp;
 							  pDoc->pRectangle->setSideColor(sideColor);
 						  }
+						  else if (tmp->getType() == group){
+							  YObject* tmp2;
+							  tmp2 = pDoc->currentObj;
+							  pDoc->currentObj = tmp;
+							  OnMenusidecolor();
+							  Invalidate(FALSE);
+							  pDoc->currentObj = tmp2;
+					  }
+
 					  }
 
 					  break;
@@ -2308,7 +2516,7 @@ void CYPaintEditView::OnEditPaste()
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	
 
-	if (cutObj != NULL && menu_CutPaste == TRUE){  
+	if (cutObj != NULL && menu_CutPaste == TRUE){
 		menu_Cut = TRUE;
 		menu_Copy = TRUE;
 		menu_Paste = FALSE;
@@ -2904,3 +3112,6 @@ void CYPaintEditView::OnUpdateFrontback(CCmdUI *pCmdUI)
 	if (pDoc->allList.GetCount() == pDoc->temp_AllList.GetCount()) pCmdUI->Enable(FALSE);
 	else pCmdUI->Enable(TRUE);
 }
+
+
+
