@@ -3717,7 +3717,7 @@ void CYPaintEditView::OnUpdateGroupsizechangebutton(CCmdUI *pCmdUI)
 	}
 	else
 		pCmdUI->Enable(FALSE);
-
+}
 void CYPaintEditView::OnEditSelectAll()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
