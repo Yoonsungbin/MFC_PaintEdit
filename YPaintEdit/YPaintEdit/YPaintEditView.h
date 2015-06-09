@@ -191,10 +191,13 @@ public:
 	afx_msg void OnUpdateMenufontdia(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateMenulinecolor(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateMenusidecolor(CCmdUI *pCmdUI);
+
 	
 
 	afx_msg void OnGroupsizechangebutton();
 	afx_msg void OnUpdateGroupsizechangebutton(CCmdUI *pCmdUI);
+
+	afx_msg void OnEditSelectAll();
 };
 
 #ifndef _DEBUG  // YPaintEditView.cpp의 디버그 버전

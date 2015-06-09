@@ -103,9 +103,13 @@ BEGIN_MESSAGE_MAP(CYPaintEditView, CView)
 	ON_UPDATE_COMMAND_UI(ID_MENUFONTDIA, &CYPaintEditView::OnUpdateMenufontdia)
 	ON_UPDATE_COMMAND_UI(ID_MENULINECOLOR, &CYPaintEditView::OnUpdateMenulinecolor)
 	ON_UPDATE_COMMAND_UI(ID_MENUSIDECOLOR, &CYPaintEditView::OnUpdateMenusidecolor)
+
 	
 	ON_COMMAND(ID_GROUPSIZECHANGEBUTTON, &CYPaintEditView::OnGroupsizechangebutton)
 	ON_UPDATE_COMMAND_UI(ID_GROUPSIZECHANGEBUTTON, &CYPaintEditView::OnUpdateGroupsizechangebutton)
+
+	ON_COMMAND(ID_EDIT_SELECT_ALL, &CYPaintEditView::OnEditSelectAll)
+
 END_MESSAGE_MAP()
 
 // CYPaintEditView 생성/소멸
@@ -629,6 +633,16 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 
 				   // 4 // (선택된 도형이 있는 경우에서) 다시 선택할 때  - 기존에 선택한 도형을 선택할수도, 새로운 도형을 선택할수도, 빈공간을 선택할수도 있으므로 currentObj를 초기화하고, 좌표를 사용하여 다시 리스트 탐색
 				   if (pDoc->grouping == FALSE && pDoc->currentObj != NULL)	{
+					   
+					   //모두 선택 후 빈공간을 클릭 했을때 영역을 다 지워서 출력한다.
+					   POSITION pos = pDoc->obj_List.GetHeadPosition();
+					  
+						   while (pos){
+							   YObject* temp = (YObject*)pDoc->obj_List.GetNext(pos);
+							   temp->setSelect(FALSE);
+						   }
+						 
+
 					   pDoc->currentObj->setSelect(FALSE);
 					   pDoc->currentObj = NULL;
 				   }
@@ -3703,4 +3717,21 @@ void CYPaintEditView::OnUpdateGroupsizechangebutton(CCmdUI *pCmdUI)
 	}
 	else
 		pCmdUI->Enable(FALSE);
+
+void CYPaintEditView::OnEditSelectAll()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+
+	CMainFrame* main = (CMainFrame*)AfxGetMainWnd();
+	CYPaintEditDoc* pDoc = GetDocument();
+
+	CMFCRibbonButton* selectAll = (CMFCRibbonButton*)main->getRibbon()->FindByID(ID_EDIT_SELECT_ALL);
+	POSITION pos = pDoc->obj_List.GetHeadPosition();
+	if (!selectAll->IsFocused()){
+		while (pos){
+			YObject* temp = (YObject*)pDoc->obj_List.GetNext(pos);
+			temp->setSelect(TRUE);
+		}
+		Invalidate(FALSE);
+	}
 }
