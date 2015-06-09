@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "YObject.h"
 
-ULONG_PTR gdiplusToken; 
+ULONG_PTR gdiplusToken;
 
 YObject::YObject()
 {

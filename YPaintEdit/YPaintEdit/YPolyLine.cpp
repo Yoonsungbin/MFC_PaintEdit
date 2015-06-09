@@ -24,9 +24,9 @@ YPolyLine::YPolyLine(YPolyLine* p){
 	setLineThick(p->getLineThick());
 	setLinePattern(p->getLinePattern());
 	setIndex(p->getIndex());
-	
+
 	setOrder(p->getOrder());
-	setSelect(FALSE);
+	setSelect(p->getSelect());
 	setType(p->getType());
 	setRgn();
 
@@ -42,7 +42,7 @@ IMPLEMENT_SERIAL(YPolyLine, CObject, 1)
 void YPolyLine::moveAll(int s, int e){
 	CList<CPoint, CPoint&> temp;
 	POSITION pos1 = polyList.GetHeadPosition();
-	
+
 	while (pos1){
 		CPoint tPoint = polyList.GetNext(pos1);
 		tPoint.x += s;
@@ -64,20 +64,20 @@ void YPolyLine::deleteAll(){
 }
 
 void YPolyLine::draw(CDC* pDC){
-	
+
 	CPen pen(getLinePattern(), getLineThick(), getLineColor());
 	CPen* oldPen = pDC->SelectObject(&pen);
 	POSITION pos = polyList.GetHeadPosition();
-	CPoint t1Point,t2Point;
+	CPoint t1Point, t2Point;
 
 	t1Point = polyList.GetNext(pos);
 
 
 	while (pos) {
-			t2Point = polyList.GetNext(pos);
-			pDC->MoveTo(t1Point);
-			pDC->LineTo(t2Point);
-			t1Point = t2Point;
+		t2Point = polyList.GetNext(pos);
+		pDC->MoveTo(t1Point);
+		pDC->LineTo(t2Point);
+		t1Point = t2Point;
 	}
 
 	if (drawingPolyLine == TRUE){
@@ -86,11 +86,11 @@ void YPolyLine::draw(CDC* pDC){
 	}
 	pDC->SelectObject(&oldPen);
 
-	
+
 	if (getSelect()){
 		//테두리 리젼 그리기
 		CPen* oldPen;
-		rect.SetRect(rect.left,rect.top,rect.right,rect.bottom);
+		rect.SetRect(rect.left, rect.top, rect.right, rect.bottom);
 		pDC->SelectObject(&oldPen);
 		CPen pen1(PS_DOT, 1, BLACK_PEN);
 		oldPen = pDC->SelectObject(&pen1);
@@ -105,17 +105,17 @@ void YPolyLine::draw(CDC* pDC){
 			CPoint temp = polyList.GetNext(pos);
 			mRect[i].SetRect(temp.x - 10, temp.y - 10, temp.x + 10, temp.y + 10);
 			CPen pen(PS_SOLID, 2, RGB(0, 0, 0));
-			 oldPen = pDC->SelectObject(&pen);
+			oldPen = pDC->SelectObject(&pen);
 			pDC->SelectStockObject(WHITE_BRUSH);
 			pDC->Ellipse(mRect[i]);
 			i++;
 		}
 	}
-	
+
 }
 
 void YPolyLine::move(int s, int e){
-	
+
 	CList<CPoint, CPoint&> temp;
 	POSITION pos1 = polyList.GetHeadPosition();
 
@@ -141,21 +141,21 @@ void YPolyLine::move(int s, int e){
 
 void YPolyLine::setRgn(){
 	POSITION pos = polyList.GetHeadPosition();
-	
+
 	rect.left = 10000;
 	rect.top = 10000;
 	rect.right = -10000;
 	rect.bottom = -10000;
-	
+
 	//제일 멀리있는점 구하기
-	while (pos){ 
-		CPoint &dPoint = polyList.GetNext(pos);  
+	while (pos){
+		CPoint &dPoint = polyList.GetNext(pos);
 		if (rect.left > dPoint.x) rect.left = dPoint.x;
 		if (rect.top > dPoint.y)rect.top = dPoint.y;
 		if (rect.right < dPoint.x)rect.right = dPoint.x;
 		if (rect.bottom < dPoint.y) rect.bottom = dPoint.y;
 	}
-	setORect(rect.left-1, rect.top-1, rect.right+1, rect.bottom+1);
+	setORect(rect.left - 1, rect.top - 1, rect.right + 1, rect.bottom + 1);
 	rgn.DeleteObject();  //이전영역 지우고 다시만들기
 	rgn.CreateRectRgn(rect.left, rect.top, rect.right, rect.bottom);
 }

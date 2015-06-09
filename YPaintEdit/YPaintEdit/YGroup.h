@@ -31,7 +31,7 @@ public:
 	void setMoveMode(int val){ moveMode = val; }
 	int getMoveMode(){ return moveMode; }
 	CPoint getMixPoint(){ return mixPoint; }
-	void setMixPoint(CPoint point){mixPoint = point;}
+	void setMixPoint(CPoint point){ mixPoint = point; }
 
 	void move(int s, int e);
 

@@ -12,7 +12,7 @@ class YObject : public CObject
 public:
 	YObject();
 	~YObject();
-	
+
 	//YObject(const YObject &s){ *this = s; }							// ???
 	//YObject& operator=(const YObject &s) { return *this; }			// ???
 
@@ -20,7 +20,9 @@ public:
 	int getOrder(){ return order; }									// 객체의 고유번호를 가져오는 함수
 
 	void setORect(int x1, int y1, int x2, int y2)					// 객체의 리젼 사각형을 설정하는 함수
-		{ rect.SetRect(x1,y1,x2,y2); }
+	{
+		rect.SetRect(x1, y1, x2, y2);
+	}
 	CRect getORect(){ return rect; }								// 객체의 리젼 사각형을 가져오는 함수
 
 
@@ -30,7 +32,7 @@ public:
 	virtual void moveAll(int s, int e) {};							// 객체를 이동시키는 함수
 	virtual void deleteAll(){};									// 객체를 리스트에서 삭제하는 함수
 	virtual void draw(CDC*){};									// 객체를 그리는 함수
-	
+
 	virtual void setRgn() {};										// 리젼을 생성하는 함수
 	CRgn* getRgn(){ return &rgn; }									// 리젼을 가져오는 함수
 	virtual BOOL checkRgn(CPoint point) { return FALSE; }			// 좌표가 리젼안에 존재하는지 확인하는 함수

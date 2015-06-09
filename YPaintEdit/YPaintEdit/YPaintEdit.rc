@@ -88,7 +88,6 @@ IDB_FILESMALL           BITMAP                  "res\\filesmall.bmp"
 IDB_WRITELARGE          BITMAP                  "res\\writelarge.bmp"
 IDB_WRITESMALL          BITMAP                  "res\\writesmall.bmp"
 IDB_BUTTONS             BITMAP                  "res\\buttons.bmp"
-IDB_BITMAP1             BITMAP                  "res\\bitmap1.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -135,6 +134,45 @@ BEGIN
     BEGIN
         MENUITEM "새로 만들기(&N)\tCtrl+N",          ID_FILE_NEW
         MENUITEM "열기(&O)...\tCtrl+O",           ID_FILE_OPEN
+        MENUITEM "닫기(&C)",                      ID_FILE_CLOSE
+        MENUITEM SEPARATOR
+        MENUITEM "최근에 사용한 파일",                  ID_FILE_MRU_FILE1, GRAYED
+        MENUITEM SEPARATOR
+        MENUITEM "끝내기(&X)",                     ID_APP_EXIT
+    END
+    POPUP "보기(&V)"
+    BEGIN
+        MENUITEM "상태 표시줄(&S)",                  ID_VIEW_STATUS_BAR
+        POPUP "응용 프로그램 모양(&A)"
+        BEGIN
+            MENUITEM "Windows 2000(&2)",            ID_VIEW_APPLOOK_WIN_2000
+            MENUITEM "Office XP(&X)",               ID_VIEW_APPLOOK_OFF_XP
+            MENUITEM "Windows XP(&W)",              ID_VIEW_APPLOOK_WIN_XP
+            MENUITEM "Office 2003(&3)",             ID_VIEW_APPLOOK_OFF_2003
+            MENUITEM "Visual Studio 200&5",         ID_VIEW_APPLOOK_VS_2005
+            MENUITEM "Visual Studio 200&8",         ID_VIEW_APPLOOK_VS_2008
+            POPUP "Office 2007(&7)"
+            BEGIN
+                MENUITEM "파랑 스타일(&B)",                  ID_VIEW_APPLOOK_OFF_2007_BLUE
+                MENUITEM "검정 스타일(&L)",                  ID_VIEW_APPLOOK_OFF_2007_BLACK
+                MENUITEM "은색 스타일(&S)",                  ID_VIEW_APPLOOK_OFF_2007_SILVER
+                MENUITEM "바다색 스타일(&A)",                 ID_VIEW_APPLOOK_OFF_2007_AQUA
+            END
+        END
+    END
+    POPUP "도움말(&H)"
+    BEGIN
+        MENUITEM "YPaintEdit 정보(&A)...",        ID_APP_ABOUT
+    END
+END
+
+IDR_YPaintEditTYPE MENU
+BEGIN
+    POPUP "파일(&F)"
+    BEGIN
+        MENUITEM "새로 만들기(&N)\tCtrl+N",          ID_FILE_NEW
+        MENUITEM "열기(&O)...\tCtrl+O",           ID_FILE_OPEN
+        MENUITEM "닫기(&C)",                      ID_FILE_CLOSE
         MENUITEM "저장(&S)\tCtrl+S",              ID_FILE_SAVE
         MENUITEM "다른 이름으로 저장(&A)...",           ID_FILE_SAVE_AS
         MENUITEM SEPARATOR
@@ -170,17 +208,16 @@ BEGIN
             END
         END
     END
+    POPUP "창(&W)"
+    BEGIN
+        MENUITEM "새 창(&N)",                     ID_WINDOW_NEW
+        MENUITEM "계단식 배열(&C)",                  ID_WINDOW_CASCADE
+        MENUITEM "바둑판식 배열(&T)",                 ID_WINDOW_TILE_HORZ
+        MENUITEM "아이콘 정렬(&A)",                  ID_WINDOW_ARRANGE
+    END
     POPUP "도움말(&H)"
     BEGIN
         MENUITEM "YPaintEdit 정보(&A)...",        ID_APP_ABOUT
-    END
-    POPUP "도형"
-    BEGIN
-        MENUITEM "선",                           ID_MENULINEBUTTON
-        MENUITEM "폴리라인",                        ID_MENUPOLYLINEBUTTON
-        MENUITEM "직사각형",                        ID_MENURECTANGLEBUTTON
-        MENUITEM "타원",                          ID_MENUELLIPSEBUTTON
-        MENUITEM "텍스트",                         ID_MENUTEXTBUTTON
     END
 END
 
@@ -191,27 +228,19 @@ BEGIN
         MENUITEM "잘라내기(&T)\tCtrl+X",            ID_EDIT_CUT
         MENUITEM "복사(&C)\tCtrl+C",              ID_EDIT_COPY
         MENUITEM "붙여넣기(&P)\tCtrl+V",            ID_EDIT_PASTE
-        MENUITEM "색(&O)\tCtrl+O",               ID_EDIT_LINECOLOR
-        MENUITEM "면 색",                         ID_EDIT_SIDECOLOR
-        MENUITEM "도형 서식(&U)\tCtrl+U",           ID_EDIT_FIGURESETTING
-        MENUITEM "삭제(&D)\tCtrl+D",              ID_EDIT_DELETE
-        MENUITEM "점 삭제(&P)\tCtrl+P",            ID_EDIT_DELETEPOINT
+        MENUITEM "색",                           ID_EDIT_LINECOLOR
+        MENUITEM "도형 색",                        ID_EDIT_SIDECOLOR
+        MENUITEM "도형 서식",                       ID_EDIT_FIGURESETTING
+        MENUITEM "삭제",                          ID_EDIT_DELETE
+        MENUITEM "점 삭제",                        ID_EDIT_DELETEPOINT
         MENUITEM "그룹화",                         ID_EDITGROUP
-        MENUITEM "그룹해제",                        ID_EDITDELETEGROUP
+        MENUITEM "그룹 해제",                       ID_EDITDELETEGROUP
     END
 END
 
 IDR_WINDOWS_MENU MENU
 BEGIN
     MENUITEM "새 창(&N)",                     ID_WINDOW_NEW
-    POPUP "도형"
-    BEGIN
-        MENUITEM "선",                           ID_MENULINEBUTTON
-        MENUITEM "폴리라인",                        ID_MENUPOLYLINEBUTTON
-        MENUITEM "직사각형",                        ID_MENURECTANGLEBUTTON
-        MENUITEM "타원",                          ID_MENUELLIPSEBUTTON
-        MENUITEM "텍스트",                         ID_MENUTEXTBUTTON
-    END
 END
 
 IDR_HELP_MENU MENU
@@ -268,18 +297,20 @@ BEGIN
     DEFPUSHBUTTON   "확인",IDOK,113,41,50,14,WS_GROUP
 END
 
-IDD_DIALOG1 DIALOGEX 0, 0, 208, 81
+IDD_DIALOG1 DIALOGEX 0, 0, 310, 176
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Dialog"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    EDITTEXT        IDC_DIALOGLINETHICK,74,16,40,14,ES_AUTOHSCROLL
-    CONTROL         "",IDC_SPIN1,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,117,18,11,14
-    DEFPUSHBUTTON   "확인",IDOK,129,59,29,9
-    PUSHBUTTON      "취소",IDCANCEL,164,59,28,8
-    LTEXT           "두께",IDC_STATIC,21,19,16,8
-    COMBOBOX        IDC_DIALOGLINEPATTERN,74,37,120,71,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "선패턴",IDC_STATIC,17,36,23,8
+    DEFPUSHBUTTON   "확인",IDOK,199,155,50,14
+    PUSHBUTTON      "취소",IDCANCEL,253,155,50,14
+    LTEXT           "두께",IDC_STATIC,35,33,39,16
+    LTEXT           "선패턴",IDC_STATIC,32,51,39,16
+    LTEXT           "면패턴",IDC_STATIC,31,70,39,16
+    COMBOBOX        IDC_DIALOGLINEPATTERN,77,50,144,58,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_DIALOGSIDEPATTERN,77,69,144,60,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_DIALOGLINETHICK,77,28,40,14,ES_AUTOHSCROLL
+    CONTROL         "",IDC_SPIN1,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,117,29,12,14
 END
 
 IDD_TEXTEDITDIALOG DIALOGEX 0, 0, 320, 200
@@ -287,10 +318,10 @@ STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSM
 CAPTION "대화 상자"
 FONT 9, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
-    DEFPUSHBUTTON   "확인",IDOK,209,179,50,14
-    PUSHBUTTON      "취소",IDCANCEL,263,179,50,14
-    EDITTEXT        IDC_EDIT1,85,93,155,14,ES_AUTOHSCROLL
-    LTEXT           "텍스트",IDC_STATIC,151,71,22,8
+    DEFPUSHBUTTON   "확인",IDOK,104,113,50,14
+    PUSHBUTTON      "취소",IDCANCEL,181,112,50,14
+    LTEXT           "텍스트",IDC_STATIC,148,65,17,8
+    EDITTEXT        IDC_EDIT1,86,80,156,15,ES_AUTOHSCROLL
 END
 
 
@@ -351,10 +382,10 @@ BEGIN
 
     IDD_DIALOG1, DIALOG
     BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 201
+        LEFTMARGIN, 8
+        RIGHTMARGIN, 303
         TOPMARGIN, 7
-        BOTTOMMARGIN, 74
+        BOTTOMMARGIN, 169
     END
 
     IDD_TEXTEDITDIALOG, DIALOG
@@ -385,10 +416,32 @@ IDD_DIALOG1 DLGINIT
 BEGIN
     IDC_DIALOGLINEPATTERN, 0x403, 9, 0
 0x5350, 0x535f, 0x4c4f, 0x4449, "\000" 
-    IDC_DIALOGLINEPATTERN, 0x403, 7, 0
-0x5350, 0x445f, 0x544f, "\000" 
     IDC_DIALOGLINEPATTERN, 0x403, 8, 0
 0x5350, 0x445f, 0x5341, 0x0048, 
+    IDC_DIALOGLINEPATTERN, 0x403, 7, 0
+0x5350, 0x445f, 0x544f, "\000" 
+    IDC_DIALOGLINEPATTERN, 0x403, 11, 0
+0x5350, 0x445f, 0x5341, 0x4448, 0x544f, "\000" 
+    IDC_DIALOGLINEPATTERN, 0x403, 14, 0
+0x5350, 0x445f, 0x5341, 0x4448, 0x544f, 0x4f44, 0x0054, 
+    IDC_DIALOGLINEPATTERN, 0x403, 8, 0
+0x5350, 0x4e5f, 0x4c55, 0x004c, 
+    IDC_DIALOGLINEPATTERN, 0x403, 15, 0
+0x5350, 0x495f, 0x534e, 0x4449, 0x4645, 0x4152, 0x454d, "\000" 
+    IDC_DIALOGSIDEPATTERN, 0x403, 9, 0
+0x5350, 0x535f, 0x4c4f, 0x4449, "\000" 
+    IDC_DIALOGSIDEPATTERN, 0x403, 8, 0
+0x5350, 0x445f, 0x5341, 0x0048, 
+    IDC_DIALOGSIDEPATTERN, 0x403, 7, 0
+0x5350, 0x445f, 0x544f, "\000" 
+    IDC_DIALOGSIDEPATTERN, 0x403, 11, 0
+0x5350, 0x445f, 0x5341, 0x4448, 0x544f, "\000" 
+    IDC_DIALOGSIDEPATTERN, 0x403, 14, 0
+0x5350, 0x442d, 0x5341, 0x4448, 0x544f, 0x4f44, 0x0054, 
+    IDC_DIALOGSIDEPATTERN, 0x403, 8, 0
+0x5350, 0x4e5f, 0x4c55, 0x004c, 
+    IDC_DIALOGSIDEPATTERN, 0x403, 15, 0
+0x5350, 0x495f, 0x534e, 0x4449, 0x4645, 0x4152, 0x454d, "\000" 
     0
 END
 
@@ -405,7 +458,9 @@ END
 
 STRINGTABLE
 BEGIN
-    IDR_MAINFRAME           "YPaintEdit\n\nYPaintEdit\n\n\nYPaintEdit.Document\nYPaintEdit.Document"
+    IDR_MAINFRAME           "YPaintEdit"
+    IDR_YPaintEditTYPE      "\nYPaintEdit\nYPaintEdit\nYPaintEdit Files (*.mdi)\n.mdi\nYPaintEdit.Document\nYPaintEdit.Document"
+    ID_WINDOW_MANAGER       "창(&W)..."
 END
 
 STRINGTABLE
@@ -467,6 +522,11 @@ END
 
 STRINGTABLE
 BEGIN
+    ID_WINDOW_NEW           "활성 문서에 대해 다른 창을 엽니다.\n새 창"
+    ID_WINDOW_ARRANGE       "창의 아래쪽에 아이콘을 정렬합니다.\n아이콘 정렬"
+    ID_WINDOW_CASCADE       "창이 겹치도록 계단식으로 정렬합니다.\n계단식 창 배열"
+    ID_WINDOW_TILE_HORZ     "창이 겹치지 않도록 바둑판식으로 정렬합니다.\n바둑판식 창 배열"
+    ID_WINDOW_TILE_VERT     "창이 겹치지 않도록 바둑판식으로 정렬합니다.\n바둑판식 창 배열"
     ID_WINDOW_SPLIT         "활성 창을 여러 개의 창으로 분할합니다.\n분할"
 END
 
@@ -506,6 +566,7 @@ STRINGTABLE
 BEGIN
     AFX_IDS_SCRESTORE       "창을 보통 크기로 복원합니다."
     AFX_IDS_SCTASKLIST      "작업 목록을 활성화합니다."
+    AFX_IDS_MDICHILD        "이 창을 활성화합니다."
 END
 
 STRINGTABLE

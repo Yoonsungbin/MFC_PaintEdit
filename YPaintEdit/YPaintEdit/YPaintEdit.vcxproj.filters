@@ -15,6 +15,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
     <ClInclude Include="YPaintEdit.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -25,6 +28,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="MainFrm.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ChildFrm.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="YPaintEditDoc.h">
@@ -42,13 +48,13 @@
     <ClInclude Include="YOneDimension.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="YTwoDimension.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
     <ClInclude Include="YLine.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="YPolyLine.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="YTwoDimension.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="YEllipse.h">
@@ -60,13 +66,13 @@
     <ClInclude Include="YText.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="YGroup.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
     <ClInclude Include="YFigureDialog.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="TextEditDialog.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="YGroup.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -78,6 +84,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="MainFrm.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ChildFrm.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="YPaintEditDoc.cpp">
@@ -92,13 +101,13 @@
     <ClCompile Include="YOneDimension.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="YTwoDimension.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
     <ClCompile Include="YLine.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="YPolyLine.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="YTwoDimension.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="YEllipse.cpp">
@@ -110,15 +119,24 @@
     <ClCompile Include="YText.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="YGroup.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
     <ClCompile Include="YFigureDialog.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="TextEditDialog.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="YGroup.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="YPaintEdit.reg" />
+    <None Include="res\ribbon.mfcribbon-ms">
+      <Filter>리소스 파일</Filter>
+    </None>
+    <None Include="res\YPaintEdit.rc2">
+      <Filter>리소스 파일</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="YPaintEdit.rc">
@@ -156,24 +174,5 @@
     <Image Include="res\Toolbar256.bmp">
       <Filter>리소스 파일</Filter>
     </Image>
-    <Image Include="res\bitmap1.bmp">
-      <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="..\..\..\캡처.bmp">
-      <Filter>리소스 파일</Filter>
-    </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="res\ribbon.mfcribbon-ms">
-      <Filter>리소스 파일</Filter>
-    </None>
-    <None Include="res\YPaintEdit.rc2">
-      <Filter>리소스 파일</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="ReadMe.txt">
-      <Filter>헤더 파일</Filter>
-    </Text>
   </ItemGroup>
 </Project>

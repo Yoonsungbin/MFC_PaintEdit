@@ -19,7 +19,7 @@ public:
 
 	CRect* getMRect(){ return mRect; }	//점의 리젼 참조하기 위해서
 	//void setMRect(int i, CPoint rect){ mRect[i].SetRect(rect.x-15,rect.y-15,rect.x+15,rect.y+15); }
-	
+
 
 	void setEPoint(CPoint point) { ePoint = point; }
 	CPoint getEPoint(){ return ePoint; }

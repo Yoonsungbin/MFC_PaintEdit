@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "YPaintEdit", "YPaintEdit\YPaintEdit.vcxproj", "{283E4ABE-CF4D-4133-BAC1-8204EE77690B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "YPaintEdit", "YPaintEdit\YPaintEdit.vcxproj", "{A9017709-76AE-498E-8799-FAB3E09E49A5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +11,10 @@ Global
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{283E4ABE-CF4D-4133-BAC1-8204EE77690B}.Debug|Win32.ActiveCfg = Debug|Win32
-		{283E4ABE-CF4D-4133-BAC1-8204EE77690B}.Debug|Win32.Build.0 = Debug|Win32
-		{283E4ABE-CF4D-4133-BAC1-8204EE77690B}.Release|Win32.ActiveCfg = Release|Win32
-		{283E4ABE-CF4D-4133-BAC1-8204EE77690B}.Release|Win32.Build.0 = Release|Win32
+		{A9017709-76AE-498E-8799-FAB3E09E49A5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A9017709-76AE-498E-8799-FAB3E09E49A5}.Debug|Win32.Build.0 = Debug|Win32
+		{A9017709-76AE-498E-8799-FAB3E09E49A5}.Release|Win32.ActiveCfg = Release|Win32
+		{A9017709-76AE-498E-8799-FAB3E09E49A5}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

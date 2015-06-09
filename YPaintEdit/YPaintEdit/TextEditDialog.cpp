@@ -12,8 +12,8 @@
 IMPLEMENT_DYNAMIC(TextEditDialog, CDialog)
 
 TextEditDialog::TextEditDialog(CString& str, CWnd* pParent /*=NULL*/)
-: CDialog(TextEditDialog::IDD, pParent)
-, text(str)
+	: CDialog(TextEditDialog::IDD, pParent)
+	, text(str)
 {
 
 }
@@ -25,9 +25,13 @@ TextEditDialog::~TextEditDialog()
 void TextEditDialog::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
+
 	DDX_Text(pDX, IDC_EDIT1, text);
 }
 
 
 BEGIN_MESSAGE_MAP(TextEditDialog, CDialog)
 END_MESSAGE_MAP()
+
+
+// TextEditDialog 메시지 처리기입니다.

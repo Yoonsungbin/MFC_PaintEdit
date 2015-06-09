@@ -7,7 +7,7 @@ public:
 	// Constructors, Destructor
 	YText();													// 기본 생성자
 	YText(CPoint point, CString f, COLORREF fc,					// 초기값을 받는 생성자
-		COLORREF bkc, int s,BOOL underline,BOOL stri,BOOL bo,BOOL ita);										
+		COLORREF bkc, int s, BOOL underline, BOOL stri, BOOL bo, BOOL ita);
 	~YText();													// 기본 소멸자
 	YText(YText* p);
 
@@ -20,14 +20,16 @@ public:
 	virtual void setRgn();										// 리젼을 생성하는 함수
 	BOOL checkRgn(CPoint point);								// 좌표가 리젼안에 존재하는지 확인하는 함수
 	void setSelect(BOOL select) { isSelected = select; }		// 객체가 선택되었음을 나타내는 함수
-	
+
 
 	// Mutator
 	void setSPoint(CPoint point) { sPoint = point; }			// 텍스트 박스의 왼쪽,위의 점을 설정하는 함수
 	void setEPoint(CPoint point) { ePoint = point; }			// 텍스트 박스의 오른쪽,아래의 점을 설정하는 함수
 	void setRect(CPoint sPoint, CPoint ePoint)					// 텍스트 박스를 설정하는 함수
-		{ rect.SetRect(sPoint.x, sPoint.y, ePoint.x, ePoint.y); }
-	void setText(CString nText) { texts = nText;  }				// 텍스트를 설정하는 함수
+	{
+		rect.SetRect(sPoint.x, sPoint.y, ePoint.x, ePoint.y);
+	}
+	void setText(CString nText) { texts = nText; }				// 텍스트를 설정하는 함수
 	void setFont(CString nFont) { font = nFont; }				// 글자체를 설정하는 함수
 	void setFontColor(COLORREF nColor) { fontColor = nColor; }	// 글자색을 설정하는 함수
 	void setBkColor(COLORREF nColor) { bkColor = nColor; }		// 배경색을 설정하는 함수

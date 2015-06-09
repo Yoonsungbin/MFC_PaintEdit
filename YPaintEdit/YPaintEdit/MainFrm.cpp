@@ -23,10 +23,11 @@
 
 // CMainFrame
 
-IMPLEMENT_DYNCREATE(CMainFrame, CFrameWndEx)
+IMPLEMENT_DYNAMIC(CMainFrame, CMDIFrameWndEx)
 
-BEGIN_MESSAGE_MAP(CMainFrame, CFrameWndEx)
+BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWndEx)
 	ON_WM_CREATE()
+	ON_COMMAND(ID_WINDOW_MANAGER, &CMainFrame::OnWindowManager)
 	ON_COMMAND_RANGE(ID_VIEW_APPLOOK_WIN_2000, ID_VIEW_APPLOOK_WINDOWS_7, &CMainFrame::OnApplicationLook)
 	ON_UPDATE_COMMAND_UI_RANGE(ID_VIEW_APPLOOK_WIN_2000, ID_VIEW_APPLOOK_WINDOWS_7, &CMainFrame::OnUpdateApplicationLook)
 END_MESSAGE_MAP()
@@ -45,7 +46,7 @@ CMainFrame::~CMainFrame()
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
-	if (CFrameWndEx::OnCreate(lpCreateStruct) == -1)
+	if (CMDIFrameWndEx::OnCreate(lpCreateStruct) == -1)
 		return -1;
 
 	BOOL bNameValid;
@@ -75,25 +76,29 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// 보관된 값에 따라 비주얼 관리자 및 스타일을 설정합니다.
 	OnApplicationLook(theApp.m_nAppLook);
 
+	// 향상된 창 관리 대화 상자를 활성화합니다.
+	EnableWindowsDialog(ID_WINDOW_MANAGER, ID_WINDOW_MANAGER, TRUE);
 
 	// 리본 메뉴 초기값 설정 //
 	CMFCRibbonEdit* thick = (CMFCRibbonEdit*)m_wndRibbonBar.FindByID(ID_MENULINETHICK);
 	thick->SetEditText(_T("1"));
 	CMFCRibbonComboBox* linePattern = (CMFCRibbonComboBox*)m_wndRibbonBar.FindByID(ID_MENULINEPATTERN);
-	 linePattern->SelectItem(0);
+	linePattern->SelectItem(0);
 	CMFCRibbonComboBox* sidePattern = (CMFCRibbonComboBox*)m_wndRibbonBar.FindByID(ID_MENUSIDEPATTERN);
 	sidePattern->SelectItem(0);
 	CMFCRibbonEdit* fontSize = (CMFCRibbonEdit*)m_wndRibbonBar.FindByID(ID_MENUFONTSIZE);
 	fontSize->SetEditText(_T("10"));
 	CMFCRibbonComboBox* font = (CMFCRibbonComboBox*)m_wndRibbonBar.FindByID(ID_MENUFONT);
 	font->SelectItem(0);
-	
+
+
+
 	return 0;
 }
 
 BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 {
-	if( !CFrameWndEx::PreCreateWindow(cs) )
+	if( !CMDIFrameWndEx::PreCreateWindow(cs) )
 		return FALSE;
 	// TODO: CREATESTRUCT cs를 수정하여 여기에서
 	//  Window 클래스 또는 스타일을 수정합니다.
@@ -106,17 +111,22 @@ BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 #ifdef _DEBUG
 void CMainFrame::AssertValid() const
 {
-	CFrameWndEx::AssertValid();
+	CMDIFrameWndEx::AssertValid();
 }
 
 void CMainFrame::Dump(CDumpContext& dc) const
 {
-	CFrameWndEx::Dump(dc);
+	CMDIFrameWndEx::Dump(dc);
 }
 #endif //_DEBUG
 
 
 // CMainFrame 메시지 처리기
+
+void CMainFrame::OnWindowManager()
+{
+	ShowWindowsDialog();
+}
 
 void CMainFrame::OnApplicationLook(UINT id)
 {
