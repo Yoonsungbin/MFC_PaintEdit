@@ -192,7 +192,7 @@ BEGIN
         MENUITEM "복사(&C)\tCtrl+C",              ID_EDIT_COPY
         MENUITEM "붙여넣기(&P)\tCtrl+V",            ID_EDIT_PASTE
         MENUITEM "색(&O)\tCtrl+O",               ID_EDIT_LINECOLOR
-        MENUITEM "도형 색",                        ID_EDIT_SIDECOLOR
+        MENUITEM "면 색",                         ID_EDIT_SIDECOLOR
         MENUITEM "도형 서식(&U)\tCtrl+U",           ID_EDIT_FIGURESETTING
         MENUITEM "삭제(&D)\tCtrl+D",              ID_EDIT_DELETE
         MENUITEM "점 삭제(&P)\tCtrl+P",            ID_EDIT_DELETEPOINT

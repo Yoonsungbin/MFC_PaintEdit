@@ -80,6 +80,7 @@ public:
 	BOOL menu_DeletePoint;
 	BOOL menu_Group;
 	BOOL menu_DeleteGroup;
+	BOOL menu_FontDialog;
 	YObject* cutObj = NULL;			// 잘라내기, 붙여넣기를 위한 변수 선언
 
 
@@ -183,6 +184,11 @@ public:
 
 	afx_msg void OnBack();
 	afx_msg void OnFrontback();
+	afx_msg void OnUpdateMenufontdia(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateMenusidecolor(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateMenulinecolor(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateBack(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateFrontback(CCmdUI *pCmdUI);
 };
 
 #ifndef _DEBUG  // YPaintEditView.cpp의 디버그 버전

@@ -100,6 +100,11 @@ BEGIN_MESSAGE_MAP(CYPaintEditView, CView)
 	ON_UPDATE_COMMAND_UI(ID_EDITDELETEGROUP, &CYPaintEditView::OnUpdateEditdeletegroup)
 	ON_COMMAND(ID_BACK, &CYPaintEditView::OnBack)
 	ON_COMMAND(ID_FRONTBACK, &CYPaintEditView::OnFrontback)
+	ON_UPDATE_COMMAND_UI(ID_MENUFONTDIA, &CYPaintEditView::OnUpdateMenufontdia)
+	ON_UPDATE_COMMAND_UI(ID_MENUSIDECOLOR, &CYPaintEditView::OnUpdateMenusidecolor)
+	ON_UPDATE_COMMAND_UI(ID_MENULINECOLOR, &CYPaintEditView::OnUpdateMenulinecolor)
+	ON_UPDATE_COMMAND_UI(ID_BACK, &CYPaintEditView::OnUpdateBack)
+	ON_UPDATE_COMMAND_UI(ID_FRONTBACK, &CYPaintEditView::OnUpdateFrontback)
 END_MESSAGE_MAP()
 
 // CYPaintEditView 생성/소멸
@@ -132,19 +137,19 @@ CYPaintEditView::CYPaintEditView()
 
 
 	// 팝업 메뉴 초기화 //
-	 menu_Cut = TRUE;
-	 menu_Paste = TRUE;
-	 menu_Copy = TRUE;
+	 menu_Cut = FALSE;
+	 menu_Paste = FALSE;
+	 menu_Copy = FALSE;
 	 menu_CutCopyflag = FALSE;			
 	 menu_CutPaste = FALSE;				
-	 menu_LineColor = FALSE;
-	 menu_SideColor = FALSE;
+	 menu_LineColor = TRUE;
+	 menu_SideColor = TRUE;
 	 menu_Figure = FALSE;
 	 menu_Delete = FALSE;
-	 menu_DeletePoint = TRUE;
+	 menu_DeletePoint = FALSE;
 	 menu_Group = FALSE;
 	 menu_DeleteGroup = FALSE;
-
+	 menu_FontDialog = FALSE;
 	cutObj = NULL;
 }
 
@@ -178,6 +183,7 @@ void CYPaintEditView::OnRButtonUp(UINT /* nFlags */, CPoint point)
 	CYPaintEditDoc* pDoc = GetDocument();
 	
 	// 클릭한 지점에 객체가 없다면 팝업메뉴를 안띄움
+	/*
 	POSITION pos = pDoc->obj_List.GetHeadPosition();
 	while (pos) {
 		pDoc->currentObj = (YObject*)pDoc->obj_List.GetNext(pos);
@@ -196,13 +202,11 @@ void CYPaintEditView::OnRButtonUp(UINT /* nFlags */, CPoint point)
 			break;
 		}
 	}
-	/*
+	*/
+	POSITION pos;
 	if (pDoc->currentObj != NULL){
 		switch (pDoc->currentObj->getType()){
 		case line:
-			menu_Cut = TRUE;
-			menu_Paste = TRUE;
-			menu_Copy = TRUE;
 			menu_LineColor = TRUE;
 			menu_SideColor = FALSE;
 			menu_Figure = TRUE;
@@ -212,9 +216,6 @@ void CYPaintEditView::OnRButtonUp(UINT /* nFlags */, CPoint point)
 			menu_DeleteGroup = FALSE;
 			break;
 		case polyline:
-			menu_Cut = TRUE;
-			menu_Paste = TRUE;
-			menu_Copy = TRUE;
 			menu_LineColor = TRUE;
 			menu_SideColor = FALSE;
 			menu_Figure = TRUE;
@@ -222,11 +223,25 @@ void CYPaintEditView::OnRButtonUp(UINT /* nFlags */, CPoint point)
 			menu_DeletePoint = TRUE;
 			menu_Group = TRUE;
 			menu_DeleteGroup = FALSE;
+
+			pos = pDoc->obj_List.GetHeadPosition();
+			while (pos) {
+				pDoc->currentObj = (YObject*)pDoc->obj_List.GetNext(pos);
+				if (pDoc->currentObj->checkRgn(point) == TRUE && pDoc->currentObj->getSelect() == TRUE){			//클릭한 점이 영역안에 있고 객체가 선택되어져 있는상황에서만 메뉴를 띄운다.
+					//pDoc->currentObj->setSelect(TRUE);
+					if (pDoc->currentObj->getType() == polyline){													//polyline 일 때만 한점지우기가 있으므로
+						for (int i = 0; i < pDoc->pPolyLine->getPolyList()->GetSize(); i++){
+							if (pDoc->pPolyLine->getMRect()[i].PtInRect(point)){
+								pDoc->deletePosition = i;															//삭제할 위치 저장
+								break;
+							}
+						}
+					}
+					break;
+				}
+			}
 			break;
 		case ellipse:
-			menu_Cut = TRUE;
-			menu_Paste = TRUE;
-			menu_Copy = TRUE;
 			menu_LineColor = TRUE;
 			menu_SideColor = TRUE;
 			menu_Figure = TRUE;
@@ -236,9 +251,6 @@ void CYPaintEditView::OnRButtonUp(UINT /* nFlags */, CPoint point)
 			menu_DeleteGroup = FALSE;
 			break;
 		case rectangle:
-			menu_Cut = TRUE;
-			menu_Paste = TRUE;
-			menu_Copy = TRUE;
 			menu_LineColor = TRUE;
 			menu_SideColor = TRUE;
 			menu_Figure = TRUE;
@@ -248,23 +260,17 @@ void CYPaintEditView::OnRButtonUp(UINT /* nFlags */, CPoint point)
 			menu_DeleteGroup = FALSE;
 			break;
 		case text:
-			menu_Cut = TRUE;
-			menu_Paste = TRUE;
-			menu_Copy = TRUE;
-			menu_LineColor = TRUE;
+			menu_LineColor = FALSE;
 			menu_SideColor = FALSE;
-			menu_Figure = TRUE;
+			menu_Figure = FALSE;
 			menu_Delete = TRUE;
 			menu_DeletePoint = FALSE;
 			menu_Group = TRUE;
 			menu_DeleteGroup = FALSE;
 			break;
 		case group:
-			menu_Cut = TRUE;
-			menu_Paste = TRUE;
-			menu_Copy = TRUE;
 			menu_LineColor = TRUE;
-			menu_SideColor = FALSE;
+			menu_SideColor = TRUE;
 			menu_Figure = TRUE;
 			menu_Delete = TRUE;
 			menu_DeletePoint = FALSE;
@@ -278,10 +284,7 @@ void CYPaintEditView::OnRButtonUp(UINT /* nFlags */, CPoint point)
 	}
 	else {
 		menu_Cut = FALSE;
-		menu_Paste = FALSE;
 		menu_Copy = FALSE;
-		menu_CutCopyflag = FALSE;
-		menu_CutPaste = FALSE;
 		menu_LineColor = FALSE;
 		menu_SideColor = FALSE;
 		menu_Figure = FALSE;
@@ -293,7 +296,7 @@ void CYPaintEditView::OnRButtonUp(UINT /* nFlags */, CPoint point)
 	
 	ClientToScreen(&point);
 	OnContextMenu(this, point);
-	*/
+	
 }
 
 void CYPaintEditView::OnContextMenu(CWnd* /* pWnd */, CPoint point)
@@ -667,20 +670,28 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 
 
 				   // 1 // (리스트가 비어 있는 경우) 빈공간을 선택한 경우
-				   if (pDoc->currentObj == NULL) // 리스트 탐색을 진행하지 않았으므로 currentObj는 NULL이다.
+				   if (pDoc->currentObj == NULL){ // 리스트 탐색을 진행하지 않았으므로 currentObj는 NULL이다.
+					   menu_Cut = FALSE;
+					   menu_Copy = FALSE;
 					   break;
+				   }
 
 
 				   // 2 // (리스트에 항목이 있는 경우) 빈공간을 선택하여 리스트에서 도형을 찾지 못하는 경우
-				   else if (pDoc->currentObj->getSelect() == FALSE) // 자연스럽게 리스트의 마지막 요소가 currnetObj가 되고 그것은 항상 FALSE임을 이용
+				   else if (pDoc->currentObj->getSelect() == FALSE){ // 자연스럽게 리스트의 마지막 요소가 currnetObj가 되고 그것은 항상 FALSE임을 이용
 					   pDoc->currentObj = NULL;
+					   menu_Cut = FALSE;
+					   menu_Copy = FALSE;
+				   }
 
 
 				   // 3 // (리스트에 항목이 있는 경우) 리스트에서 도형을 찾은 경우  - 선택된 도형 설정
 				   else if (pDoc->currentObj->getSelect() == TRUE){
 					   pDoc->Original_Point = point;  //선 이동시 기준점이 되는 좌표
 					   pDoc->drawing = TRUE;
-
+					   //메뉴 초기화 (잘라내기 , 복사하기 , 붙여넣기)
+					   menu_Cut = TRUE;
+					   menu_Copy = TRUE;
 					   switch (pDoc->currentObj->getType()){
 					   case line:
 					   {
@@ -1223,7 +1234,7 @@ void CYPaintEditView::OnMenudefaulttbutton()
 	menu_Ellipse = FALSE;
 	menu_Rectangle = FALSE;
 	menu_Text = FALSE;
-
+	menu_FontDialog = TRUE;
 	CYPaintEditDoc* pDoc = GetDocument();
 	pDoc->yType = choice;
 
@@ -1243,13 +1254,15 @@ void CYPaintEditView::OnUpdateMenudefaulttbutton(CCmdUI *pCmdUI)
 void CYPaintEditView::OnMenulinebutton()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	menu_Cut = FALSE;
+	menu_Copy = FALSE;
 	menu_Select = FALSE;
 	menu_Line = TRUE;
 	menu_PolyLine = FALSE;
 	menu_Ellipse = FALSE;
 	menu_Rectangle = FALSE;
 	menu_Text = FALSE;
-
+	menu_FontDialog = FALSE;
 	CYPaintEditDoc* pDoc = GetDocument();
 	pDoc->yType = line;
 
@@ -1268,13 +1281,15 @@ void CYPaintEditView::OnUpdateMenulinebutton(CCmdUI *pCmdUI)
 void CYPaintEditView::OnMenupolylinebutton()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	menu_Cut = FALSE;
+	menu_Copy = FALSE;
 	menu_Select = FALSE;
 	menu_Line = FALSE;
 	menu_PolyLine = TRUE;
 	menu_Ellipse = FALSE;
 	menu_Rectangle = FALSE;
 	menu_Text = FALSE;
-
+	menu_FontDialog = FALSE;
 	CYPaintEditDoc* pDoc = GetDocument();
 	pDoc->yType = polyline;
 
@@ -1293,13 +1308,15 @@ void CYPaintEditView::OnUpdateMenupolylinebutton(CCmdUI *pCmdUI)
 void CYPaintEditView::OnMenurectanglebutton()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	menu_Cut = FALSE;
+	menu_Copy = FALSE;
 	menu_Select = FALSE;
 	menu_Line = FALSE;
 	menu_PolyLine = FALSE;
 	menu_Ellipse = FALSE;
 	menu_Rectangle = TRUE;
 	menu_Text = FALSE;
-
+	menu_FontDialog = FALSE;
 	CYPaintEditDoc* pDoc = GetDocument();
 	pDoc->yType = rectangle;
 
@@ -1318,13 +1335,15 @@ void CYPaintEditView::OnUpdateMenurectanglebutton(CCmdUI *pCmdUI)
 void CYPaintEditView::OnMenuellipsebutton()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	menu_Cut = FALSE;
+	menu_Copy = FALSE;
 	menu_Select = FALSE;
 	menu_Line = FALSE;
 	menu_PolyLine = FALSE;
 	menu_Ellipse = TRUE;
 	menu_Rectangle = FALSE;
 	menu_Text = FALSE;
-
+	menu_FontDialog = FALSE;
 	CYPaintEditDoc* pDoc = GetDocument();
 	pDoc->yType = ellipse;
 
@@ -1342,13 +1361,15 @@ void CYPaintEditView::OnUpdateMenuellipsebutton(CCmdUI *pCmdUI)
 }
 void CYPaintEditView::OnMenutextbutton()
 {
+	menu_Cut = FALSE;
+	menu_Copy = FALSE;
 	menu_Select = FALSE;
 	menu_Line = FALSE;
 	menu_PolyLine = FALSE;
 	menu_Ellipse = FALSE;
 	menu_Rectangle = FALSE;
 	menu_Text = TRUE;
-
+	menu_FontDialog = TRUE;
 	CYPaintEditDoc* pDoc = GetDocument();
 	pDoc->yType = text;
 
@@ -1546,62 +1567,183 @@ void CYPaintEditView::OnMenufontbkcolor()
 		Invalidate(FALSE);
 	}
 }
+void CYPaintEditView::OnMenufontdia()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+
+	LOGFONT lf;
+	int dialogFontSize;
+	if (pDoc->currentObj != NULL && pDoc->currentObj->getType() == text){
+
+		if (pDoc->pText->getBold()) lf.lfWeight = FW_BOLD;
+		else lf.lfWeight = FW_NORMAL;
+
+		if (pDoc->pText->getFontSize() >= 300) dialogFontSize = pDoc->pText->getFontSize() / 3.8 + 1;
+		else dialogFontSize = pDoc->pText->getFontSize() / 3.8;
+
+		lf.lfHeight = dialogFontSize;						//높이 설정
+		lf.lfStrikeOut = pDoc->pText->getStrikeOut();						//취소선 설정
+		lf.lfUnderline = pDoc->pText->getUnderLine();						//밑줄설정
+		lf.lfItalic = pDoc->pText->getItalic();							//기울임
+		lf.lfWidth = 0;
+		lf.lfEscapement = 0;							//기울기 각도 초기화
+		lf.lfOutPrecision = OUT_CHARACTER_PRECIS;
+		lf.lfClipPrecision = CLIP_CHARACTER_PRECIS;
+		lf.lfPitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
+		lf.lfQuality = DEFAULT_QUALITY;
+		lf.lfCharSet = DEFAULT_CHARSET;
+		wcscpy_s((lf.lfFaceName), _countof(lf.lfFaceName), pDoc->pText->getFont());
+
+		CFontDialog dlg(&lf);
+
+		int result = dlg.DoModal();
+		if (result == IDOK){
+
+			LOGFONT lf;
+			//다이얼로그에서 값가져오기
+			dlg.GetCurrentFont(&lf);
+			underline = dlg.IsUnderline();
+			bold = dlg.IsBold();
+			italic = dlg.IsItalic();
+			strikeout = dlg.IsStrikeOut();
+			font = lf.lfFaceName;
+			fontSize = dlg.GetSize();
+			fontColor = dlg.GetColor();
+
+			pDoc->pText->setFont(font);
+			pDoc->pText->setFontSize(fontSize);
+			pDoc->pText->setFontColor(fontColor);
+			pDoc->pText->setItalic(italic);
+			pDoc->pText->setBold(bold);
+			pDoc->pText->setUnderLine(underline);
+			pDoc->pText->setStrikeOut(strikeout);
+
+			if (pDoc->yType == choice && pDoc->currentObj != NULL && pDoc->currentObj->getType() == text){
+				pDoc->pText->setFont(font);
+
+				// 글자크기변경 -> 끝점 변경,렉트변경,리젼변경
+				CDC* dc = GetDC();
+				CFont f;
+				if (bold) lf.lfWeight = FW_BOLD;
+				else lf.lfWeight = FW_NORMAL;
+				lf.lfWidth = 0;
+				lf.lfHeight = fontSize;						//높이 설정
+				lf.lfStrikeOut = strikeout;						//취소선 설정
+				lf.lfUnderline = underline;						//밑줄설정
+				lf.lfItalic = italic;							//기울임
+				lf.lfEscapement = 0;							//글자 각도 초기화
+				lf.lfOutPrecision = OUT_CHARACTER_PRECIS;
+				lf.lfClipPrecision = CLIP_CHARACTER_PRECIS;
+				lf.lfPitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
+				lf.lfQuality = DEFAULT_QUALITY;
+				lf.lfCharSet = DEFAULT_CHARSET;
+				wcscpy_s((lf.lfFaceName), _countof(lf.lfFaceName), font);
+				f.CreateFontIndirect(&lf);
+				dc->SelectObject(f);
+
+				CSize s = dc->GetTextExtent(pDoc->pText->getText(), pDoc->pText->getText().GetLength());
+				if (lf.lfWeight == FW_BOLD){
+					s.cx += 50;
+				}
+				pDoc->pText->setEPoint(CPoint(pDoc->pText->getSPoint().x + s.cx, pDoc->pText->getSPoint().y + s.cy));
+				pDoc->pText->setRect(pDoc->pText->getSPoint(), pDoc->pText->getEPoint());
+				pDoc->pText->setRgn();
+
+				pDoc->pText->setFontColor(fontColor);
+				YText* text = new YText(pDoc->pText);
+				pDoc->allList.AddTail(text);
+				ReleaseDC(dc);
+				Invalidate(FALSE);
+			}
+		}
+	}
+}
 void CYPaintEditView::OnUpdateMenufontsize(CCmdUI *pCmdUI)
 {
 	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
 	CYPaintEditDoc* pDoc = GetDocument();
 
-	if (pDoc->yType == choice || pDoc->yType == text){
-		pCmdUI->Enable(TRUE);
+	if (pDoc->currentObj != NULL){
+		if (pDoc->currentObj->getType() == text) pCmdUI->Enable(TRUE);
+		else pCmdUI->Enable(FALSE);
 	}
-	else
-		pCmdUI->Enable(FALSE);
+	else {
+		if (pDoc->yType == text || pDoc->yType == choice) pCmdUI->Enable(TRUE);
+		else pCmdUI->Enable(FALSE);
+	}
+
 }
 void CYPaintEditView::OnUpdateMenufont(CCmdUI *pCmdUI)
 {
 	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
 	CYPaintEditDoc* pDoc = GetDocument();
 
-	if (pDoc->yType == choice || pDoc->yType == text){
-		pCmdUI->Enable(TRUE);
+	if (pDoc->currentObj != NULL){
+		if (pDoc->currentObj->getType() == text) pCmdUI->Enable(TRUE);
+		else pCmdUI->Enable(FALSE);
 	}
-	else
-		pCmdUI->Enable(FALSE);
+	else {
+		if (pDoc->yType == text || pDoc->yType == choice) pCmdUI->Enable(TRUE);
+		else pCmdUI->Enable(FALSE);
+	}
 }
 void CYPaintEditView::OnUpdateTexteditbutton(CCmdUI *pCmdUI)
 {
 	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
 	CYPaintEditDoc* pDoc = GetDocument();
 
-	if (pDoc->yType == choice || pDoc->yType == text){
-		pCmdUI->Enable(TRUE);
+	if (pDoc->currentObj != NULL){
+		if (pDoc->currentObj->getType() == text) pCmdUI->Enable(TRUE);
+		else pCmdUI->Enable(FALSE);
 	}
-	else
-		pCmdUI->Enable(FALSE);
+	else {
+		if (pDoc->yType == text || pDoc->yType == choice) pCmdUI->Enable(TRUE);
+		else pCmdUI->Enable(FALSE);
+	}
 }
 void CYPaintEditView::OnUpdateMenufontcolor(CCmdUI *pCmdUI)
 {
 	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
 	CYPaintEditDoc* pDoc = GetDocument();
 
-	if (pDoc->yType == choice || pDoc->yType == text){
-		pCmdUI->Enable(TRUE);
+	if (pDoc->currentObj != NULL){
+		if (pDoc->currentObj->getType() == text) pCmdUI->Enable(TRUE);
+		else pCmdUI->Enable(FALSE);
 	}
-	else
-		pCmdUI->Enable(FALSE);
+	else {
+		if (pDoc->yType == text || pDoc->yType == choice) pCmdUI->Enable(TRUE);
+		else pCmdUI->Enable(FALSE);
+	}
 }
 void CYPaintEditView::OnUpdateMenufontbkcolor(CCmdUI *pCmdUI)
 {
 	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
 	CYPaintEditDoc* pDoc = GetDocument();
 
-	if (pDoc->yType == choice || pDoc->yType == text){
-		pCmdUI->Enable(TRUE);
+	if (pDoc->currentObj != NULL){
+		if (pDoc->currentObj->getType() == text) pCmdUI->Enable(TRUE);
+		else pCmdUI->Enable(FALSE);
 	}
-	else
-		pCmdUI->Enable(FALSE);
+	else {
+		if (pDoc->yType == text || pDoc->yType == choice) pCmdUI->Enable(TRUE);
+		else pCmdUI->Enable(FALSE);
+	}
 }
+void CYPaintEditView::OnUpdateMenufontdia(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
 
+	if (pDoc->currentObj != NULL){
+		if (pDoc->currentObj->getType() == text) pCmdUI->Enable(TRUE);
+		else pCmdUI->Enable(FALSE);
+	}
+	else {
+		if (pDoc->yType == text || pDoc->yType == choice) pCmdUI->Enable(TRUE);
+		else pCmdUI->Enable(FALSE);
+	}
+}
 // 도형속성 패널
 void CYPaintEditView::OnMenulinethick() //기능 : 선 굵기
 {
@@ -1693,10 +1835,12 @@ void CYPaintEditView::OnUpdateMenulinethick(CCmdUI *pCmdUI)
 	CYPaintEditDoc* pDoc = GetDocument();
 
 	if (pDoc->currentObj != NULL){
-		if (pDoc->currentObj->getType() == text) pCmdUI->Enable(FALSE);
+		if (pDoc->currentObj->getType() == line || pDoc->currentObj->getType() == polyline || pDoc->currentObj->getType() == ellipse || pDoc->currentObj->getType() == rectangle || pDoc->currentObj->getType() == group)pCmdUI->Enable(TRUE);
+		else pCmdUI->Enable(FALSE);
 	}
 	else {
-		if (pDoc->yType == text) pCmdUI->Enable(FALSE);
+		if (pDoc->yType == line || pDoc->yType == polyline || pDoc->yType == ellipse || pDoc->yType == rectangle || pDoc->yType == choice)pCmdUI->Enable(TRUE);
+		else  pCmdUI->Enable(FALSE);
 	}
 }
 void CYPaintEditView::OnMenulinepattern() //기능 : 선 패턴
@@ -1787,10 +1931,12 @@ void CYPaintEditView::OnUpdateMenulinepattern(CCmdUI *pCmdUI)
 	CYPaintEditDoc* pDoc = GetDocument();
 
 	if (pDoc->currentObj != NULL){
-		if (pDoc->currentObj->getType() == text) pCmdUI->Enable(FALSE);
+		if (pDoc->currentObj->getType() == line || pDoc->currentObj->getType() == polyline || pDoc->currentObj->getType() == ellipse || pDoc->currentObj->getType() == rectangle || pDoc->currentObj->getType() == group)pCmdUI->Enable(TRUE);
+		else pCmdUI->Enable(FALSE);
 	}
 	else {
-		if (pDoc->yType == text) pCmdUI->Enable(FALSE);
+		if (pDoc->yType == line || pDoc->yType == polyline || pDoc->yType == ellipse || pDoc->yType == rectangle || pDoc->yType == choice)pCmdUI->Enable(TRUE);
+		else  pCmdUI->Enable(FALSE);
 	}
 }
 void CYPaintEditView::OnMenusidepattern() //기능 : 면 패턴
@@ -1877,7 +2023,7 @@ void CYPaintEditView::OnUpdateMenusidepattern(CCmdUI *pCmdUI) //기능 : 면 패턴 U
 		else pCmdUI->Enable(FALSE);
 	}
 	else {
-		if (pDoc->yType == ellipse || pDoc->yType == rectangle)pCmdUI->Enable(TRUE);
+		if (pDoc->yType == ellipse || pDoc->yType == rectangle || pDoc->yType == choice)pCmdUI->Enable(TRUE);
 		else  pCmdUI->Enable(FALSE);
 	}
 
@@ -2022,6 +2168,36 @@ void CYPaintEditView::OnMenusidecolor() //기능 : 면 색
 	}
 
 }
+void CYPaintEditView::OnUpdateMenulinecolor(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+
+	if (pDoc->currentObj != NULL){
+		if (pDoc->currentObj->getType() == line || pDoc->currentObj->getType() == polyline || pDoc->currentObj->getType() == ellipse || pDoc->currentObj->getType() == rectangle || pDoc->currentObj->getType() == group)pCmdUI->Enable(TRUE);
+		else pCmdUI->Enable(FALSE);
+	}
+	else {
+		if (pDoc->yType == line || pDoc->yType == polyline || pDoc->yType == ellipse || pDoc->yType == rectangle || pDoc->yType == choice)pCmdUI->Enable(TRUE);
+		else  pCmdUI->Enable(FALSE);
+	}
+}
+void CYPaintEditView::OnUpdateMenusidecolor(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+	if (pDoc->currentObj != NULL){
+		if (pDoc->currentObj->getType() == ellipse || pDoc->currentObj->getType() == rectangle || pDoc->currentObj->getType() == group)pCmdUI->Enable(TRUE);
+		else pCmdUI->Enable(FALSE);
+	}
+	else {
+		if (pDoc->yType == ellipse || pDoc->yType == rectangle || pDoc->yType == choice)pCmdUI->Enable(TRUE);
+		else  pCmdUI->Enable(FALSE);
+	}
+}
+
+
+
 
 // 그룹 패널
 void CYPaintEditView::OnGroupsbutton()
@@ -2132,10 +2308,10 @@ void CYPaintEditView::OnEditPaste()
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	
 
-	if (cutObj != NULL && menu_CutPaste == TRUE){
+	if (cutObj != NULL && menu_CutPaste == TRUE){  
 		menu_Cut = TRUE;
 		menu_Copy = TRUE;
-		menu_Paste = TRUE;
+		menu_Paste = FALSE;
 		if (menu_CutCopyflag == TRUE) menu_CutPaste = FALSE;
 		CYPaintEditDoc* pDoc = GetDocument();
 		cutObj->setSelect(FALSE);
@@ -2147,7 +2323,10 @@ void CYPaintEditView::OnEditPaste()
 			pDoc->pLine = new YLine(temp->getSPoint(), temp->getEPoint(), temp->getLineColor(), temp->getLineThick(), temp->getLinePattern());
 			pDoc->pLine->setType(line);
 			pDoc->pLine->setSelect(TRUE);
-			if (menu_CutCopyflag == FALSE) pDoc->pLine->moveAll(20, 20);
+			if (menu_CutCopyflag == FALSE){			//복사하기 일때 -> 이동하고 붙여넣기 탭 활성화
+				pDoc->pLine->moveAll(20, 20);		
+				menu_Paste = TRUE;
+			}
 			pDoc->pLine->setRgn();
 			pDoc->drawing = FALSE;
 			pDoc->obj_List.AddTail(pDoc->pLine);
@@ -2170,7 +2349,10 @@ void CYPaintEditView::OnEditPaste()
 			}
 			pDoc->pPolyLine->setType(polyline);
 			pDoc->pPolyLine->setSelect(TRUE);
-			if (menu_CutCopyflag == FALSE) pDoc->pPolyLine->moveAll(20, 20);
+			if (menu_CutCopyflag == FALSE) {			//복사하기 일때 -> 이동하고 붙여넣기 탭 활성화
+				pDoc->pPolyLine->moveAll(20, 20);
+				menu_Paste = TRUE;
+			}
 			pDoc->pPolyLine->setRgn();
 			pDoc->drawing = FALSE;
 			pDoc->obj_List.AddTail(pDoc->pPolyLine);
@@ -2185,7 +2367,10 @@ void CYPaintEditView::OnEditPaste()
 			pDoc->pEllipse = new YEllipse(temp->getSPoint(), temp->getEPoint(), temp->getLineColor(), temp->getLineThick(), temp->getLinePattern(), temp->getSideColor(), temp->getSidePattern(), temp->getPatternflag());
 			pDoc->pEllipse->setType(ellipse);
 			pDoc->pEllipse->setSelect(TRUE);
-			if (menu_CutCopyflag == FALSE) pDoc->pEllipse->moveAll(20, 20);
+			if (menu_CutCopyflag == FALSE){				//복사하기 일때 -> 이동하고 붙여넣기 탭 활성화
+				pDoc->pEllipse->moveAll(20, 20);
+				menu_Paste = TRUE;
+			}
 			pDoc->pEllipse->setRgn();
 			pDoc->obj_List.AddTail(pDoc->pEllipse); 
 			pDoc->drawing = FALSE;
@@ -2199,7 +2384,10 @@ void CYPaintEditView::OnEditPaste()
 			pDoc->pRectangle = new YRectangle(temp->getSPoint(), temp->getEPoint(), temp->getLineColor(), temp->getLineThick(), temp->getLinePattern(), temp->getSideColor(), temp->getSidePattern(), temp->getPatternflag());
 			pDoc->pRectangle->setType(rectangle);
 			pDoc->pRectangle->setSelect(TRUE);
-			if (menu_CutCopyflag == FALSE) pDoc->pRectangle->moveAll(20, 20);
+			if (menu_CutCopyflag == FALSE){						//복사하기 일때 -> 이동하고 붙여넣기 탭 활성화
+				pDoc->pRectangle->moveAll(20, 20);
+				menu_Paste = TRUE;
+			}
 			pDoc->pRectangle->setRgn();
 			pDoc->drawing = FALSE;
 			pDoc->obj_List.AddTail(pDoc->pRectangle);
@@ -2239,7 +2427,10 @@ void CYPaintEditView::OnEditPaste()
 			pDoc->pText->setRgn();
 			pDoc->pText->setFontColor(fontColor);
 
-			if (menu_CutCopyflag == FALSE) pDoc->pText->moveAll(20, 20);
+			if (menu_CutCopyflag == FALSE){								//복사하기 일때 -> 이동하고 붙여넣기 탭 활성화
+				pDoc->pText->moveAll(20, 20);
+				menu_Paste = TRUE;
+			}
 			pDoc->textEditing = FALSE;
 			pDoc->obj_List.AddTail(pDoc->pText);
 			cutObj = pDoc->pText;
@@ -2558,98 +2749,7 @@ void CYPaintEditView::OnUpdateEditdeletegroup(CCmdUI *pCmdUI)
 
 
 
-void CYPaintEditView::OnMenufontdia()
-{
-	// TODO: 여기에 명령 처리기 코드를 추가합니다.
-	CYPaintEditDoc* pDoc = GetDocument();
 
-	LOGFONT lf;
-	int dialogFontSize;
-	if (pDoc->currentObj != NULL && pDoc->currentObj->getType() == text){
-
-		if (pDoc->pText->getBold()) lf.lfWeight = FW_BOLD;
-		else lf.lfWeight = FW_NORMAL;
-
-		if (pDoc->pText->getFontSize() >= 300) dialogFontSize = pDoc->pText->getFontSize() / 3.8 + 1;
-		else dialogFontSize = pDoc->pText->getFontSize() / 3.8;
-
-		lf.lfHeight = dialogFontSize;						//높이 설정
-		lf.lfStrikeOut = pDoc->pText->getStrikeOut();						//취소선 설정
-		lf.lfUnderline = pDoc->pText->getUnderLine();						//밑줄설정
-		lf.lfItalic = pDoc->pText->getItalic();							//기울임
-		lf.lfWidth = 0;
-		lf.lfEscapement = 0;							//기울기 각도 초기화
-		lf.lfOutPrecision = OUT_CHARACTER_PRECIS;
-		lf.lfClipPrecision = CLIP_CHARACTER_PRECIS;
-		lf.lfPitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
-		lf.lfQuality = DEFAULT_QUALITY;
-		lf.lfCharSet = DEFAULT_CHARSET;
-		wcscpy_s((lf.lfFaceName), _countof(lf.lfFaceName), pDoc->pText->getFont());
-
-		CFontDialog dlg(&lf);
-
-		int result = dlg.DoModal();
-		if (result == IDOK){
-
-			LOGFONT lf;
-			//다이얼로그에서 값가져오기
-			dlg.GetCurrentFont(&lf);
-			underline = dlg.IsUnderline();
-			bold = dlg.IsBold();
-			italic = dlg.IsItalic();
-			strikeout = dlg.IsStrikeOut();
-			font = lf.lfFaceName;
-			fontSize = dlg.GetSize();
-			fontColor = dlg.GetColor();
-
-			pDoc->pText->setFont(font);
-			pDoc->pText->setFontSize(fontSize);
-			pDoc->pText->setFontColor(fontColor);
-			pDoc->pText->setItalic(italic);
-			pDoc->pText->setBold(bold);
-			pDoc->pText->setUnderLine(underline);
-			pDoc->pText->setStrikeOut(strikeout);
-
-			if (pDoc->yType == choice && pDoc->currentObj != NULL && pDoc->currentObj->getType() == text){
-				pDoc->pText->setFont(font);
-
-				// 글자크기변경 -> 끝점 변경,렉트변경,리젼변경
-				CDC* dc = GetDC();
-				CFont f;
-				if (bold) lf.lfWeight = FW_BOLD;
-				else lf.lfWeight = FW_NORMAL;
-				lf.lfWidth = 0;
-				lf.lfHeight = fontSize;						//높이 설정
-				lf.lfStrikeOut = strikeout;						//취소선 설정
-				lf.lfUnderline = underline;						//밑줄설정
-				lf.lfItalic = italic;							//기울임
-				lf.lfEscapement = 0;							//글자 각도 초기화
-				lf.lfOutPrecision = OUT_CHARACTER_PRECIS;
-				lf.lfClipPrecision = CLIP_CHARACTER_PRECIS;
-				lf.lfPitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
-				lf.lfQuality = DEFAULT_QUALITY;
-				lf.lfCharSet = DEFAULT_CHARSET;
-				wcscpy_s((lf.lfFaceName), _countof(lf.lfFaceName), font);
-				f.CreateFontIndirect(&lf);
-				dc->SelectObject(f);
-
-				CSize s = dc->GetTextExtent(pDoc->pText->getText(), pDoc->pText->getText().GetLength());
-				if (lf.lfWeight == FW_BOLD){
-					s.cx += 50;
-				}
-				pDoc->pText->setEPoint(CPoint(pDoc->pText->getSPoint().x + s.cx, pDoc->pText->getSPoint().y + s.cy));
-				pDoc->pText->setRect(pDoc->pText->getSPoint(), pDoc->pText->getEPoint());
-				pDoc->pText->setRgn();
-
-				pDoc->pText->setFontColor(fontColor);
-				YText* text = new YText(pDoc->pText);
-				pDoc->allList.AddTail(text);
-				ReleaseDC(dc);
-				Invalidate(FALSE);
-			}
-		}
-	}
-}
 
 
 
@@ -2783,4 +2883,24 @@ void CYPaintEditView::OnFrontback()
 
 		Invalidate(FALSE);
 	}
+}
+
+
+
+void CYPaintEditView::OnUpdateBack(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+	
+	if (pDoc->allList.GetCount() == 0) pCmdUI->Enable(FALSE);
+	else pCmdUI->Enable(TRUE);
+}
+
+
+void CYPaintEditView::OnUpdateFrontback(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+	if (pDoc->allList.GetCount() == pDoc->temp_AllList.GetCount()) pCmdUI->Enable(FALSE);
+	else pCmdUI->Enable(TRUE);
 }
