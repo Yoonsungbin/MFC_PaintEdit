@@ -33,6 +33,11 @@ public:
 	CPoint getMixPoint(){ return mixPoint; }
 	void setMixPoint(CPoint point){ mixPoint = point; }
 
+	void setResizing(){ resizing = TRUE; }
+	void dsetResizing(){ resizing = FALSE; }
+	BOOL getResizing(){ return resizing; }
+	void dsetRgn(){ rgn.DeleteObject(); rgn.CreateRectRgn(0, 0, 0, 0); setORect(0,0,0,0); }
+
 	void move(int s, int e);
 
 	virtual void Serialize(CArchive& ar);
@@ -44,5 +49,5 @@ private:
 	CPoint mixPoint;
 	CRect mRect[4];
 	int moveMode;
-
+	BOOL resizing;
 };

@@ -89,13 +89,15 @@
 #define ID_EDIT_DELETE                  32816
 #define ID_EDIT_FIGURESETTING           32817
 #define ID_EDITGROUP                    32818
+#define ID_GROUPSIZECHANGEBUTTON        32820
+#define ID_ACCELERATOR32822             32822
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        312
-#define _APS_NEXT_COMMAND_VALUE         32819
+#define _APS_NEXT_COMMAND_VALUE         32823
 #define _APS_NEXT_CONTROL_VALUE         1006
 #define _APS_NEXT_SYMED_VALUE           313
 #endif

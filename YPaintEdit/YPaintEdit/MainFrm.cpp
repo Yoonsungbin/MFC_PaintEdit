@@ -79,6 +79,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	// 향상된 창 관리 대화 상자를 활성화합니다.
 	EnableWindowsDialog(ID_WINDOW_MANAGER, ID_WINDOW_MANAGER, TRUE);
 
+
 	// 리본 메뉴 초기값 설정 //
 	CMFCRibbonEdit* thick = (CMFCRibbonEdit*)m_wndRibbonBar.FindByID(ID_MENULINETHICK);
 	thick->SetEditText(_T("1"));
@@ -90,8 +91,6 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	fontSize->SetEditText(_T("10"));
 	CMFCRibbonComboBox* font = (CMFCRibbonComboBox*)m_wndRibbonBar.FindByID(ID_MENUFONT);
 	font->SelectItem(0);
-
-
 
 	return 0;
 }

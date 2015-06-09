@@ -103,6 +103,9 @@ BEGIN_MESSAGE_MAP(CYPaintEditView, CView)
 	ON_UPDATE_COMMAND_UI(ID_MENUFONTDIA, &CYPaintEditView::OnUpdateMenufontdia)
 	ON_UPDATE_COMMAND_UI(ID_MENULINECOLOR, &CYPaintEditView::OnUpdateMenulinecolor)
 	ON_UPDATE_COMMAND_UI(ID_MENUSIDECOLOR, &CYPaintEditView::OnUpdateMenusidecolor)
+	
+	ON_COMMAND(ID_GROUPSIZECHANGEBUTTON, &CYPaintEditView::OnGroupsizechangebutton)
+	ON_UPDATE_COMMAND_UI(ID_GROUPSIZECHANGEBUTTON, &CYPaintEditView::OnUpdateGroupsizechangebutton)
 END_MESSAGE_MAP()
 
 // CYPaintEditView 생성/소멸
@@ -278,9 +281,9 @@ void CYPaintEditView::OnRButtonUp(UINT /* nFlags */, CPoint point)
 				menu_DeleteGroup = FALSE;
 				break;
 			case group:
-				menu_LineColor = TRUE;
-				menu_SideColor = TRUE;
-				menu_Figure = TRUE;
+				menu_LineColor = FALSE;
+				menu_SideColor = FALSE;
+				menu_Figure = FALSE;
 				menu_Delete = TRUE;
 				menu_DeletePoint = FALSE;
 				menu_Group = TRUE;
@@ -678,9 +681,11 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 						   }
 					   }
 					   else if (pDoc->currentObj == pDoc->pGroup){
-						   if (pDoc->pGroup->getMRect()[0].PtInRect(point) || pDoc->pGroup->getMRect()[1].PtInRect(point) ||
-							   pDoc->pGroup->getMRect()[2].PtInRect(point) || pDoc->pGroup->getMRect()[3].PtInRect(point)) {
-							   pDoc->currentObj->setSelect(TRUE);
+						   if (pDoc->resizing == FALSE){
+							   if (pDoc->pGroup->getMRect()[0].PtInRect(point) || pDoc->pGroup->getMRect()[1].PtInRect(point) ||
+								   pDoc->pGroup->getMRect()[2].PtInRect(point) || pDoc->pGroup->getMRect()[3].PtInRect(point)) {
+								   pDoc->currentObj->setSelect(TRUE);
+							   }
 							   break;
 						   }
 					   }
@@ -851,6 +856,50 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 		break;
 	}
 
+	if (pDoc->resizing == TRUE){
+		pDoc->Original_Point = point;
+		YObject* tmp;
+		POSITION pos = pDoc->current_group.GetHeadPosition();
+		while (pos){
+			tmp = pDoc->current_group.GetNext(pos);
+			switch (tmp->getType()){
+			case line:{
+						  YLine* tmp2 = (YLine*)tmp;
+						  if (tmp2->getMRect()[0].PtInRect(point))
+							  pDoc->flag = 0; // 시작점
+						  else if (tmp2->getMRect()[1].PtInRect(point))
+							  pDoc->flag = 1; // 끝점
+						  break;
+			}
+			case rectangle:{
+							   YRectangle* tmp2 = (YRectangle*)tmp;
+							   if (tmp2->getMRect()[0].PtInRect(point))
+								   pDoc->flag = 0;
+							   else if (tmp2->getMRect()[1].PtInRect(point))
+								   pDoc->flag = 1;
+							   else if (tmp2->getMRect()[2].PtInRect(point))
+								   pDoc->flag = 2;
+							   else if (tmp2->getMRect()[3].PtInRect(point))
+								   pDoc->flag = 3;
+							   break;
+			}
+			case ellipse:{
+							 YEllipse* tmp2 = (YEllipse*)tmp;
+							 if (tmp2->getMRect()[0].PtInRect(point))
+								 pDoc->flag = 0; // 2사분면
+							 else if (tmp2->getMRect()[1].PtInRect(point))
+								 pDoc->flag = 1; // 4사분면
+							 else if (tmp2->getMRect()[2].PtInRect(point))
+								 pDoc->flag = 2; // 3사분면
+							 else if (tmp2->getMRect()[3].PtInRect(point))
+								 pDoc->flag = 3; // 1사분면
+							 break;
+			}
+			default:
+				break;
+			}
+		}
+	}
 	CView::OnLButtonDown(nFlags, point);
 }
 void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
@@ -888,106 +937,213 @@ void CYPaintEditView::OnMouseMove(UINT nFlags, CPoint point)
 		}
 		case choice:
 		{
-					   if (pDoc->currentObj == NULL) break;  // 빈곳을 클릭했을때 (예외상황)
-
 					   CPoint t_point = point - pDoc->Original_Point; // 좌표 움직임
 					   pDoc->Original_Point = point;
-
-					   switch (pDoc->currentObj->getType()){
-					   case line:
-					   {
-									//pDoc->pLine = (YLine*)pDoc->currentObj;
-									//선택되었을때 이동 변수에따라 다른 move실행
-									lineMove = TRUE;
-									if (pDoc->pLine->getSelect()){
-										if (pDoc->pLine->getMoveMode() == 0){  //전체이동
-											pDoc->pLine->moveAll(t_point.x, t_point.y);
-											pDoc->pLine->setRgn();
-										}
-										else {
-											pDoc->pLine->move(t_point.x, t_point.y);
-											pDoc->pLine->setRgn();
-										}
-									}
-									break;
-					   }
-					   case polyline:
-					   {
-										polylineMove = TRUE;
-										if (pDoc->pPolyLine->getMoveMode() == 0){
-											if (pDoc->pPolyLine->getSelect()){
-												pDoc->pPolyLine->moveAll(t_point.x, t_point.y);
-												pDoc->pPolyLine->setRgn();
+					   
+					   if (pDoc->currentObj != NULL){
+						   
+						   switch (pDoc->currentObj->getType()){
+						   case line:
+						   {
+										//pDoc->pLine = (YLine*)pDoc->currentObj;
+										//선택되었을때 이동 변수에따라 다른 move실행
+										lineMove = TRUE;
+										if (pDoc->pLine->getSelect()){
+											if (pDoc->pLine->getMoveMode() == 0){  //전체이동
+												pDoc->pLine->moveAll(t_point.x, t_point.y);
+												pDoc->pLine->setRgn();
+											}
+											else {
+												pDoc->pLine->move(t_point.x, t_point.y);
+												pDoc->pLine->setRgn();
 											}
 										}
-										else {
-											pDoc->pPolyLine->move(t_point.x, t_point.y);
-											pDoc->pPolyLine->setRgn();
-										}
 										break;
-					   }
-					   case ellipse:
-					   {
-									   ellipseMove = TRUE;
-									   //pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
-									   //선택되었을때 이동 변수에따라 다른 move실행
-									   if (pDoc->pEllipse->getSelect()){
-										   if (pDoc->pEllipse->getMoveMode() == 0){  //전체이동
-											   pDoc->pEllipse->moveAll(t_point.x, t_point.y);
-											   pDoc->pEllipse->setRgn();
-										   }
-										   else {
-											   pDoc->pEllipse->move(t_point.x, t_point.y);
-											   pDoc->pEllipse->setRgn();
-										   }
-									   }
-									   break;
-					   }
-					   case rectangle:
-					   {
-										 rectangleMove = TRUE;
-										 //pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
-										 //선택되었을때 이동 변수에따라 다른 move실행
-										 if (pDoc->pRectangle->getSelect()){
-											 if (pDoc->pRectangle->getMoveMode() == 0){  //전체이동
-												 pDoc->pRectangle->moveAll(t_point.x, t_point.y);
-												 pDoc->pRectangle->setRgn();
-											 }
-											 else {
-												 pDoc->pRectangle->move(t_point.x, t_point.y);
-												 pDoc->pRectangle->setRgn();
-											 }
-										 }
-										 break;
-					   }
-					   case text:
-					   {
-									textMove = TRUE;
-									pDoc->pText->setSPoint(pDoc->pText->getSPoint() + t_point);
-									pDoc->pText->setEPoint(pDoc->pText->getEPoint() + t_point);
-									pDoc->pText->setRect(pDoc->pText->getSPoint(), pDoc->pText->getEPoint());
-									pDoc->pText->setRgn();
-									break;
-					   }
-					   case group:
-						   groupMove = TRUE;
-						   if (pDoc->pGroup->getSelect()){
-							   if (pDoc->pGroup->getMoveMode() == 0){  //전체이동
-								   pDoc->pGroup->moveAll(t_point.x, t_point.y);
-								   pDoc->pGroup->setORect(pDoc->pGroup->getSPoint().x, pDoc->pGroup->getSPoint().y, pDoc->pGroup->getEPoint().x, pDoc->pGroup->getEPoint().y);
-							   }
-							   else {
-								   pDoc->pGroup->move(t_point.x, t_point.y);
-								   pDoc->pGroup->setORect(pDoc->pGroup->getSPoint().x, pDoc->pGroup->getSPoint().y, pDoc->pGroup->getEPoint().x, pDoc->pGroup->getEPoint().y);
-							   }
-							   pDoc->pGroup->setRgn();
 						   }
+						   case polyline:
+						   {
+											polylineMove = TRUE;
+											if (pDoc->pPolyLine->getMoveMode() == 0){
+												if (pDoc->pPolyLine->getSelect()){
+													pDoc->pPolyLine->moveAll(t_point.x, t_point.y);
+													pDoc->pPolyLine->setRgn();
+												}
+											}
+											else {
+												pDoc->pPolyLine->move(t_point.x, t_point.y);
+												pDoc->pPolyLine->setRgn();
+											}
+											break;
+						   }
+						   case ellipse:
+						   {
+										   ellipseMove = TRUE;
+										   //pDoc->pEllipse = (YEllipse*)pDoc->currentObj;
+										   //선택되었을때 이동 변수에따라 다른 move실행
+										   if (pDoc->pEllipse->getSelect()){
+											   if (pDoc->pEllipse->getMoveMode() == 0){  //전체이동
+												   pDoc->pEllipse->moveAll(t_point.x, t_point.y);
+												   pDoc->pEllipse->setRgn();
+											   }
+											   else {
+												   pDoc->pEllipse->move(t_point.x, t_point.y);
+												   pDoc->pEllipse->setRgn();
+											   }
+										   }
+										   break;
+						   }
+						   case rectangle:
+						   {
+											 rectangleMove = TRUE;
+											 //pDoc->pRectangle = (YRectangle*)pDoc->currentObj;
+											 //선택되었을때 이동 변수에따라 다른 move실행
+											 if (pDoc->pRectangle->getSelect()){
+												 if (pDoc->pRectangle->getMoveMode() == 0){  //전체이동
+													 pDoc->pRectangle->moveAll(t_point.x, t_point.y);
+													 pDoc->pRectangle->setRgn();
+												 }
+												 else {
+													 pDoc->pRectangle->move(t_point.x, t_point.y);
+													 pDoc->pRectangle->setRgn();
+												 }
+											 }
+											 break;
+						   }
+						   case text:
+						   {
+										textMove = TRUE;
+										pDoc->pText->setSPoint(pDoc->pText->getSPoint() + t_point);
+										pDoc->pText->setEPoint(pDoc->pText->getEPoint() + t_point);
+										pDoc->pText->setRect(pDoc->pText->getSPoint(), pDoc->pText->getEPoint());
+										pDoc->pText->setRgn();
+										break;
+						   }
+						   case group:
+							   groupMove = TRUE;
+							   if (pDoc->resizing == FALSE){
+								   if (pDoc->pGroup->getSelect()){
+									   if (pDoc->pGroup->getMoveMode() == 0){  //전체이동
+										   pDoc->pGroup->moveAll(t_point.x, t_point.y);
+										   pDoc->pGroup->setORect(pDoc->pGroup->getSPoint().x, pDoc->pGroup->getSPoint().y, pDoc->pGroup->getEPoint().x, pDoc->pGroup->getEPoint().y);
+									   }
+									   else {
+										   pDoc->pGroup->move(t_point.x, t_point.y);
+										   pDoc->pGroup->setORect(pDoc->pGroup->getSPoint().x, pDoc->pGroup->getSPoint().y, pDoc->pGroup->getEPoint().x, pDoc->pGroup->getEPoint().y);
+									   }
+									   pDoc->pGroup->setRgn();
+								   }
+							   }
+							   else{ // 그룹크기 조정일 때
+								   
+							   }
 
 
-						   break;
-					   default:
-						   break;
+							   break;
+						   default:
+							   break;
+						   }
 					   }
+					   else if (pDoc->resizing){
+						   if (pDoc->flag == 0){ // 2
+							   POSITION pos = pDoc->current_group.GetHeadPosition();
+							   YObject* tmp;
+							   while (pos){
+								   tmp = pDoc->current_group.GetNext(pos);
+								   switch (tmp->getType()){
+								   case line:{
+												 YLine* p = (YLine*)tmp;
+												 p->setMoveMode(-1);
+												 p->move(t_point.x, t_point.y);
+												 break;
+								   }
+								   case rectangle:{
+													  YRectangle* p = (YRectangle*)tmp;
+													  p->setMoveMode(-1);
+													  p->move(t_point.x, t_point.y);
+													  break;
+								   }
+								   case ellipse:{
+													YEllipse* p = (YEllipse*)tmp;
+													p->setMoveMode(-1);
+													p->move(t_point.x, t_point.y);
+													break;
+								   }
+								   }
+							   }
+						   }
+						   else if (pDoc->flag == 1){ // 4
+							   POSITION pos = pDoc->current_group.GetHeadPosition();
+							   YObject* tmp;
+							   while (pos){
+								   tmp = pDoc->current_group.GetNext(pos);
+								   
+								   switch (tmp->getType()){
+								   case line:{
+												 YLine* p = (YLine*)tmp;
+												 p->setMoveMode(1);
+												 p->move(t_point.x, t_point.y);
+												 break;
+								   }
+								   case rectangle:{
+													  YRectangle* p = (YRectangle*)tmp;
+													  p->setMoveMode(1);
+													  p->move(t_point.x, t_point.y);
+													  break;
+								   }
+								   case ellipse:{
+													YEllipse* p = (YEllipse*)tmp;
+													p->setMoveMode(1);
+													p->move(t_point.x, t_point.y);
+													break;
+								   }
+								   }
+							   }
+						   }
+						   else if (pDoc->flag == 2){ // 3
+							   POSITION pos = pDoc->current_group.GetHeadPosition();
+							   YObject* tmp;
+							   while (pos){
+								   tmp = pDoc->current_group.GetNext(pos);
+								   switch (tmp->getType()){
+								   case rectangle:{
+													  YRectangle* p = (YRectangle*)tmp;
+													  p->setMoveMode(2);
+													  p->move(t_point.x, t_point.y);
+													  break;
+								   }
+								   case ellipse:{
+													YEllipse* p = (YEllipse*)tmp;
+													p->setMoveMode(2);
+													p->move(t_point.x, t_point.y);
+													break;
+								   }
+								   }
+							   }
+						   }
+						   else if (pDoc->flag == 3){ // 1
+							   POSITION pos = pDoc->current_group.GetHeadPosition();
+							   YObject* tmp;
+							   while (pos){
+								   tmp = pDoc->current_group.GetNext(pos);
+								   switch (tmp->getType()){
+								   case rectangle:{
+													  YRectangle* p = (YRectangle*)tmp;
+													  p->setMoveMode(3);
+													  p->move(t_point.x, t_point.y);
+													  break;
+								   }
+								   case ellipse:{
+													YEllipse* p = (YEllipse*)tmp;
+													p->setMoveMode(3);
+													p->move(t_point.x, t_point.y);
+													break;
+								   }
+								   }
+							   }
+						   }
+					   } 
+					   else // 빈곳을 클릭했을때 (예외상황)
+						   break;
 		}
 		default:
 			break;
@@ -1172,6 +1328,23 @@ void CYPaintEditView::OnLButtonDblClk(UINT nFlags, CPoint point)
 		pDoc->grouping = FALSE;
 
 		Invalidate();
+	}
+	if (pDoc->resizing){
+		pDoc->resizing = FALSE;
+
+		YObject* tmp;
+		POSITION pos = pDoc->current_group.GetHeadPosition();
+		while (pos) {
+			tmp = (YObject*)pDoc->obj_List.GetNext(pos);
+			tmp->setSelect(FALSE);
+			tmp->setRgn();
+		}
+
+		pDoc->pGroup->setSelect(TRUE);
+		pDoc->pGroup->setRgn();
+		pDoc->pGroup->dsetResizing();
+
+		pDoc->current_group.RemoveAll();
 	}
 	CView::OnLButtonDblClk(nFlags, point);
 }
@@ -3482,3 +3655,52 @@ void CYPaintEditView::OnUpdateFrontback(CCmdUI *pCmdUI)
 
 
 
+
+
+void CYPaintEditView::OnGroupsizechangebutton()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+	
+	if (pDoc->resizing == FALSE){ // 시작
+		pDoc->resizing = TRUE;
+
+		pDoc->pGroup = (YGroup*)pDoc->currentObj;
+		pDoc->pGroup->setSelect(FALSE);
+		pDoc->pGroup->dsetRgn();
+		pDoc->pGroup->setResizing();
+		
+		CList<YObject*, YObject*>* pL = pDoc->pGroup->getList();
+		POSITION pos = (*pL).GetHeadPosition();
+		while (pos) {
+			YObject* tmp = (*pL).GetNext(pos);
+			tmp->setSelect(TRUE);
+			pDoc->current_group.AddTail(tmp);
+		}
+		Invalidate(FALSE);
+	}
+	/*
+	else{ // 끝
+		pDoc->resizing = FALSE;
+		
+		pDoc->pGroup->setSelect(TRUE);
+		pDoc->pGroup->setRgn();
+		pDoc->pGroup->dsetResizing();
+
+		pDoc->current_group.RemoveAll();
+	}*/
+}
+
+
+void CYPaintEditView::OnUpdateGroupsizechangebutton(CCmdUI *pCmdUI)
+{
+	// TODO: 여기에 명령 업데이트 UI 처리기 코드를 추가합니다
+	CYPaintEditDoc* pDoc = GetDocument();
+
+	if (pDoc->yType == choice && pDoc->currentObj != NULL && pDoc->currentObj->getType() == group){
+		pCmdUI->Enable(TRUE);
+		pCmdUI->SetCheck(pDoc->resizing);
+	}
+	else
+		pCmdUI->Enable(FALSE);
+}

@@ -16,6 +16,7 @@ YGroup::~YGroup()
 
 YGroup::YGroup(CList<YObject*, YObject*>& list){
 
+	resizing = FALSE;
 	// 그룹 리스트 초기화
 	YObject* tmp;
 	POSITION pos = list.GetHeadPosition();
@@ -40,6 +41,7 @@ YGroup::YGroup(CList<YObject*, YObject*>& list){
 	}
 }
 YGroup::YGroup(YGroup* p){
+	resizing = FALSE;
 	sPoint = p->getSPoint();
 	ePoint = p->getEPoint();
 	mixPoint = p->getMixPoint();
@@ -221,6 +223,20 @@ void YGroup::draw(CDC* dc){
 	}
 }
 void YGroup::setRgn(){
+
+	sPoint.SetPoint(10000, 10000);
+	ePoint.SetPoint(0, 0);
+	CRect rec;
+	YObject* tmp;
+	POSITION pos = groupList.GetHeadPosition();
+	while (pos){
+		tmp = groupList.GetNext(pos);
+		rec = tmp->getORect();
+		if (sPoint.x > rec.TopLeft().x) sPoint.x = rec.TopLeft().x;
+		if (sPoint.y > rec.TopLeft().y) sPoint.y = rec.TopLeft().y;
+		if (ePoint.x < rec.BottomRight().x) ePoint.x = rec.BottomRight().x;
+		if (ePoint.y < rec.BottomRight().y) ePoint.y = rec.BottomRight().y;
+	}
 	// 리젼 사각형 생성
 	setORect(sPoint.x, sPoint.y, ePoint.x, ePoint.y);
 	// 리젼 생성
@@ -234,8 +250,6 @@ BOOL YGroup::checkRgn(CPoint point)
 
 	return FALSE;
 }
-
-
 void YGroup::Serialize(CArchive& ar)
 {
 	YObject::Serialize(ar);
@@ -348,4 +362,3 @@ void YGroup::Serialize(CArchive& ar)
 		setRgn();
 	}
 }
-
