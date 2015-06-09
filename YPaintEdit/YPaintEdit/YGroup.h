@@ -8,7 +8,7 @@ public:
 	YGroup();
 	YGroup(CList<YObject*, YObject*>& list);
 	~YGroup();
-
+	YGroup(YGroup* p);
 
 	// Virtual
 	void setType(YObject_Type t) { yType = t; }					// 객체의 타입을 텍스트 타입으로 설정하는 함수

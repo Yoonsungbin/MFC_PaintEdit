@@ -83,8 +83,8 @@ public:
 	YObject* cutObj = NULL;			// 잘라내기, 붙여넣기를 위한 변수 선언
 
 
-
-	BOOL lineMove = FALSE;
+	//움직임이 결정되었을때 저장하기 위한 flag 변수
+	BOOL lineMove = FALSE;	
 	BOOL polylineMove = FALSE;
 	BOOL ellipseMove = FALSE;
 	BOOL rectangleMove = FALSE;
@@ -182,6 +182,7 @@ public:
 	afx_msg void OnMenufontdia();
 
 	afx_msg void OnBack();
+	afx_msg void OnFrontback();
 };
 
 #ifndef _DEBUG  // YPaintEditView.cpp의 디버그 버전

@@ -27,7 +27,7 @@ YLine::YLine(YLine* p){
 	setLinePattern(p->getLinePattern());
 	setMoveMode(p->getMoveMode());
 	setOrder(p->getOrder());
-	setSelect(p->getSelect());
+	setSelect(FALSE);
 	setType(p->getType());
 	setRgn();
 }

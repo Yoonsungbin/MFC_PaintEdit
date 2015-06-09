@@ -38,7 +38,7 @@ YRectangle::YRectangle(YRectangle *p){
 	setMoveMode(p->getMoveMode());
 	setMixPoint(p->getMixPoint());
 	setOrder(p->getOrder());
-	setSelect(p->getSelect());
+	setSelect(FALSE);
 	setType(p->getType());
 	setRgn();
 }

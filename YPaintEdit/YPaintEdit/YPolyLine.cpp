@@ -26,7 +26,7 @@ YPolyLine::YPolyLine(YPolyLine* p){
 	setIndex(p->getIndex());
 	
 	setOrder(p->getOrder());
-	setSelect(p->getSelect());
+	setSelect(FALSE);
 	setType(p->getType());
 	setRgn();
 

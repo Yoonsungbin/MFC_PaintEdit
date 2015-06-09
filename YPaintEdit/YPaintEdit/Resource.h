@@ -77,15 +77,15 @@
 #define ID_EDIT_SIDECOLOR               32838
 #define ID_EDITGROUP                    32844
 #define ID_EDITDELETEGROUP              32845
-#define ID_BUTTON2                      32846
 #define ID_BACK                         32846
+#define ID_FRONTBACK                    32848
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        316
-#define _APS_NEXT_COMMAND_VALUE         32847
+#define _APS_NEXT_COMMAND_VALUE         32849
 #define _APS_NEXT_CONTROL_VALUE         1011
 #define _APS_NEXT_SYMED_VALUE           312
 #endif

@@ -52,10 +52,11 @@ public:
 	BOOL grouping;								// 그룹화중임을 나타내주는 변수
 	CList<YObject*, YObject*> current_group;	// 현재 그룹 리스트
 	int allNum;									// 총 만든 도형의 개수
+
+	CPtrList allList;							// 도형의 변경값도 모두 기록하는 리스트
+	CPtrList temp_AllList;						// redo를 구현하기 위해 모두 기록된 리스트의 복사본
 // 작업입니다.
 public:
-
-	CPtrList allList;
 
 // 재정의입니다.
 public:

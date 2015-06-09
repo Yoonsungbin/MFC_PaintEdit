@@ -39,6 +39,25 @@ YGroup::YGroup(CList<YObject*, YObject*>& list){
 		if (ePoint.y < rec.BottomRight().y) ePoint.y = rec.BottomRight().y;
 	}
 }
+YGroup::YGroup(YGroup* p){
+	sPoint = p->getSPoint();
+	ePoint = p->getEPoint();
+	mixPoint = p->getMixPoint();
+
+	setOrder(p->getOrder());
+	setSelect(FALSE);
+	setType(p->getType());
+	setRgn();
+
+	POSITION pos = p->getList()->GetHeadPosition();
+	groupList.RemoveAll();
+	while (pos){
+		YObject* object = p->getList()->GetNext(pos);
+		groupList.AddTail(object);
+	}
+
+}
+
 
 IMPLEMENT_SERIAL(YGroup, CObject, 1)
 void YGroup::move(int s, int e){

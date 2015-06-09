@@ -32,6 +32,7 @@ YText::YText(YText* p){
 	bold = p->getBold();						// ±½±â ÃÊ±âÈ­
 	italic = p->getItalic();
 	texts = p->getText();
+	rect = p->getRect();
 	LOGFONT lf;
 	CFont f;
 	if (bold) lf.lfWeight = FW_BOLD;
@@ -51,7 +52,7 @@ YText::YText(YText* p){
 	f.CreateFontIndirect(&lf);
 
 	setOrder(p->getOrder());
-	setSelect(p->getSelect());
+	setSelect(FALSE);
 	setType(p->getType());
 	setRgn();
 }

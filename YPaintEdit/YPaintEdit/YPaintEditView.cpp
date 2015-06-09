@@ -99,6 +99,7 @@ BEGIN_MESSAGE_MAP(CYPaintEditView, CView)
 	ON_UPDATE_COMMAND_UI(ID_EDITGROUP, &CYPaintEditView::OnUpdateEditgroup)
 	ON_UPDATE_COMMAND_UI(ID_EDITDELETEGROUP, &CYPaintEditView::OnUpdateEditdeletegroup)
 	ON_COMMAND(ID_BACK, &CYPaintEditView::OnBack)
+	ON_COMMAND(ID_FRONTBACK, &CYPaintEditView::OnFrontback)
 END_MESSAGE_MAP()
 
 // CYPaintEditView 생성/소멸
@@ -140,7 +141,7 @@ CYPaintEditView::CYPaintEditView()
 	 menu_SideColor = FALSE;
 	 menu_Figure = FALSE;
 	 menu_Delete = FALSE;
-	 menu_DeletePoint = FALSE;
+	 menu_DeletePoint = TRUE;
 	 menu_Group = FALSE;
 	 menu_DeleteGroup = FALSE;
 
@@ -175,7 +176,7 @@ void CYPaintEditView::OnDraw(CDC* /*pDC*/)
 void CYPaintEditView::OnRButtonUp(UINT /* nFlags */, CPoint point)
 {
 	CYPaintEditDoc* pDoc = GetDocument();
-	/*
+	
 	// 클릭한 지점에 객체가 없다면 팝업메뉴를 안띄움
 	POSITION pos = pDoc->obj_List.GetHeadPosition();
 	while (pos) {
@@ -195,7 +196,7 @@ void CYPaintEditView::OnRButtonUp(UINT /* nFlags */, CPoint point)
 			break;
 		}
 	}
-	*/
+	/*
 	if (pDoc->currentObj != NULL){
 		switch (pDoc->currentObj->getType()){
 		case line:
@@ -289,8 +290,10 @@ void CYPaintEditView::OnRButtonUp(UINT /* nFlags */, CPoint point)
 		menu_Group = FALSE;
 		menu_DeleteGroup = FALSE;
 	}
+	
 	ClientToScreen(&point);
 	OnContextMenu(this, point);
+	*/
 }
 
 void CYPaintEditView::OnContextMenu(CWnd* /* pWnd */, CPoint point)
@@ -501,6 +504,7 @@ void CYPaintEditView::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) // Text
 			pDoc->obj_List.AddTail(pDoc->pText);
 			YText* text = new YText(pDoc->pText);
 			pDoc->allList.AddTail(text);
+			pDoc->temp_AllList.AddTail(text);
 			pDoc->pText = NULL;
 			pDoc->textEditing = FALSE;
 			pDoc->tmp.Empty();
@@ -554,6 +558,7 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 						 pDoc->pPolyLine->addPoint(point);
 						 YPolyLine* polyline = new YPolyLine(pDoc->pPolyLine);
 						 pDoc->allList.AddTail(polyline);
+						 pDoc->temp_AllList.AddTail(polyline);
 					 }
 					 break;
 	}
@@ -810,6 +815,7 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 
 				 
 				   Invalidate(FALSE);
+				   UpdateMenu();
 				   break;
 	}
 	default:
@@ -975,6 +981,7 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 				 pDoc->obj_List.AddTail(pDoc->pLine);
 				 YLine* line = new YLine(pDoc->pLine);
 				 pDoc->allList.AddTail(line);
+				 pDoc->temp_AllList.AddTail(line);
 				 pDoc->pLine = NULL;
 				 pDoc->drawing = FALSE;
 				 break;
@@ -990,6 +997,7 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 					pDoc->obj_List.AddTail(pDoc->pEllipse);
 					YEllipse* ellipse = new YEllipse(pDoc->pEllipse);
 					pDoc->allList.AddTail(ellipse);
+					pDoc->temp_AllList.AddTail(ellipse);
 					pDoc->drawing = FALSE;
 					ReleaseCapture();
 					break;
@@ -1001,6 +1009,7 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 					  pDoc->obj_List.AddTail(pDoc->pRectangle);
 					  YRectangle* rectangle = new YRectangle(pDoc->pRectangle);
 					  pDoc->allList.AddTail(rectangle);
+					  pDoc->temp_AllList.AddTail(rectangle);
 					  pDoc->drawing = FALSE;
 					  ReleaseCapture();
 					  break;
@@ -1018,6 +1027,7 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 				if (lineMove){
 					YLine* line = new YLine(pDoc->pLine);
 					pDoc->allList.AddTail(line);
+					pDoc->temp_AllList.AddTail(line);
 					lineMove = FALSE;
 				}
 				break;
@@ -1028,6 +1038,7 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 				if (polylineMove){
 					YPolyLine* polyline = new YPolyLine(pDoc->pPolyLine);
 					pDoc->allList.AddTail(polyline);
+					pDoc->temp_AllList.AddTail(polyline);
 					polylineMove = FALSE;
 				}
 				break;
@@ -1037,6 +1048,7 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 				if (ellipseMove){
 					YEllipse* ellipse = new YEllipse(pDoc->pEllipse);
 					pDoc->allList.AddTail(ellipse);
+					pDoc->temp_AllList.AddTail(ellipse);
 					ellipseMove = FALSE;
 				}
 			}
@@ -1045,6 +1057,7 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 				if (rectangleMove){
 					YRectangle* rectangle = new YRectangle(pDoc->pRectangle);
 					pDoc->allList.AddTail(rectangle);
+					pDoc->temp_AllList.AddTail(rectangle);
 					rectangleMove = FALSE;
 				}
 				break;
@@ -1054,11 +1067,21 @@ void CYPaintEditView::OnLButtonUp(UINT nFlags, CPoint point)
 				if (textMove){
 					YText* text = new YText(pDoc->pText);
 					pDoc->allList.AddTail(text);
+					pDoc->temp_AllList.AddTail(text);
 					textMove = FALSE;
 				}
 				break;
 			}
-
+			case group:
+			{
+				if (groupMove){
+					YGroup* group = new YGroup(pDoc->pGroup);
+					pDoc->allList.AddTail(group);
+					pDoc->temp_AllList.AddTail(group);
+					groupMove = FALSE;
+				}
+				break;
+			}
 			}
 		}
 	}
@@ -1080,6 +1103,9 @@ void CYPaintEditView::OnLButtonDblClk(UINT nFlags, CPoint point)
 		pDoc->pPolyLine->setSelect(FALSE);
 		pDoc->pPolyLine->setType(polyline);
 		pDoc->obj_List.AddTail(pDoc->pPolyLine);
+		YPolyLine* polyline = new YPolyLine(pDoc->pPolyLine);
+		pDoc->allList.AddTail(polyline);
+		pDoc->temp_AllList.AddTail(polyline);
 		pDoc->pPolyLine = NULL;
 		Invalidate(FALSE);
 	}
@@ -1384,6 +1410,7 @@ void CYPaintEditView::OnMenufontsize()
 		pDoc->pText->setRgn();
 		YText* text = new YText(pDoc->pText);
 		pDoc->allList.AddTail(text);
+		pDoc->temp_AllList.AddTail(text);
 		ReleaseDC(dc);
 		Invalidate(FALSE);
 	}	
@@ -1430,6 +1457,7 @@ void CYPaintEditView::OnMenufont()
 		pDoc->pText->setRgn();
 		YText* text = new YText(pDoc->pText);
 		pDoc->allList.AddTail(text);
+		pDoc->temp_AllList.AddTail(text);
 		ReleaseDC(dc);
 		Invalidate(FALSE);
 	}
@@ -1478,6 +1506,7 @@ void CYPaintEditView::OnTexteditbutton()
 			pDoc->pText->setRgn();
 			YText* text = new YText(pDoc->pText);
 			pDoc->allList.AddTail(text);
+			pDoc->temp_AllList.AddTail(text);
 			ReleaseDC(dc);
 			Invalidate(FALSE);
 		}
@@ -1496,6 +1525,7 @@ void CYPaintEditView::OnMenufontcolor()
 		pDoc->pText->setFontColor(fontColor);
 		YText* text = new YText(pDoc->pText);
 		pDoc->allList.AddTail(text);
+		pDoc->temp_AllList.AddTail(text);
 		Invalidate(FALSE);
 	}
 }
@@ -1512,6 +1542,7 @@ void CYPaintEditView::OnMenufontbkcolor()
 		pDoc->pText->setBkColor(bkColor);
 		YText* text = new YText(pDoc->pText);
 		pDoc->allList.AddTail(text);
+		pDoc->temp_AllList.AddTail(text);
 		Invalidate(FALSE);
 	}
 }
@@ -1589,6 +1620,7 @@ void CYPaintEditView::OnMenulinethick() //기능 : 선 굵기
 					 pDoc->pLine->setLineThick(lineThick);
 					 YLine* line = new YLine(pDoc->pLine);
 					 pDoc->allList.AddTail(line);
+					 pDoc->temp_AllList.AddTail(line);
 					 break;
 		}
 		case polyline:
@@ -1597,6 +1629,7 @@ void CYPaintEditView::OnMenulinethick() //기능 : 선 굵기
 						 pDoc->pPolyLine->setLineThick(lineThick);
 						 YPolyLine* polyline = new YPolyLine(pDoc->pPolyLine);
 						 pDoc->allList.AddTail(polyline);
+						 pDoc->temp_AllList.AddTail(polyline);
 						 break;
 		}
 		case ellipse:
@@ -1605,6 +1638,7 @@ void CYPaintEditView::OnMenulinethick() //기능 : 선 굵기
 						pDoc->pEllipse->setLineThick(lineThick);
 						YEllipse* ellipse = new YEllipse(pDoc->pEllipse);
 						pDoc->allList.AddTail(ellipse);
+						pDoc->temp_AllList.AddTail(ellipse);
 						break;
 		}
 		case rectangle:
@@ -1613,6 +1647,7 @@ void CYPaintEditView::OnMenulinethick() //기능 : 선 굵기
 						  pDoc->pRectangle->setLineThick(lineThick);
 						  YRectangle* rectangle = new YRectangle(pDoc->pRectangle);
 						  pDoc->allList.AddTail(rectangle);
+						  pDoc->temp_AllList.AddTail(rectangle);
 						  break;
 		}
 		case group:
@@ -1640,7 +1675,9 @@ void CYPaintEditView::OnMenulinethick() //기능 : 선 굵기
 							   pDoc->pRectangle->setLineThick(lineThick);
 						   }
 					   }
-
+					   YGroup* group = new YGroup(pDoc->pGroup);
+					   pDoc->allList.AddTail(group);
+					   pDoc->temp_AllList.AddTail(group);
 					   break;
 		}
 		default:
@@ -1679,6 +1716,7 @@ void CYPaintEditView::OnMenulinepattern() //기능 : 선 패턴
 					 pDoc->pLine->setLinePattern(linePattern);
 					 YLine* line = new YLine(pDoc->pLine);
 					 pDoc->allList.AddTail(line);
+					 pDoc->temp_AllList.AddTail(line);
 					 break;
 		}
 		case polyline:
@@ -1687,6 +1725,7 @@ void CYPaintEditView::OnMenulinepattern() //기능 : 선 패턴
 						 pDoc->pPolyLine->setLinePattern(linePattern);
 						 YPolyLine* polyline = new YPolyLine(pDoc->pPolyLine);
 						 pDoc->allList.AddTail(polyline);
+						 pDoc->temp_AllList.AddTail(polyline);
 						 break;
 		}
 		case ellipse:
@@ -1695,6 +1734,7 @@ void CYPaintEditView::OnMenulinepattern() //기능 : 선 패턴
 						pDoc->pEllipse->setLinePattern(linePattern);
 						YEllipse* ellipse = new YEllipse(pDoc->pEllipse);
 						pDoc->allList.AddTail(ellipse);
+						pDoc->temp_AllList.AddTail(ellipse);
 						break;
 		}
 		case rectangle:
@@ -1703,6 +1743,7 @@ void CYPaintEditView::OnMenulinepattern() //기능 : 선 패턴
 						  pDoc->pRectangle->setLinePattern(linePattern);
 						  YRectangle* rectangle = new YRectangle(pDoc->pRectangle);
 						  pDoc->allList.AddTail(rectangle);
+						  pDoc->temp_AllList.AddTail(rectangle);
 						  break;
 		}
 		case group:
@@ -1776,6 +1817,7 @@ void CYPaintEditView::OnMenusidepattern() //기능 : 면 패턴
 						pDoc->pEllipse->setSidePattern(sidePattern);
 						YEllipse* ellipse = new YEllipse(pDoc->pEllipse);
 						pDoc->allList.AddTail(ellipse);
+						pDoc->temp_AllList.AddTail(ellipse);
 						break;
 		}
 		case rectangle:
@@ -1787,6 +1829,7 @@ void CYPaintEditView::OnMenusidepattern() //기능 : 면 패턴
 						  pDoc->pRectangle->setSidePattern(sidePattern);
 						  YRectangle* rectangle = new YRectangle(pDoc->pRectangle);
 						  pDoc->allList.AddTail(rectangle);
+						  pDoc->temp_AllList.AddTail(rectangle);
 						  break;
 		}
 		
@@ -1857,6 +1900,7 @@ void CYPaintEditView::OnMenulinecolor() //기능 : 선 색
 					 pDoc->pLine->setLineColor(lineColor);
 					 YLine* line = new YLine(pDoc->pLine);
 					 pDoc->allList.AddTail(line);
+					 pDoc->temp_AllList.AddTail(line);
 					 break;
 		}
 		case polyline:
@@ -1865,6 +1909,7 @@ void CYPaintEditView::OnMenulinecolor() //기능 : 선 색
 						 pDoc->pPolyLine->setLineColor(lineColor);
 						 YPolyLine* polyline = new YPolyLine(pDoc->pPolyLine);
 						 pDoc->allList.AddTail(polyline);
+						 pDoc->temp_AllList.AddTail(polyline);
 						 break;
 		}
 		case ellipse:
@@ -1873,6 +1918,7 @@ void CYPaintEditView::OnMenulinecolor() //기능 : 선 색
 						pDoc->pEllipse->setLineColor(lineColor);
 						YEllipse* ellipse = new YEllipse(pDoc->pEllipse);
 						pDoc->allList.AddTail(ellipse);
+						pDoc->temp_AllList.AddTail(ellipse);
 						break;
 		}
 		case rectangle:
@@ -1881,6 +1927,7 @@ void CYPaintEditView::OnMenulinecolor() //기능 : 선 색
 						  pDoc->pRectangle->setLineColor(lineColor);
 						  YRectangle* rectangle = new YRectangle(pDoc->pRectangle);
 						  pDoc->allList.AddTail(rectangle);
+						  pDoc->temp_AllList.AddTail(rectangle);
 						  break;
 		}
 		case group:
@@ -1935,6 +1982,7 @@ void CYPaintEditView::OnMenusidecolor() //기능 : 면 색
 						pDoc->pEllipse->setSideColor(sideColor);
 						YEllipse* ellipse = new YEllipse(pDoc->pEllipse);
 						pDoc->allList.AddTail(ellipse);
+						pDoc->temp_AllList.AddTail(ellipse);
 						break;
 		}
 		case rectangle:
@@ -1943,6 +1991,7 @@ void CYPaintEditView::OnMenusidecolor() //기능 : 면 색
 						  pDoc->pRectangle->setSideColor(sideColor);
 						  YRectangle* rectangle = new YRectangle(pDoc->pRectangle);
 						  pDoc->allList.AddTail(rectangle);
+						  pDoc->temp_AllList.AddTail(rectangle);
 						  break;
 		}
 		case group:
@@ -2117,6 +2166,7 @@ void CYPaintEditView::OnEditPaste()
 				pDoc->pPolyLine->addPoint(point);
 				YPolyLine* polyline = new YPolyLine(pDoc->pPolyLine);
 				pDoc->allList.AddTail(polyline);
+				pDoc->temp_AllList.AddTail(polyline);
 			}
 			pDoc->pPolyLine->setType(polyline);
 			pDoc->pPolyLine->setSelect(TRUE);
@@ -2254,6 +2304,7 @@ void CYPaintEditView::OnEditLinecolor()
 			pDoc->pLine->setLineColor(lineColor);
 			YLine* line = new YLine(pDoc->pLine);
 			pDoc->allList.AddTail(line);
+			pDoc->temp_AllList.AddTail(line);
 			break;
 		}
 		case polyline:
@@ -2262,6 +2313,7 @@ void CYPaintEditView::OnEditLinecolor()
 			pDoc->pPolyLine->setLineColor(lineColor);
 			YPolyLine* polyline = new YPolyLine(pDoc->pPolyLine);
 			pDoc->allList.AddTail(polyline);
+			pDoc->temp_AllList.AddTail(polyline);
 			break;
 		}
 
@@ -2271,6 +2323,7 @@ void CYPaintEditView::OnEditLinecolor()
 			pDoc->pEllipse->setLineColor(lineColor);
 			YEllipse* ellipse = new YEllipse(pDoc->pEllipse);
 			pDoc->allList.AddTail(ellipse);
+			pDoc->temp_AllList.AddTail(ellipse);
 			break;
 		}
 		case rectangle:
@@ -2279,6 +2332,7 @@ void CYPaintEditView::OnEditLinecolor()
 			pDoc->pRectangle->setLineColor(lineColor);
 			YRectangle* rectangle = new YRectangle(pDoc->pRectangle);
 			pDoc->allList.AddTail(rectangle);
+			pDoc->temp_AllList.AddTail(rectangle);
 			break;
 		}
 		default:
@@ -2608,56 +2662,125 @@ void CYPaintEditView::OnBack()
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	CYPaintEditDoc* pDoc = GetDocument();
 
-	POSITION pos = pDoc->allList.GetTailPosition();
+	POSITION pos;
 	YObject* temp;
 	YObject* lastObject;
 	YObject* original;
-	BOOL find;
-	if (pos != NULL && pDoc->allList.GetSize() > 1){
-		temp = (YObject*)pDoc->allList.GetTail();		//마지막꺼 지우고
-		pDoc->allList.RemoveTail();
+	BOOL find;																		//obj_List에 같은 객체가 있는 판별하는 flag변수
 
-		POSITION rpos = pDoc->allList.GetTailPosition();		//마지막꺼 지우고 다시탐색
-		while (rpos) {
-			lastObject = (YObject*)pDoc->allList.GetPrev(rpos);
-			if (temp->getOrder() == lastObject->getOrder()){
-				find = TRUE;										//같은 order의 객체가 있으면
+	pos = pDoc->allList.GetTailPosition();						
+	if (pDoc->currentObj == NULL){													//객체가 클릭 안되었을때 동작가능하도록 설정
+		if (pos != NULL && pDoc->allList.GetSize() > 1){
+			temp = (YObject*)pDoc->allList.GetTail();								//마지막꺼 지우고
+			pDoc->allList.RemoveTail();
+
+			POSITION rpos = pDoc->allList.GetTailPosition();						//마지막꺼 지우고 다시탐색
+			while (rpos) {
+				lastObject = (YObject*)pDoc->allList.GetPrev(rpos);
+				if (temp->getOrder() == lastObject->getOrder()){
+					find = TRUE;													
+					break;
+				}
+				find = FALSE;
+			}
+			if (find){																// order가 똑같은 것이 obj_List에 있을 경우
+				POSITION opos = pDoc->obj_List.GetTailPosition();
+				while (opos) {
+					POSITION t;
+					t = opos;
+					original = (YObject*)pDoc->obj_List.GetPrev(opos);
+					if (lastObject->getOrder() == original->getOrder()){
+						pDoc->obj_List.SetAt(t, lastObject);
+						break;
+					}
+				}
+			}
+			else {																	// 같은것이 없으면 obj_List에서 제거해 주어여한다.
+				POSITION opos = pDoc->obj_List.GetTailPosition();
+				while (opos) {
+					POSITION t;
+					t = opos;
+					original = (YObject*)pDoc->obj_List.GetPrev(opos);
+					if (temp->getOrder() == original->getOrder()){
+						pDoc->obj_List.RemoveAt(t);
+						break;
+					}
+				}
+			}
+		}
+		else {
+			pDoc->allList.RemoveAll();
+			pDoc->obj_List.RemoveAll();
+		}
+		Invalidate(FALSE);
+	}
+
+}
+
+void CYPaintEditView::OnFrontback()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CYPaintEditDoc* pDoc = GetDocument();
+	POSITION pos;				//allList의 position
+	YObject* temp;				//다시 보여질 객체를 저장할 변수
+	if (pDoc->allList.GetSize() != pDoc->temp_AllList.GetSize()){  // 뒤로가기를 했을경우에만 실행
+
+			int count = pDoc->allList.GetSize();					
+			pos = pDoc->temp_AllList.GetHeadPosition();
+			for (int i = 0; i < count; i++){
+				pDoc->temp_AllList.GetNext(pos);
+			}
+			temp = (YObject*)pDoc->temp_AllList.GetNext(pos);
+			switch (temp->getType()){
+			case line:
+			{
+				YLine* line = new YLine((YLine*)temp);
+				pDoc->allList.AddTail(line);
 				break;
 			}
-			find = FALSE;
-		}
-		if (find){
-			POSITION opos = pDoc->obj_List.GetTailPosition();
-			while (opos) {
-				POSITION t;
-				t = opos;
-				original = (YObject*)pDoc->obj_List.GetPrev(opos);
-				if (lastObject->getOrder() == original->getOrder()){
-					pDoc->obj_List.SetAt(t, lastObject);
-					break;
-				}
+			case polyline:
+			{
+				YPolyLine* polyline = new YPolyLine((YPolyLine*)temp);
+				pDoc->allList.AddTail(polyline);
+				break;
 			}
-		}
-		else {  // 똑같은게 없다
-			POSITION opos = pDoc->obj_List.GetTailPosition();
-			while (opos) {
-				POSITION t;
-				t = opos;
-				original = (YObject*)pDoc->obj_List.GetPrev(opos);
+			case ellipse:
+			{
+				YEllipse* ellipse = new YEllipse((YEllipse*)temp);
+				pDoc->allList.AddTail(ellipse);
+				break;
+			}
+			case rectangle:
+			{
+				YRectangle* rectangle = new YRectangle((YRectangle*)temp);
+				pDoc->allList.AddTail(rectangle);
+				break;
+			}
+			case text:
+			{
+				YText* text = new YText((YText*)temp);
+				pDoc->allList.AddTail(text);
+				break;
+			}
+			}
+			//obj_List에 객체를 다시 추가하는 과정
+			POSITION tpos = pDoc->obj_List.GetTailPosition();
+			POSITION changepos;
+			BOOL check = FALSE;
+			while (tpos){
+				changepos = tpos;
+				YObject* original = (YObject*)pDoc->obj_List.GetPrev(tpos);
+
 				if (temp->getOrder() == original->getOrder()){
-					pDoc->obj_List.RemoveAt(t);
+					pDoc->obj_List.SetAt(changepos, temp);
+					check = TRUE;
 					break;
 				}
 			}
-		}
+			if (!check){ // 탐색을 다했는데 같은 객체가 없으면 객체를 추가해주어야한다.
+				pDoc->obj_List.AddTail(temp);
+			}
+
+		Invalidate(FALSE);
 	}
-	else {
-		pDoc->allList.RemoveAll();
-		pDoc->obj_List.RemoveAll();
-	}
-
-
-
-
-	Invalidate(FALSE);
 }
