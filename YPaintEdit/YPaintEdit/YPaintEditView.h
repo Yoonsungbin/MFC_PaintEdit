@@ -183,6 +183,7 @@ public:
 
 	afx_msg void OnBack();
 	afx_msg void OnFrontback();
+	afx_msg void OnUpdateMenufontdia(CCmdUI *pCmdUI);
 };
 
 #ifndef _DEBUG  // YPaintEditView.cpp의 디버그 버전
