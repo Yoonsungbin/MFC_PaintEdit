@@ -9,7 +9,7 @@ YRectangle::YRectangle()
 
 YRectangle::~YRectangle()
 {
-	
+
 }
 
 IMPLEMENT_SERIAL(YRectangle, CObject, 1)
@@ -38,7 +38,7 @@ YRectangle::YRectangle(YRectangle *p){
 	setMoveMode(p->getMoveMode());
 	setMixPoint(p->getMixPoint());
 	setOrder(p->getOrder());
-	setSelect(FALSE);
+	setSelect(p->getSelect());
 	setType(p->getType());
 	setRgn();
 }
@@ -61,8 +61,8 @@ void YRectangle::draw(CDC* pDC)
 	CPen pen(getLinePattern(), getLineThick(), getLineColor());
 	CPen* oldPen = pDC->SelectObject(&pen);
 
-	
-	
+
+
 
 	if (getPatternflag() == FALSE)
 	{
@@ -74,7 +74,7 @@ void YRectangle::draw(CDC* pDC)
 	}
 	else
 	{
-		CBrush brush(getSidePattern()-1, getSideColor());
+		CBrush brush(getSidePattern() - 1, getSideColor());
 		CBrush* oldBrush = pDC->SelectObject(&brush);
 		pDC->Rectangle(sPoint.x, sPoint.y, ePoint.x, ePoint.y);
 		pDC->SelectObject(&oldPen);
@@ -169,7 +169,7 @@ void YRectangle::setRgn(){
 		right = sPoint.x;
 		bottom = sPoint.y;
 	}
-	setORect(left-1, top-1, right+1, bottom+1);
+	setORect(left - 1, top - 1, right + 1, bottom + 1);
 	rgn.DeleteObject();
 	rgn.CreateRectRgn(left, top, right, bottom);
 }

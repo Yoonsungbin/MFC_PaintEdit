@@ -22,6 +22,7 @@
 #include "YEllipse.h"
 #include "YText.h"
 #include "YFigureDialog.h"
+#include "TextEditDialog.h"
 
 class CYPaintEditView : public CView
 {
@@ -64,7 +65,7 @@ public:
 	// 리본 메뉴 (색 패널) : 메뉴들의 초기값 설정 및 값들의 임시 저장을 위해 선언
 	COLORREF lineColor = RGB(0, 0, 0);
 	COLORREF sideColor = RGB(255, 255, 255);
-	
+
 
 	// 팝업 메뉴 //
 	// 팝업 메뉴 : 메뉴들의 비/활성화를 위해 선언
@@ -81,11 +82,12 @@ public:
 	BOOL menu_Group;
 	BOOL menu_DeleteGroup;
 	BOOL menu_FontDialog;
+
 	YObject* cutObj = NULL;			// 잘라내기, 붙여넣기를 위한 변수 선언
+	BOOL undoredoFlag = FALSE;
 
 
-	//움직임이 결정되었을때 저장하기 위한 flag 변수
-	BOOL lineMove = FALSE;	
+	BOOL lineMove = FALSE;
 	BOOL polylineMove = FALSE;
 	BOOL ellipseMove = FALSE;
 	BOOL rectangleMove = FALSE;
@@ -110,20 +112,15 @@ protected:
 
 // 생성된 메시지 맵 함수
 protected:
+
+
 	afx_msg void OnFilePrintPreview();
 	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
 	DECLARE_MESSAGE_MAP()
 public:
-	void Paint(CDC* dc);
-	afx_msg void OnPaint();
-	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
-	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
-	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
-	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
 
+	void Paint(CDC* dc);
 	void UpdateMenu();
 	afx_msg void OnMenudefaulttbutton();
 	afx_msg void OnUpdateMenudefaulttbutton(CCmdUI *pCmdUI);
@@ -135,23 +132,23 @@ public:
 	afx_msg void OnUpdateMenurectanglebutton(CCmdUI *pCmdUI);
 	afx_msg void OnMenuellipsebutton();
 	afx_msg void OnUpdateMenuellipsebutton(CCmdUI *pCmdUI);
+	afx_msg void OnMenutextbutton();
+	afx_msg void OnUpdateMenutextbutton(CCmdUI *pCmdUI);
+	afx_msg void OnMenufontsize();
+	afx_msg void OnUpdateMenufontsize(CCmdUI *pCmdUI);
+	afx_msg void OnMenufont();
+	afx_msg void OnUpdateMenufont(CCmdUI *pCmdUI);
 	afx_msg void OnTexteditbutton();
 	afx_msg void OnUpdateTexteditbutton(CCmdUI *pCmdUI);
-	afx_msg void OnMenufontsize();
-	afx_msg void OnMenufont();
-	afx_msg void OnMenutextbutton();
 	afx_msg void OnMenufontcolor();
-	afx_msg void OnMenufontbkcolor();
-	afx_msg void OnUpdateMenufontsize(CCmdUI *pCmdUI);
-	afx_msg void OnUpdateMenufont(CCmdUI *pCmdUI);
-	afx_msg void OnUpdateMenutextbutton(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateMenufontcolor(CCmdUI *pCmdUI);
+	afx_msg void OnMenufontbkcolor();
 	afx_msg void OnUpdateMenufontbkcolor(CCmdUI *pCmdUI);
 	afx_msg void OnMenulinethick();
-	afx_msg void OnMenulinepattern();
-	afx_msg void OnMenusidepattern();
 	afx_msg void OnUpdateMenulinethick(CCmdUI *pCmdUI);
+	afx_msg void OnMenulinepattern();
 	afx_msg void OnUpdateMenulinepattern(CCmdUI *pCmdUI);
+	afx_msg void OnMenusidepattern();
 	afx_msg void OnUpdateMenusidepattern(CCmdUI *pCmdUI);
 	afx_msg void OnMenulinecolor();
 	afx_msg void OnMenusidecolor();
@@ -159,39 +156,46 @@ public:
 	afx_msg void OnUpdateGroupsbutton(CCmdUI *pCmdUI);
 	afx_msg void OnDeletegroupbutton();
 	afx_msg void OnUpdateDeletegroupbutton(CCmdUI *pCmdUI);
+	afx_msg void OnPaint();
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
+	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
 	afx_msg void OnEditCut();
-	afx_msg void OnEditPaste();
 	afx_msg void OnEditCopy();
+	afx_msg void OnEditPaste();
 	afx_msg void OnUpdateEditCut(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateEditCopy(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateEditPaste(CCmdUI *pCmdUI);
 	afx_msg void OnEditLinecolor();
 	afx_msg void OnUpdateEditLinecolor(CCmdUI *pCmdUI);
+	afx_msg void OnEditSidecolor();
+	afx_msg void OnUpdateEditSidecolor(CCmdUI *pCmdUI);
 	afx_msg void OnEditFiguresetting();
 	afx_msg void OnUpdateEditFiguresetting(CCmdUI *pCmdUI);
 	afx_msg void OnEditDelete();
 	afx_msg void OnUpdateEditDelete(CCmdUI *pCmdUI);
 	afx_msg void OnEditDeletepoint();
 	afx_msg void OnUpdateEditDeletepoint(CCmdUI *pCmdUI);
-	afx_msg void OnEditSidecolor();
-	afx_msg void OnUpdateEditSidecolor(CCmdUI *pCmdUI);
 	afx_msg void OnEditgroup();
 	afx_msg void OnUpdateEditgroup(CCmdUI *pCmdUI);
 	afx_msg void OnEditdeletegroup();
 	afx_msg void OnUpdateEditdeletegroup(CCmdUI *pCmdUI);
-
-	afx_msg void OnMenufontdia();
-
 	afx_msg void OnBack();
 	afx_msg void OnFrontback();
-	afx_msg void OnUpdateMenufontdia(CCmdUI *pCmdUI);
-	afx_msg void OnUpdateMenusidecolor(CCmdUI *pCmdUI);
-	afx_msg void OnUpdateMenulinecolor(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateBack(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateFrontback(CCmdUI *pCmdUI);
+	afx_msg void OnMenufontdia();
+	afx_msg void OnUpdateMenufontdia(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateMenulinecolor(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateMenusidecolor(CCmdUI *pCmdUI);
+	afx_msg void OnEditSelectAll();
 };
 
 #ifndef _DEBUG  // YPaintEditView.cpp의 디버그 버전
 inline CYPaintEditDoc* CYPaintEditView::GetDocument() const
    { return reinterpret_cast<CYPaintEditDoc*>(m_pDocument); }
 #endif
+

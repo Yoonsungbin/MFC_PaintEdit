@@ -32,7 +32,6 @@ YText::YText(YText* p){
 	bold = p->getBold();						// 굵기 초기화
 	italic = p->getItalic();
 	texts = p->getText();
-	rect = p->getRect();
 	LOGFONT lf;
 	CFont f;
 	if (bold) lf.lfWeight = FW_BOLD;
@@ -52,7 +51,7 @@ YText::YText(YText* p){
 	f.CreateFontIndirect(&lf);
 
 	setOrder(p->getOrder());
-	setSelect(FALSE);
+	setSelect(p->getSelect());
 	setType(p->getType());
 	setRgn();
 }
@@ -99,6 +98,7 @@ void YText::draw(CDC* dc){
 	lf.lfQuality = DEFAULT_QUALITY;
 	lf.lfCharSet = DEFAULT_CHARSET;
 	f.CreateFontIndirect(&lf);
+	
 	dc->SelectObject(&f);
 
 	dc->SetBkColor(bkColor);
@@ -110,7 +110,7 @@ void YText::draw(CDC* dc){
 }
 void YText::setRgn(){
 	int left, top, right, bottom;
-	
+
 	// 경우에 수에 따라 리젼생성함수에 입력할 좌표 설정
 	if (sPoint.x < ePoint.x && sPoint.y < ePoint.y){
 		left = sPoint.x;
@@ -136,7 +136,7 @@ void YText::setRgn(){
 		right = sPoint.x;
 		bottom = sPoint.y;
 	}
-	YObject::setORect(left-1, top-1, right+1, bottom+1);
+	YObject::setORect(left - 1, top - 1, right + 1, bottom + 1);
 	// 리젼 생성
 	rgn.DeleteObject();
 	rgn.CreateRectRgn(left, top, right, bottom);

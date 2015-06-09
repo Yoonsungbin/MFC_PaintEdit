@@ -5,34 +5,34 @@ class YLine :public YOneDimension
 	DECLARE_SERIAL(YLine);
 public:
 	YLine();
-	YLine(CPoint start, CPoint end,int color,int thick, int pattern);    //시작점 , 끝점 , 색 , 두께 , 패턴
+	YLine(CPoint start, CPoint end, int color, int thick, int pattern);    //시작점 , 끝점 , 색 , 두께 , 패턴
 	YLine(YLine* p);
 	~YLine();
 	virtual void moveAll(int s, int e);
 	virtual void deleteAll();
 	virtual void draw(CDC* cPC);
 
-	virtual void move(int s,int e);
+	virtual void move(int s, int e);
 
 	virtual void setRgn();
 	BOOL virtual checkRgn(CPoint point);
 
-	 void setSPoint(CPoint point){
+	void setSPoint(CPoint point){
 		sPoint = point;
 	}
-	 CPoint getSPoint(){ return sPoint; }
+	CPoint getSPoint(){ return sPoint; }
 
-	 void setEPoint(CPoint point){
+	void setEPoint(CPoint point){
 		ePoint = point;
 	}
-	 CPoint getEPoint(){ return ePoint; }
-	 
-	 CRect* getMRect(){ return mRect; }
+	CPoint getEPoint(){ return ePoint; }
 
-	 void setMoveMode(int val){ moveMode = val; }
-	 int getMoveMode(){ return moveMode; }
+	CRect* getMRect(){ return mRect; }
 
-	 virtual void Serialize(CArchive& ar);
+	void setMoveMode(int val){ moveMode = val; }
+	int getMoveMode(){ return moveMode; }
+
+	virtual void Serialize(CArchive& ar);
 
 private:
 	CPoint sPoint;

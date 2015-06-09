@@ -13,7 +13,7 @@ YEllipse::~YEllipse()
 
 IMPLEMENT_SERIAL(YEllipse, CObject, 1)
 
-YEllipse::YEllipse(CPoint start, CPoint end, int color, int thick, int pattern, int inColor, int sidepattern,BOOL paflag)
+YEllipse::YEllipse(CPoint start, CPoint end, int color, int thick, int pattern, int inColor, int sidepattern, BOOL paflag)
 {
 	sPoint = start;
 	ePoint = end;
@@ -37,7 +37,7 @@ YEllipse::YEllipse(YEllipse *p){
 	setMoveMode(p->getMoveMode());
 	setMixPoint(p->getMixPoint());
 	setOrder(p->getOrder());
-	setSelect(FALSE);
+	setSelect(p->getSelect());
 	setType(p->getType());
 	setRgn();
 }
@@ -71,16 +71,16 @@ void YEllipse::draw(CDC* pDC)
 	}
 	else
 	{
-		CBrush brush(getSidePattern()-1, getSideColor());
+		CBrush brush(getSidePattern() - 1, getSideColor());
 		CBrush* oldBrush = pDC->SelectObject(&brush);
 		pDC->Ellipse(sPoint.x, sPoint.y, ePoint.x, ePoint.y);
 		pDC->SelectObject(&oldPen);
 		pDC->SelectObject(oldBrush);
 	}
-	
-	
-	
-	
+
+
+
+
 
 	//Graphics graphics(*pDC);
 
@@ -178,7 +178,7 @@ void YEllipse::setRgn(){
 		right = sPoint.x;
 		bottom = sPoint.y;
 	}
-	YObject::setORect(left-1, top-1, right+1, bottom+1);
+	YObject::setORect(left - 1, top - 1, right + 1, bottom + 1);
 	rgn.DeleteObject();
 	rgn.CreateRectRgn(left, top, right, bottom);
 }

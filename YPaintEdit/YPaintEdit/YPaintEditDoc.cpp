@@ -20,7 +20,7 @@
 #endif
 
 #include "YPaintEditDoc.h"
-
+#include<afxtempl.h>
 #include <propkey.h>
 
 #ifdef _DEBUG
@@ -36,7 +36,6 @@ END_MESSAGE_MAP()
 
 
 // CYPaintEditDoc 생성/소멸
-
 
 CYPaintEditDoc::CYPaintEditDoc()
 {
@@ -63,7 +62,6 @@ BOOL CYPaintEditDoc::OnNewDocument()
 	// TODO: 여기에 재초기화 코드를 추가합니다.
 	// SDI 문서는 이 문서를 다시 사용합니다.
 	obj_List.RemoveAll();
-
 	return TRUE;
 }
 
@@ -71,7 +69,6 @@ BOOL CYPaintEditDoc::OnNewDocument()
 
 
 // CYPaintEditDoc serialization
-
 void CYPaintEditDoc::Serialize(CArchive& ar)
 {
 	if (ar.IsStoring())
@@ -87,39 +84,39 @@ void CYPaintEditDoc::Serialize(CArchive& ar)
 			switch (temp->getType()){
 			case line:
 			{
-				YLine* line = (YLine*)temp;
-				line->Serialize(ar);
-				break;
+						 YLine* line = (YLine*)temp;
+						 line->Serialize(ar);
+						 break;
 			}
 			case polyline:
 			{
-				YPolyLine* polyline = (YPolyLine*)temp;
-				polyline->Serialize(ar);
-				break;
+							 YPolyLine* polyline = (YPolyLine*)temp;
+							 polyline->Serialize(ar);
+							 break;
 			}
 			case ellipse:
 			{
-				YEllipse* ellipse = (YEllipse*)temp;
-				ellipse->Serialize(ar);
-				break;
+							YEllipse* ellipse = (YEllipse*)temp;
+							ellipse->Serialize(ar);
+							break;
 			}
 			case rectangle:
 			{
-				YRectangle* rectangle = (YRectangle*)temp;
-				rectangle->Serialize(ar);
-				break;
+							  YRectangle* rectangle = (YRectangle*)temp;
+							  rectangle->Serialize(ar);
+							  break;
 			}
 			case text:
 			{
-				YText* text = (YText*)temp;
-				text->Serialize(ar);
-				break;
+						 YText* text = (YText*)temp;
+						 text->Serialize(ar);
+						 break;
 			}
 			case group:
 			{
-				YGroup* group = (YGroup*)temp;
-				group->Serialize(ar);
-				break;
+						  YGroup* group = (YGroup*)temp;
+						  group->Serialize(ar);
+						  break;
 			}
 			}
 		}
@@ -130,57 +127,57 @@ void CYPaintEditDoc::Serialize(CArchive& ar)
 		int count;
 		int type;
 		ar >> count;
-	
+
 		obj_List.RemoveAll();
 		currentObj = NULL;
 		for (int i = 0; i < count; i++){
 			ar >> type;
-			
+
 			switch (type){
-				case line:
-				{
-					YLine* line = new YLine();
-					line->Serialize(ar);
-					obj_List.AddTail(line);
-					break;
-				}
-				case polyline:
-				{
-					YPolyLine* polyline = new YPolyLine();
-					polyline->Serialize(ar);
-					obj_List.AddTail(polyline);
-					break;
-				}
-				case ellipse:
-				{
-					YEllipse* ellipse = new YEllipse();
-					ellipse->Serialize(ar);
-					obj_List.AddTail(ellipse);
-					break;
-				}
-				case rectangle:
-				{
-					YRectangle* rectangle = new YRectangle();
-					rectangle->Serialize(ar);
-					obj_List.AddTail(rectangle);
-					break;
-				}
-				case text:
-				{
-					YText* text = new YText();
-					text->Serialize(ar);
-					obj_List.AddTail(text);
-					break;
-				}
-				case group:
-				{
-					YGroup* group = new YGroup();
-					group->Serialize(ar);
-					obj_List.AddTail(group);
-					break;
-				}
+			case line:
+			{
+						 YLine* line = new YLine();
+						 line->Serialize(ar);
+						 obj_List.AddTail(line);
+						 break;
 			}
-			
+			case polyline:
+			{
+							 YPolyLine* polyline = new YPolyLine();
+							 polyline->Serialize(ar);
+							 obj_List.AddTail(polyline);
+							 break;
+			}
+			case ellipse:
+			{
+							YEllipse* ellipse = new YEllipse();
+							ellipse->Serialize(ar);
+							obj_List.AddTail(ellipse);
+							break;
+			}
+			case rectangle:
+			{
+							  YRectangle* rectangle = new YRectangle();
+							  rectangle->Serialize(ar);
+							  obj_List.AddTail(rectangle);
+							  break;
+			}
+			case text:
+			{
+						 YText* text = new YText();
+						 text->Serialize(ar);
+						 obj_List.AddTail(text);
+						 break;
+			}
+			case group:
+			{
+						  YGroup* group = new YGroup();
+						  group->Serialize(ar);
+						  obj_List.AddTail(group);
+						  break;
+			}
+			}
+
 		}
 	}
 }

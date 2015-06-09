@@ -57,8 +57,6 @@ YGroup::YGroup(YGroup* p){
 	}
 
 }
-
-
 IMPLEMENT_SERIAL(YGroup, CObject, 1)
 void YGroup::move(int s, int e){
 	if (getMoveMode() == -1){  //시작점 2
@@ -72,7 +70,7 @@ void YGroup::move(int s, int e){
 			if (tmp->getType() == line){
 				YLine* pL = (YLine*)tmp;
 				pL->setMoveMode(-1);
-				pL->move(s,e);
+				pL->move(s, e);
 			}
 			else if (tmp->getType() == polyline){
 				YPolyLine* pPL = (YPolyLine*)tmp;
@@ -178,7 +176,7 @@ void YGroup::moveAll(int s, int e){
 	POSITION pos = groupList.GetHeadPosition();
 	while (pos){
 		tmp = groupList.GetNext(pos);
-		tmp->moveAll(s,e);
+		tmp->moveAll(s, e);
 		tmp->setRgn();
 	}
 	sPoint.x += s;
@@ -197,7 +195,7 @@ void YGroup::draw(CDC* dc){
 		dc->SelectObject(pen0);
 		dc->SelectStockObject(NULL_BRUSH);
 		dc->Rectangle(sPoint.x, sPoint.y, ePoint.x, ePoint.y);
-		
+
 		//draw circle
 		mRect[0].SetRect(sPoint.x - 10, sPoint.y - 10, sPoint.x + 10, sPoint.y + 10);
 		mRect[1].SetRect(ePoint.x - 10, ePoint.y - 10, ePoint.x + 10, ePoint.y + 10);
@@ -223,20 +221,6 @@ void YGroup::draw(CDC* dc){
 	}
 }
 void YGroup::setRgn(){
-	sPoint.SetPoint(10000, 10000);
-	ePoint.SetPoint(0, 0);
-	CRect rec;
-	YObject* tmp;
-	POSITION pos = groupList.GetHeadPosition();
-	while (pos){
-		tmp = groupList.GetNext(pos);
-		rec = tmp->getORect();
-		if (sPoint.x > rec.TopLeft().x) sPoint.x = rec.TopLeft().x;
-		if (sPoint.y > rec.TopLeft().y) sPoint.y = rec.TopLeft().y;
-		if (ePoint.x < rec.BottomRight().x) ePoint.x = rec.BottomRight().x;
-		if (ePoint.y < rec.BottomRight().y) ePoint.y = rec.BottomRight().y;
-	}
-
 	// 리젼 사각형 생성
 	setORect(sPoint.x, sPoint.y, ePoint.x, ePoint.y);
 	// 리젼 생성
@@ -264,42 +248,42 @@ void YGroup::Serialize(CArchive& ar)
 			YObject* temp = groupList.GetNext(pos);
 			ar << temp->getType();
 			switch (temp->getType()){
-				case line:
-				{
-					YLine* line = (YLine*)temp;
-					line->Serialize(ar);
-					break;
-				}
-				case polyline:
-				{
-					YPolyLine* polyline = (YPolyLine*)temp;
-					polyline->Serialize(ar);
-					break;
-				}
-				case ellipse:
-				{
-					YEllipse* ellipse = (YEllipse*)temp;
-					ellipse->Serialize(ar);
-					break;
-				}
-				case rectangle:
-				{
-					YRectangle* rectangle = (YRectangle*)temp;
-					rectangle->Serialize(ar);
-					break;
-				}
-				case text:
-				{
-					YText* text = (YText*)temp;
-					text->Serialize(ar);
-					break;
-				}
-				case group:
-				{
-					YGroup* group = (YGroup*)temp;
-					group->Serialize(ar);
-					break;
-				}
+			case line:
+			{
+						 YLine* line = (YLine*)temp;
+						 line->Serialize(ar);
+						 break;
+			}
+			case polyline:
+			{
+							 YPolyLine* polyline = (YPolyLine*)temp;
+							 polyline->Serialize(ar);
+							 break;
+			}
+			case ellipse:
+			{
+							YEllipse* ellipse = (YEllipse*)temp;
+							ellipse->Serialize(ar);
+							break;
+			}
+			case rectangle:
+			{
+							  YRectangle* rectangle = (YRectangle*)temp;
+							  rectangle->Serialize(ar);
+							  break;
+			}
+			case text:
+			{
+						 YText* text = (YText*)temp;
+						 text->Serialize(ar);
+						 break;
+			}
+			case group:
+			{
+						  YGroup* group = (YGroup*)temp;
+						  group->Serialize(ar);
+						  break;
+			}
 			}
 		}
 		ar << sPoint << ePoint << mixPoint;
@@ -317,45 +301,45 @@ void YGroup::Serialize(CArchive& ar)
 			switch (type){
 			case line:
 			{
-				YLine* line = new YLine();
-				line->Serialize(ar);
-				groupList.AddTail(line);
-				break;
+						 YLine* line = new YLine();
+						 line->Serialize(ar);
+						 groupList.AddTail(line);
+						 break;
 			}
 			case polyline:
 			{
-				YPolyLine* polyline = new YPolyLine();
-				polyline->Serialize(ar);
-				groupList.AddTail(polyline);
-				break;
+							 YPolyLine* polyline = new YPolyLine();
+							 polyline->Serialize(ar);
+							 groupList.AddTail(polyline);
+							 break;
 			}
 			case ellipse:
 			{
-				YEllipse* ellipse = new YEllipse();
-				ellipse->Serialize(ar);
-				groupList.AddTail(ellipse);
-				break;
+							YEllipse* ellipse = new YEllipse();
+							ellipse->Serialize(ar);
+							groupList.AddTail(ellipse);
+							break;
 			}
 			case rectangle:
 			{
-				YRectangle* rectangle = new YRectangle();
-				rectangle->Serialize(ar);
-				groupList.AddTail(rectangle);
-				break;
+							  YRectangle* rectangle = new YRectangle();
+							  rectangle->Serialize(ar);
+							  groupList.AddTail(rectangle);
+							  break;
 			}
 			case text:
 			{
-				YText* text = new YText();
-				text->Serialize(ar);
-				groupList.AddTail(text);
-				break;
+						 YText* text = new YText();
+						 text->Serialize(ar);
+						 groupList.AddTail(text);
+						 break;
 			}
 			case group:
 			{
-				YGroup* group = new YGroup();
-				group->Serialize(ar);
-				groupList.AddTail(group);
-				break;
+						  YGroup* group = new YGroup();
+						  group->Serialize(ar);
+						  groupList.AddTail(group);
+						  break;
 			}
 			}
 
