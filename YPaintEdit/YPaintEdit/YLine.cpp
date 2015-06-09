@@ -48,22 +48,10 @@ void YLine::deleteAll(){
 void YLine::draw(CDC* pDC){
 
 	CPen pen(getLinePattern(), getLineThick(), getLineColor());
-	//	CPen* oldPen = pDC->SelectObject(&pen);
 	pDC->SelectObject(&pen);
-	/*
-	Graphics graphics(*pDC);
-
-	//GDI+ 사용법
-	Pen pen1(Color(0, 0, 255),5);  // 불투명 (255), 검정색(0,0,0)
-	pen1.SetDashStyle(DashStyleSolid);
-	pen1.SetStartCap(LineCapRound);
-	pen1.SetEndCap(LineCapAnchorMask);
-	graphics.DrawLine(&pen1, sPoint.x, sPoint.y, nPoint.x, nPoint.y);
-	*/
-
+	
 	pDC->MoveTo(sPoint);
 	pDC->LineTo(ePoint);
-	//pDC->SelectObject(&oldPen);
 
 	if (getSelect()){
 		//테두리 리젼 그리기
@@ -147,40 +135,7 @@ BOOL YLine::checkRgn(CPoint point)
 	return FALSE;
 }
 
-/*
-void YLine::Serialize(CArchive& ar)
-{
-YObject::Serialize(ar);
-YOneDimension::Serialize(ar);
-if (ar.IsStoring())
-{
-// TODO: 여기에 저장 코드를 추가합니다.
-ar << sPoint << ePoint << mRect[0] << mRect[1] << moveMode << getLineThick()<<getLineColor() << getLinePattern() << getType()  << getORect() << getSelect() << getOrder();
-}
-else
-{
-// TODO: 여기에 로딩 코드를 추가합니다.
-int lineThick;
-int lineColor;
-int linePattern;
-int yType;		// 도형의 타입
-CRect rect;				// 도형의 리젼 사각형
-BOOL isSelected;		// 도형의 선택 여부
-int order;
 
-
-ar >> sPoint >> ePoint>> mRect[0] >>mRect[1]>> moveMode >>lineThick >> lineColor >> linePattern >> yType  >> rect >> isSelected >> order;
-
-setLineColor(lineColor);
-setLineThick(lineThick);
-setLinePattern(linePattern);
-setSelect(isSelected);
-setType((YObject_Type)yType);
-setRgn();
-}
-}
-
-*/
 void YLine::Serialize(CArchive& ar)
 {
 	YObject::Serialize(ar);

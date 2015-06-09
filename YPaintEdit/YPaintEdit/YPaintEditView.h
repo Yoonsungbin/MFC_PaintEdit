@@ -86,7 +86,6 @@ public:
 	YObject* cutObj = NULL;			// 잘라내기, 붙여넣기를 위한 변수 선언
 	BOOL undoredoFlag = FALSE;
 
-
 	BOOL lineMove = FALSE;
 	BOOL polylineMove = FALSE;
 	BOOL ellipseMove = FALSE;
@@ -112,8 +111,6 @@ protected:
 
 // 생성된 메시지 맵 함수
 protected:
-
-
 	afx_msg void OnFilePrintPreview();
 	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
@@ -191,12 +188,8 @@ public:
 	afx_msg void OnUpdateMenufontdia(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateMenulinecolor(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateMenusidecolor(CCmdUI *pCmdUI);
-
-	
-
 	afx_msg void OnGroupsizechangebutton();
 	afx_msg void OnUpdateGroupsizechangebutton(CCmdUI *pCmdUI);
-
 	afx_msg void OnEditSelectAll();
 };
 

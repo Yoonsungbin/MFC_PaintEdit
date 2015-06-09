@@ -82,9 +82,6 @@ void YEllipse::draw(CDC* pDC)
 
 
 
-	//Graphics graphics(*pDC);
-
-
 
 	if (getSelect()){
 

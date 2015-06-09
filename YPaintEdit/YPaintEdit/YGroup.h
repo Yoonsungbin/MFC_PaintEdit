@@ -41,6 +41,8 @@ public:
 	void move(int s, int e);
 
 	virtual void Serialize(CArchive& ar);
+
+
 	// Variables
 private:
 	CList<YObject*, YObject*> groupList;

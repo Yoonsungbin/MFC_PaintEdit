@@ -80,7 +80,6 @@ void YText::draw(CDC* dc){
 
 	CFont f;
 	LOGFONT lf;
-	//f.CreatePointFont(fontSize, font);
 
 	//±½±â¼³Á¤
 	if (bold) lf.lfWeight = FW_BOLD;

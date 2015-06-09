@@ -11,6 +11,7 @@ public:
 	~YText();													// 기본 소멸자
 	YText(YText* p);
 
+
 	// Virtual
 	void setType(YObject_Type t) { yType = t; }					// 객체의 타입을 텍스트 타입으로 설정하는 함수
 	void moveAll(int s, int e);									// 텍스트 객체를 이동시키는 함수
@@ -52,6 +53,8 @@ public:
 	BOOL getBold() { return bold; }
 	BOOL getItalic() { return italic; }
 	virtual void Serialize(CArchive& ar);
+
+
 	// Variables
 private:
 	CPoint sPoint;			// 텍스트 박스의 왼쪽,위의 점

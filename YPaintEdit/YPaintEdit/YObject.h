@@ -13,9 +13,6 @@ public:
 	YObject();
 	~YObject();
 
-	//YObject(const YObject &s){ *this = s; }							// ???
-	//YObject& operator=(const YObject &s) { return *this; }			// ???
-
 	void setOrder(int num){ order = num; }							// 객체의 고유번호를 설정하는 함수
 	int getOrder(){ return order; }									// 객체의 고유번호를 가져오는 함수
 
