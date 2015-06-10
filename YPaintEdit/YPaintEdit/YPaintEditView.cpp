@@ -672,7 +672,7 @@ void CYPaintEditView::OnLButtonDown(UINT nFlags, CPoint point)
 						   }
 					   }
 					   else if (pDoc->currentObj == pDoc->pGroup){
-						   if (pDoc->resizing == FALSE){
+						   if (pDoc->resizing == TRUE){
 							   if (pDoc->pGroup->getMRect()[0].PtInRect(point) || pDoc->pGroup->getMRect()[1].PtInRect(point) ||
 								   pDoc->pGroup->getMRect()[2].PtInRect(point) || pDoc->pGroup->getMRect()[3].PtInRect(point)) {
 								   pDoc->currentObj->setSelect(TRUE);
